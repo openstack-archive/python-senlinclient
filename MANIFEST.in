@@ -1,0 +1,8 @@
+include babel.cfg
+include LICENSE
+include README.rst
+include tox.ini
+include .testr.conf
+recursive-include doc *
+recursive-include tools *
+recursive-include python-senlinclient *.po *.pot
