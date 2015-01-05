@@ -1,6 +1,10 @@
 High Priority
 =============
 
+  - Support action_create
+  - Support action_delete
+  - Support action_cancel
+  - Support event_delete
 
 Middle Priority
 ===============
