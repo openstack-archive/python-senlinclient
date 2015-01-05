@@ -138,10 +138,3 @@ class ClusterManager(base.BaseManager):
             'GET',
             '/clusters/%s' % cluster_id)
         return Cluster(self, body['cluster'])
-
-    def profile(self, cluster_id):
-        '''Get the profile spec for a specific cluster as a parsed Json.'''
-        resp, body = self.client.json_request(
-            'GET',
-            '/clusters/%s/profile' % cluster_id)
-        return body
