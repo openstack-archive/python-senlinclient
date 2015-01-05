@@ -10,15 +10,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
-class BaseException(Exception):
-    '''An error occurred.'''
-    def __init__(self, message=None):
-        self.message = message
-
-    def __str__(self):
-        return self.message or self.__class__.__doc__
+from senlinclient.openstack.common.apiclient import base
 
 
-class CommandError(BaseException):
-    '''Invalid usage of CLI.'''
+class BuildInfo(base.Resource):
+    def __repr__(self):
+        return "<BuildInfo %s>" % self._info
+
+    def build_info(self):
+        return self.manager.build_info()
+
+
+class BuildInfoManager(base.BaseManager):
+    resource_class = BuildInfo
+
+    def build_info(self):
+        resp, body = self.client.json_request('GET', '/build_info')
+        return body
