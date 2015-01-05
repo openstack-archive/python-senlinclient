@@ -1,0 +1,13 @@
+High Priority
+=============
+
+
+Middle Priority
+===============
+
+  - Use code from https://review.openstack.org/#/c/95679/ to replace
+    _append_global_identity_args(parser)
+
+Low Priority
+============
+
