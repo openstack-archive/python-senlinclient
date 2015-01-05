@@ -13,7 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import yaml
 
+from oslo.serialization import jsonutils
 from oslo.utils import importutils
 
 from senlinclient.openstack.common import cliutils
@@ -25,6 +27,11 @@ arg = cliutils.arg
 env = cliutils.env
 print_list = cliutils.print_list
 exit = cliutils.exit
+
+supported_formats = {
+    "json": lambda x: jsonutils.dumps(x, indent=2),
+    "yaml": yaml.safe_dump
+}
 
 
 def import_versioned_module(version, submodule=None):
