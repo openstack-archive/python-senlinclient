@@ -102,6 +102,29 @@ class ClusterManager(base.BaseManager):
         """Delete a cluster."""
         self._delete("/clusters/%s" % cluster_id)
 
+    def list_nodes(self, cluster_id, **kwargs):
+        # kwargs contains nodes to be added
+        cluster = self.get(cluster_id)
+        resp, body = self.client.json_request(
+            'GET',
+            '/clusters/%s/nodes' % cluster.identifier)
+        return body
+
+    def add_node(self, cluster_id, node_id):
+        headers = self.client.credentials_headers()
+        cluster = self.get(cluster_id)
+        data = {'node_id': node_id}
+        resp, body = self.client.json_request(
+            'POST',
+            '/clusters/%s/nodes' % cluster.identifier,
+            data=data, headers=headers)
+
+    def del_node(self, cluster_id, node_id):
+        cluster = self.get(cluster_id)
+        resp, body = self.client.json_request(
+            'DELETE',
+            '/clusters/%s/nodes/%s' % (cluster.identifier, node_id))
+
     def attach_policy(self, cluster_id, policy_id):
         """Attach a policy to a cluster."""
         cluster = self.get(cluster_id)
@@ -110,7 +133,30 @@ class ClusterManager(base.BaseManager):
             'POST',
             '/clusters/%s/policies' % cluster.identifier,
             data=data)
-        return body
+
+    def detach_policy(self, cluster_id, policy_id):
+        cluster = self.get(cluster_id)
+        resp, body = self.client.json_request(
+            'DELETE',
+            '/clusters/%s/policies/%s' % (cluster.identifier, policy_id))
+
+    def enable_policy(self, cluster_id, policy_id):
+        """Enable a policy on a cluster."""
+        cluster = self.get(cluster_id)
+        data = {'enabled': True}
+        resp, body = self.client.json_request(
+            'POST',
+            '/clusters/%s/policies/%s' % (cluster.identifier, policy_id),
+            data=data)
+
+    def disable_policy(self, cluster_id, policy_id):
+        """Enable a policy on a cluster."""
+        cluster = self.get(cluster_id)
+        data = {'enabled': False}
+        resp, body = self.client.json_request(
+            'POST',
+            '/clusters/%s/policies/%s' % (cluster.identifier, policy_id),
+            data=data)
 
     def show_policy(self, cluster_id, policy_id):
         cluster = self.get(cluster_id)
@@ -119,14 +165,7 @@ class ClusterManager(base.BaseManager):
             '/clusters/%s/policies/%s' % (cluster.identifier, policy_id))
         return body
 
-    def detach_policy(self, cluster_id, policy_id):
-        cluster = self.get(cluster_id)
-        resp, body = self.client.json_request(
-            'DELETE',
-            '/clusters/%s/policies/%s' % (cluster.identifier, policy_id))
-        return body
-
-    def policy_list(self, cluster_id):
+    def list_policy(self, cluster_id):
         cluster = self.get(cluster_id)
         resp, body = self.client.json_request(
             'GET',
