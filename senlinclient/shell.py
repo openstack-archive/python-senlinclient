@@ -31,9 +31,9 @@ from keystoneclient import session as kssession
 
 import senlinclient
 from senlinclient import client as senlin_client
+from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
-from senlinclient import exc
 
 logger = logging.getLogger(__name__)
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
