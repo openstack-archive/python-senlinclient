@@ -52,8 +52,8 @@ def do_cluster_list(sc, args=None):
             fields.append('parent')
             kwargs['show_nested'] = True
 
-        if args.global_tenant or args.show_owner:
-            fields.insert(2, 'stack_owner')
+        if args.global_tenant or args.show_parent:
+            fields.insert(2, 'parent')
         if args.global_tenant:
             fields.insert(2, 'project')
 
