@@ -102,14 +102,6 @@ class ClusterManager(base.BaseManager):
         """Delete a cluster."""
         self._delete("/clusters/%s" % cluster_id)
 
-    def list_nodes(self, cluster_id):
-        # kwargs contains nodes to be added
-        cluster = self.get(cluster_id)
-        resp, body = self.client.json_request(
-            'GET',
-            '/clusters/%s/nodes' % cluster.identifier)
-        return body
-
     def add_node(self, cluster_id, node_id):
         headers = self.client.credentials_headers()
         cluster = self.get(cluster_id)

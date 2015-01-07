@@ -250,12 +250,38 @@ def do_cluster_show(sc, args):
         }
         utils.print_dict(cluster.to_dict(), formatters=formatters)
 
-
+@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted nodes if any.'))
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned nodes. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of nodes returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return nodes that appear after the given node ID.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
-    sc.clusters.list_nodes(args.id)
+    fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
+
+    kwargs = {
+        'cluster_id': args.id,
+        'show_deleted': args.show_deleted,
+        'filters': utils.format_parameters(args.filters),
+        'limit': args.limit,
+        'marker': args.marker,
+    }
+
+    try:
+        nodes = sc.nodes.list(**kwargs)
+    except exc.HTTPNotFound:
+        msg = _('No node matching criteria is found')
+        raise exc.CommandError(msg)
+
+    utils.print_list(nodes, fields, sortby_index=5)
 
 
 @utils.arg('-n', '--nodes', metavar='<NODE_IDs>',
