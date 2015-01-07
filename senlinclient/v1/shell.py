@@ -250,6 +250,7 @@ def do_cluster_show(sc, args):
         }
         utils.print_dict(cluster.to_dict(), formatters=formatters)
 
+
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -344,11 +345,23 @@ def do_cluster_policy_attach(sc, args):
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY_ID>',
+           help=_('ID of policy to be detached.'))
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_policy_detach(sc, args):
+    '''Detach policy from cluster.'''
+    sc.clusters.detach_policy(args.id, args.policy)
+    do_cluster_policy_list(sc, args.id)
+
+
+@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
            help=_('ID of policy to be enabled.'))
 @utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
            help=_('Cooldown interval in seconds.'))
 @utils.arg('-l', '--level', metavar='<LEVEL>',
            help=_('Enforcement level.'))
+@utils.arg('-e', '--enabled', metavar='<BOOLEAN>',
+           help=_('Specify whether to enable policy.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(sc, args):
@@ -356,29 +369,10 @@ def do_cluster_policy_update(sc, args):
     kwargs = {
         'policy_id': args.policy,
         'cooldown': args.cooldown,
+        'enabled': args.enabled,
         'level': args.level,
     }
     sc.clusters.update_policy(args.id, **kwargs)
-    do_cluster_policy_list(sc, args.id)
-
-
-@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
-           help=_('ID of policy to be disabled.'))
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_disable(sc, args):
-    '''Disable policy on cluster.'''
-    sc.clusters.disable_policy(args.id, args.policy)
-    do_cluster_policy_list(sc, args.id)
-
-
-@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
-           help=_('ID of policy to be detached.'))
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_detach(sc, args):
-    '''Detach policy from cluster.'''
-    sc.clusters.detach_policy(args.id, args.policy)
     do_cluster_policy_list(sc, args.id)
 
 
