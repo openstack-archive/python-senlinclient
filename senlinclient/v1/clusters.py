@@ -102,7 +102,7 @@ class ClusterManager(base.BaseManager):
         """Delete a cluster."""
         self._delete("/clusters/%s" % cluster_id)
 
-    def list_nodes(self, cluster_id, **kwargs):
+    def list_nodes(self, cluster_id):
         # kwargs contains nodes to be added
         cluster = self.get(cluster_id)
         resp, body = self.client.json_request(
@@ -125,6 +125,13 @@ class ClusterManager(base.BaseManager):
             'DELETE',
             '/clusters/%s/nodes/%s' % (cluster.identifier, node_id))
 
+    def list_policy(self, cluster_id):
+        cluster = self.get(cluster_id)
+        resp, body = self.client.json_request(
+            'GET',
+            '/clusters/%s/policies' % cluster.identifier)
+        return body
+
     def attach_policy(self, cluster_id, policy_id):
         """Attach a policy to a cluster."""
         cluster = self.get(cluster_id)
@@ -140,36 +147,19 @@ class ClusterManager(base.BaseManager):
             'DELETE',
             '/clusters/%s/policies/%s' % (cluster.identifier, policy_id))
 
-    def enable_policy(self, cluster_id, policy_id):
-        """Enable a policy on a cluster."""
+    def update_policy(self, cluster_id, **kwargs):
         cluster = self.get(cluster_id)
-        data = {'enabled': True}
+        policy_id = kwargs.pop('policy_id')
         resp, body = self.client.json_request(
             'POST',
             '/clusters/%s/policies/%s' % (cluster.identifier, policy_id),
-            data=data)
-
-    def disable_policy(self, cluster_id, policy_id):
-        """Enable a policy on a cluster."""
-        cluster = self.get(cluster_id)
-        data = {'enabled': False}
-        resp, body = self.client.json_request(
-            'POST',
-            '/clusters/%s/policies/%s' % (cluster.identifier, policy_id),
-            data=data)
+            data=kwargs)
 
     def show_policy(self, cluster_id, policy_id):
         cluster = self.get(cluster_id)
         resp, body = self.client.json_request(
             'GET',
             '/clusters/%s/policies/%s' % (cluster.identifier, policy_id))
-        return body
-
-    def list_policy(self, cluster_id):
-        cluster = self.get(cluster_id)
-        resp, body = self.client.json_request(
-            'GET',
-            '/clusters/%s/policies' % cluster.identifier)
         return body
 
     def get(self, cluster_id):

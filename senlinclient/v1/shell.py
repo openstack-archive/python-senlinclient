@@ -122,6 +122,40 @@ def do_policy_type_template(sc, args):
 #### CLUSTERS
 
 
+@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted clusters if any.'))
+@utils.arg('-n', '--show-nested', default=False, action="store_true",
+           help=_('Include nested clusters if any.'))
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned clusters. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of clusters returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return clusters that appear after the given cluster '
+                  'ID.'))
+def do_cluster_list(sc, args=None):
+    '''List the user's clusters.'''
+    kwargs = {}
+    fields = ['id', 'cluster_name', 'status', 'created_time']
+    if args:
+        kwargs = {'limit': args.limit,
+                  'marker': args.marker,
+                  'filters': utils.format_parameters(args.filters),
+                  'show_deleted': args.show_deleted,
+                  'show_nested': args.show_nested}
+        if args.show_nested:
+            fields.append('parent')
+
+#        if args.global_tenant:
+#            fields.insert(2, 'project')
+
+    clusters = sc.clusters.list(**kwargs)
+    utils.print_list(clusters, fields, sortby_index=3)
+
+
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
            help=_('Profile Id used for this cluster.'))
 @utils.arg('-n', '--size', metavar='<NUMBER>',
@@ -170,6 +204,8 @@ def do_cluster_delete(sc, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
            help=_('ID of new profile to use.'))
+@utils.arg('-n', '--size', metavar='<NUMBER>',
+           help=_('Initial size of the cluster.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            type=int,
            help=_('Cluster update timeout in minutes.'))
@@ -184,8 +220,8 @@ def do_cluster_update(sc, args):
     '''Update the cluster.'''
 
     fields = {
-        'cluster_id': args.id,
         'profile_id': args.profile,
+        'size': args.size,
         'tags': utils.format_parameters(args.tags),
     }
 
@@ -194,6 +230,32 @@ def do_cluster_update(sc, args):
 
     sc.clusters.update(**fields)
     do_cluster_list(sc)
+
+
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of cluster to show.'))
+def do_cluster_show(sc, args):
+    '''Show details of the cluster.'''
+    try:
+        cluster = sc.clusters.get(args.id)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Cluster not found: %s') % args.id)
+    else:
+        formatters = {
+            'profile': utils.json_formatter,
+            'status': utils.text_wrap_formatter,
+            'status_reason': utils.text_wrap_formatter,
+            'tags': utils.json_formatter,
+            'links': utils.link_formatter
+        }
+        utils.print_dict(cluster.to_dict(), formatters=formatters)
+
+
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of cluster to nodes from.'))
+def do_cluster_node_list(sc, args):
+    '''List nodes from cluster.'''
+    sc.clusters.list_nodes(args.id)
 
 
 @utils.arg('-n', '--nodes', metavar='<NODE_IDs>',
@@ -237,10 +299,12 @@ def do_cluster_node_del(sc, args):
 
 
 @utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to nodes from.'))
-def do_cluster_node_list(sc, args):
-    '''List nodes from cluster.'''
-    sc.clusters.list_nodes(args.id)
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_policy_list(sc, args):
+    '''List policies from cluster.'''
+    policies = sc.clusters.list_policy(args.id)
+    fields = ['id', 'name', 'enabled', 'level']
+    utils.print_list(policies, fields, sortby_index=1)
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY_ID>',
@@ -255,11 +319,20 @@ def do_cluster_policy_attach(sc, args):
 
 @utils.arg('-p', '--policy', metavar='<POLICY_ID>',
            help=_('ID of policy to be enabled.'))
+@utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
+           help=_('Cooldown interval in seconds.'))
+@utils.arg('-l', '--level', metavar='<LEVEL>',
+           help=_('Enforcement level.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_enable(sc, args):
+def do_cluster_policy_update(sc, args):
     '''Enable policy on cluster.'''
-    sc.clusters.enable_policy(args.id, args.policy)
+    kwargs = {
+        'policy_id': args.policy,
+        'cooldown': args.cooldown,
+        'level': args.level,
+    }
+    sc.clusters.update_policy(args.id, **kwargs)
     do_cluster_policy_list(sc, args.id)
 
 
@@ -281,77 +354,6 @@ def do_cluster_policy_detach(sc, args):
     '''Detach policy from cluster.'''
     sc.clusters.detach_policy(args.id, args.policy)
     do_cluster_policy_list(sc, args.id)
-
-
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_list(sc, args):
-    '''List policies from cluster.'''
-    policies = sc.clusters.list_policy(args.id)
-    fields = ['id', 'name', 'enabled', 'level']
-    utils.print_list(policies, fields, sortby_index=1)
-
-
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted clusters if any.'))
-@utils.arg('-n', '--show-nested', default=False, action="store_true",
-           help=_('Include nested clusters if any.'))
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Filter parameters to apply on returned clusters. '
-                  'This can be specified multiple times, or once with '
-                  'parameters separated by a semicolon.'),
-           action='append')
-@utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of clusters returned.'))
-@utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return clusters that appear after the given cluster '
-                  'ID.'))
-@utils.arg('-g', '--global-tenant', action='store_true', default=False,
-           help=_('List clusters from all tenants. Operation only authorized '
-                  'for users who match the policy in policy file.'))
-@utils.arg('-o', '--show-parent', action='store_true', default=False,
-           help=_('Show cluster parent information. This is automatically '
-                  'enabled when using %(arg)s.') % {'arg': '--global-tenant'})
-def do_cluster_list(sc, args=None):
-    '''List the user's clusters.'''
-    kwargs = {}
-    fields = ['id', 'cluster_name', 'status', 'created_time']
-    if args:
-        kwargs = {'limit': args.limit,
-                  'marker': args.marker,
-                  'filters': utils.format_parameters(args.filters),
-                  'global_tenant': args.global_tenant,
-                  'show_deleted': args.show_deleted}
-        if args.show_nested:
-            fields.append('parent')
-            kwargs['show_nested'] = True
-
-        if args.global_tenant or args.show_parent:
-            fields.insert(2, 'parent')
-        if args.global_tenant:
-            fields.insert(2, 'project')
-
-    clusters = sc.clusters.list(**kwargs)
-    utils.print_list(clusters, fields, sortby_index=3)
-
-
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to show.'))
-def do_cluster_show(sc, args):
-    '''Show details of the cluster.'''
-    try:
-        cluster = sc.clusters.get(args.id)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Cluster not found: %s') % args.id)
-    else:
-        formatters = {
-            'profile': utils.json_formatter,
-            'status': utils.text_wrap_formatter,
-            'status_reason': utils.text_wrap_formatter,
-            'tags': utils.json_formatter,
-            'links': utils.link_formatter
-        }
-        utils.print_dict(cluster.to_dict(), formatters=formatters)
 
 
 #### NODES
