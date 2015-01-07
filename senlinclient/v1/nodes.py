@@ -93,23 +93,6 @@ class NodeManager(base.BaseManager):
             '/nodes/%s' % node_id)
         return Node(self, body['node'])
 
-    def join(self, node_id, cluster_id):
-        '''Make node join the specified cluster.'''
-        headers = self.client.credentials_headers()
-        data = {'cluster_id': cluster_id}
-        resp, body = self.client.json_request(
-            'POST',
-            '/nodes/%s/cluster' % node_id,
-            data=data, headers=headers)
-        return body
-
-    def leave(self, node_id):
-        '''Make node leave its current cluster.'''
-        resp, body = self.client.json_request(
-            'POST',
-            '/nodes/%s/cluster' % node_id)
-        return body
-
     def profile(self, node_id):
         '''Get the profile spec for a specific node as a parsed JSON.'''
         resp, body = self.client.json_request(

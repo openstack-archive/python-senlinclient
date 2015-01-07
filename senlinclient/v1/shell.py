@@ -424,24 +424,29 @@ def do_node_delete(sc, args):
     do_node_list(sc)
 
 
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('New name for the node.'))
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
            help=_('ID of new profile to use.'))
+@utils.arg('-r', '--role', metavar='<ROLE>',
+           help=_('Role for this node in the specific cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the node. '
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
            action='append')
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of node to update.'))
+@utils.arg('id', metavar='<ID>',
+           help=_('ID of node to update.'))
 def do_node_update(sc, args):
     '''Update the node.'''
     fields = {
-        'id': args.id,
+        'name': args.name,
+        'role': args.role,
         'profile': args.profile,
         'tags': utils.format_parameters(args.tags),
     }
 
-    sc.nodes.update(**fields)
+    sc.nodes.update(args.id, **fields)
     do_node_list(sc)
 
 
@@ -449,7 +454,10 @@ def do_node_update(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_leave(sc, args):
     '''Make node leave its current cluster.'''
-    sc.nodes.leave(args.id)
+    kwargs = {
+        'cluster_id': '',
+    }
+    do_node_update(args.id, **kwargs)
     do_node_list(sc)
 
 
@@ -459,7 +467,10 @@ def do_node_leave(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_join(sc, args):
     '''Make node join the specified cluster.'''
-    sc.nodes.join(args.id, args.cluster)
+    kwargs = {
+        'cluster_id': args.cluster,
+    }
+    do_node_update(args.id, **kwargs)
     do_node_list(sc)
 
 
