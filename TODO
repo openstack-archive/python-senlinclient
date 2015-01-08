@@ -5,6 +5,7 @@ High Priority
   - Support action_delete
   - Support action_cancel
   - Support event_delete
+  - Add unit tests
 
 Middle Priority
 ===============
