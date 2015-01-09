@@ -13,6 +13,13 @@ Middle Priority
   - Use code from https://review.openstack.org/#/c/95679/ to replace
     _append_global_identity_args(parser)
 
+  - Migrate to openstacksdk when possible, since apiclient is deprecated
+    * remove openstack/common/apiclient according to:
+      https://review.openstack.org/#/c/134024/2
+    * rebase on openstacksdk:
+      https://launchpad.net/python-openstacksdk
+
+
 Low Priority
 ============
 
