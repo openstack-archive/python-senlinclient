@@ -1,11 +1,11 @@
 High Priority
 =============
 
+  - Add http/json request module to make client tool work [Qiming]
   - Support action_create
   - Support action_delete
   - Support action_cancel
   - Support event_delete
-  - Add unit tests
 
 Middle Priority
 ===============
@@ -19,6 +19,7 @@ Middle Priority
     * rebase on openstacksdk:
       https://launchpad.net/python-openstacksdk
 
+  - Add unit tests
 
 Low Priority
 ============
