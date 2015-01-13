@@ -536,8 +536,10 @@ def do_node_show(sc, args):
 ##### EVENTS
 
 
-@utils.arg('-i', '--id', metavar='<NAME or ID>',
-           help=_('Name or ID of objects to show the events for.'))
+@utils.arg('-i', '--id', metavar='<ID>',
+           help=_('ID of objects to show the events for.'))
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('Name of objects to show the events for.'))
 @utils.arg('-t', '--type', metavar='<OBJECT TYPE>',
            help=_('Types of the objects to filter events by.'
                   'The types can be CLUSTER, NODE, PROFILE, POLICY.'))
@@ -550,13 +552,23 @@ def do_node_show(sc, args):
            help=_('Limit the number of events returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return events that appear after the given event ID.'))
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned events.'))
+@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 def do_event_list(sc, args):
     '''List events.'''
-    fields = {'obj_id': args.id,
-              'obj_type': args.type,
-              'limit': args.limit,
-              'marker': args.marker,
-              'filters': utils.format_parameters(args.filters)}
+    fields = {
+        'obj_id': args.id,
+        'obj_name': args.name,
+        'obj_type': args.type,
+        'filters': utils.format_parameters(args.filters),
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
+
     try:
         events = sc.events.list(**fields)
     except exc.HTTPNotFound as ex:
