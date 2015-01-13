@@ -10,44 +10,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six.moves.urllib import parse
 
-from oslo.utils import encodeutils
-
-from senlinclient.openstack.common.apiclient import base
-
-
-class PolicyType(base.Resource):
-    def __repr__(self):
-        return "<PolicyType %s>" % self._info
-
-    def data(self, **kwargs):
-        return self.manager.data(self, **kwargs)
-
-    def _add_details(self, info):
-        self.policy_type = info
-
-
-class PolicyTypeManager(base.BaseManager):
-    resource_class = PolicyType
-
-    def list(self):
-        """Get a list of policy types.
-        :rtype: list of :class:`PolicyType`
-        """
-        return self._list('/policy_types', 'policy_types')
-
-    def get(self, policy_type):
-        '''Get the details for a specific policy_type.'''
-        url_str = parse.quote(encodeutils.safe_encode(policy_type), '')
-        resp, body = self.client.json_request(
-            'GET',
-            '/policy_types/%s' % url_str)
-        return body
-
-    def generate_template(self, policy_type):
-        url_str = parse.quote(encodeutils.safe_encode(policy_type), '')
-        resp, body = self.client.json_request(
-            'GET',
-            '/policy_types/%s/template' % url_str)
-        return body
