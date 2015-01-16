@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import prettytable
 import yaml
 
 from oslo_serialization import jsonutils
@@ -39,3 +40,21 @@ def import_versioned_module(version, submodule=None):
     if submodule:
         module = '.'.join((module, submodule))
     return importutils.import_module(module)
+
+
+def json_formatter(js):
+    return jsonutils.dumps(js, indent=2, ensure_ascii=False)
+
+
+def print_dict(d, formatters=None):
+    formatters = formatters or {}
+    pt = prettytable.PrettyTable(['Property', 'Value'],
+                                 caching=False, print_empty=False)
+    pt.align = 'l'
+
+    for field in d.keys():
+        if field in formatters:
+            pt.add_row([field, formatters[field](d[field])])
+        else:
+            pt.add_row([field, d[field]])
+    print(pt.get_string(sortby='Property'))

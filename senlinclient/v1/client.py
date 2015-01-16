@@ -24,7 +24,7 @@ class Client(object):
         self.session = session
         self.auth = session.authenticator
 
-    def get_options(options):
+    def get_options(self, options):
         try:
             iddy = uuid.UUID(options)
             return {'id': iddy}
@@ -77,14 +77,16 @@ class Client(object):
         obj = cls.new(**kwargs)
         obj.create(self.session)
 
-    def get(self, cls, options):
+    def get(self, cls, options=None):
         try:
-            kwargs = self.get_options(options)
+            kwargs = {}
+            if options:
+                kwargs = self.get_options(options)
             obj = cls.new(**kwargs)
             obj.get(self.session)
+            return obj
         except Exception as ex:
             print(ex)
-        return obj
 
     def find(self, cls, options):
         return cls.find(self.session, options)
