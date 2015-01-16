@@ -13,7 +13,12 @@
 from senlinclient.common import utils
 
 
-def Client(version, *args, **kwargs):
-    module = utils.import_versioned_module(version, 'client')
-    client_class = getattr(module, 'Client')
-    return client_class(*args, **kwargs)
+def Client(api_ver, session, **kwargs):
+    '''Import versioned client module.
+
+    :param api_ver: API version required.
+    :param endpoint: endpoint URL requested.
+    '''
+    module = utils.import_versioned_module(api_ver, 'client')
+    cls = getattr(module, 'Client')
+    return cls(session)
