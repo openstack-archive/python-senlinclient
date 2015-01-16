@@ -12,18 +12,19 @@
 
 import logging
 
-from oslo.serialization import jsonutils
+from oslo_serialization import jsonutils
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
+from senlinclient.v1 import models
 
 logger = logging.getLogger(__name__)
 
 
 def do_build_info(sc, args):
     '''Retrieve build information.'''
-    result = sc.build_info.build_info()
+    result = sc.get(models.BuildInfo)
     formatters = {
         'api': utils.json_formatter,
         'engine': utils.json_formatter,
@@ -36,8 +37,8 @@ def do_build_info(sc, args):
 
 def do_profile_type_list(sc, args):
     '''List the available profile types.'''
-    types = sc.profile_types.list()
-    utils.print_list(types, ['profile_type'], sortby_index=0)
+    types = sc.list_short(models.ProfileType)
+    utils.print_list(types, ['name'], sortby_index=0)
 
 
 @utils.arg('profile_type', metavar='<PROFILE_TYPE>',
@@ -45,7 +46,8 @@ def do_profile_type_list(sc, args):
 def do_profile_type_show(sc, args):
     '''Show the profile type.'''
     try:
-        profile_type = sc.profile_types.get(args.profile_type)
+        params = {'profile_type': args.profile_type}
+        profile_type = sc.get(models.ProfileTypeSchema, params)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Profile Type not found: %s') % args.profile_type)
@@ -61,7 +63,8 @@ def do_profile_type_show(sc, args):
 def do_profile_type_template(sc, args):
     '''Generate a template based on a profile type.'''
     try:
-        template = sc.profile_types.generate_template(args.profile_type)
+        params = {'profile_type': args.profile_type}
+        template = sc.get(models.ProfileTypeTemplate, params)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Profile Type %s not found.') % args.profile_type)
@@ -80,8 +83,8 @@ def do_profile_type_template(sc, args):
 
 def do_policy_type_list(sc, args):
     '''List the available policy types.'''
-    types = sc.policy_types.list()
-    utils.print_list(types, ['policy_type'], sortby_index=0)
+    types = sc.list_short(models.PolicyType)
+    utils.print_list(types, ['name'], sortby_index=0)
 
 
 @utils.arg('policy_type', metavar='<POLICY_TYPE>',
@@ -89,7 +92,8 @@ def do_policy_type_list(sc, args):
 def do_policy_type_show(sc, args):
     '''Show the policy type.'''
     try:
-        policy_type = sc.policy_types.get(args.policy_type)
+        params = {'policy_type': args.policy_type}
+        policy_type = sc.get(models.PolicyTypeSchema, params)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Policy Type not found: %s') % args.policy_type)
@@ -105,7 +109,8 @@ def do_policy_type_show(sc, args):
 def do_policy_type_template(sc, args):
     '''Generate a template based on a policy type.'''
     try:
-        template = sc.policy_types.generate_template(args.policy_type)
+        params = {'policy_type': args.policy_type}
+        template = sc.get(models.PolicyTypeTemplate, params)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Policy Type %s not found.') % args.policy_type)
@@ -138,21 +143,18 @@ def do_policy_type_template(sc, args):
                   'ID.'))
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
-    kwargs = {}
+    queries = {}
     fields = ['id', 'cluster_name', 'status', 'created_time']
     if args:
-        kwargs = {'limit': args.limit,
-                  'marker': args.marker,
-                  'filters': utils.format_parameters(args.filters),
-                  'show_deleted': args.show_deleted,
-                  'show_nested': args.show_nested}
+        queries = {'limit': args.limit,
+                   'marker': args.marker,
+                   'filters': utils.format_parameters(args.filters),
+                   'show_deleted': args.show_deleted,
+                   'show_nested': args.show_nested}
         if args.show_nested:
             fields.append('parent')
 
-#        if args.global_tenant:
-#            fields.insert(2, 'project')
-
-    clusters = sc.clusters.list(**kwargs)
+    clusters = sc.list(models.Cluster, queries)
     utils.print_list(clusters, fields, sortby_index=3)
 
 
@@ -172,7 +174,7 @@ def do_cluster_list(sc, args=None):
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
     '''Create the cluster.'''
-    fields = {
+    params = {
         'name': args.name,
         'profile_id': args.profile,
         'tags': utils.format_parameters(args.tags),
@@ -180,7 +182,7 @@ def do_cluster_create(sc, args):
         'timeout': args.timeout
     }
 
-    sc.clusters.create(**fields)
+    sc.create(models.Cluster, params)
     do_cluster_list(sc)
 
 
@@ -192,7 +194,8 @@ def do_cluster_delete(sc, args):
 
     for cid in args.id:
         try:
-            sc.clusters.delete(cid)
+            query = {'id': cid}
+            sc.delete(models.Cluster, query)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -219,16 +222,16 @@ def do_cluster_delete(sc, args):
 def do_cluster_update(sc, args):
     '''Update the cluster.'''
 
-    fields = {
+    params = {
         'profile_id': args.profile,
         'size': args.size,
         'tags': utils.format_parameters(args.tags),
     }
 
     if args.timeout:
-        fields['timeout'] = args.timeout
+        params['timeout'] = args.timeout
 
-    sc.clusters.update(**fields)
+    sc.update(models.Cluster, params)
     do_cluster_list(sc)
 
 
@@ -237,7 +240,8 @@ def do_cluster_update(sc, args):
 def do_cluster_show(sc, args):
     '''Show details of the cluster.'''
     try:
-        cluster = sc.clusters.get(args.id)
+        query = {'id': args.id}
+        cluster = sc.get(models.Cluster, query)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Cluster not found: %s') % args.id)
     else:
@@ -268,7 +272,7 @@ def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
     fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
 
-    kwargs = {
+    query = {
         'cluster_id': args.id,
         'show_deleted': args.show_deleted,
         'filters': utils.format_parameters(args.filters),
@@ -277,7 +281,7 @@ def do_cluster_node_list(sc, args):
     }
 
     try:
-        nodes = sc.nodes.list(**kwargs)
+        nodes = sc.list(models.ClusterNode, query)
     except exc.HTTPNotFound:
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
@@ -294,7 +298,8 @@ def do_cluster_node_add(sc, args):
     failure_count = 0
     for nid in args.nodes:
         try:
-            sc.clusters.add_node(args.id, nid)
+            params = {'cluster_id': args.id, 'id': nid}
+            sc.create(models.ClusterNode, params)
         except Exception as ex:
             failure_count += 1
             print(ex)
@@ -314,7 +319,8 @@ def do_cluster_node_del(sc, args):
     failure_count = 0
     for nid in args.nodes:
         try:
-            sc.clusters.del_node(args.id, nid)
+            query = {'cluster_id': args.id, 'id': nid}
+            sc.delete(models.ClusterNode, query)
         except Exception as ex:
             failure_count += 1
             print(ex)
@@ -329,7 +335,8 @@ def do_cluster_node_del(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_list(sc, args):
     '''List policies from cluster.'''
-    policies = sc.clusters.list_policy(args.id)
+    query = {'id': args.id}
+    policies = sc.list(models.ClusterPolicy, query)
     fields = ['id', 'name', 'enabled', 'level']
     utils.print_list(policies, fields, sortby_index=1)
 
@@ -340,7 +347,8 @@ def do_cluster_policy_list(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_attach(sc, args):
     '''Attach policy to cluster.'''
-    sc.clusters.attach_policy(args.id, args.policy)
+    params = {'cluster_id': args.id, 'policy_id': args.policy}
+    sc.create(models.ClusterPolicy, params)
     do_cluster_policy_list(sc, args.id)
 
 
@@ -350,7 +358,8 @@ def do_cluster_policy_attach(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(sc, args):
     '''Detach policy from cluster.'''
-    sc.clusters.detach_policy(args.id, args.policy)
+    params = {'cluster_id': args.id, 'policy_id': args.policy}
+    sc.delete(models.ClusterPolicy, params)
     do_cluster_policy_list(sc, args.id)
 
 
@@ -366,13 +375,14 @@ def do_cluster_policy_detach(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(sc, args):
     '''Enable policy on cluster.'''
-    kwargs = {
+    params = {
+        'cluster_id': args.id,
         'policy_id': args.policy,
         'cooldown': args.cooldown,
         'enabled': args.enabled,
         'level': args.level,
     }
-    sc.clusters.update_policy(args.id, **kwargs)
+    sc.update(models.ClusterPolicy, params)
     do_cluster_policy_list(sc, args.id)
 
 
@@ -394,7 +404,7 @@ def do_cluster_policy_update(sc, args):
            help=_('Name of the node to create.'))
 def do_node_create(sc, args):
     '''Create the node.'''
-    fields = {
+    params = {
         'name': args.name,
         'cluster_id': args.cluster,
         'profile_id': args.profile,
@@ -402,7 +412,7 @@ def do_node_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    sc.nodes.create(**fields)
+    sc.create(models.Node, params)
     do_node_list(sc)
 
 
@@ -414,7 +424,8 @@ def do_node_delete(sc, args):
 
     for nid in args.id:
         try:
-            sc.nodes.delete(nid)
+            query = {'id': nid}
+            sc.delete(models.Node, query)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -439,14 +450,15 @@ def do_node_delete(sc, args):
            help=_('ID of node to update.'))
 def do_node_update(sc, args):
     '''Update the node.'''
-    fields = {
+    params = {
+        'id': args.id,
         'name': args.name,
         'role': args.role,
         'profile': args.profile,
         'tags': utils.format_parameters(args.tags),
     }
 
-    sc.nodes.update(args.id, **fields)
+    sc.update(models.Node, params)
     do_node_list(sc)
 
 
@@ -454,10 +466,12 @@ def do_node_update(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_leave(sc, args):
     '''Make node leave its current cluster.'''
-    kwargs = {
+    params = {
+        'id': args.id,
         'cluster_id': '',
     }
-    do_node_update(args.id, **kwargs)
+
+    sc.update(models.Node, params)
     do_node_list(sc)
 
 
@@ -467,10 +481,12 @@ def do_node_leave(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_join(sc, args):
     '''Make node join the specified cluster.'''
-    kwargs = {
+    params = {
+        'id': args.id,
         'cluster_id': args.cluster,
     }
-    do_node_update(args.id, **kwargs)
+
+    sc.update(models.Node, params)
     do_node_list(sc)
 
 
@@ -497,7 +513,7 @@ def do_node_list(sc, args):
     if args.global_tenant:
         fields.insert(2, 'project')
 
-    kwargs = {
+    queries = {
         'cluster_id': args.cluster,
         'show_deleted': args.show_deleted,
         'filters': utils.format_parameters(args.filters),
@@ -507,7 +523,7 @@ def do_node_list(sc, args):
     }
 
     try:
-        nodes = sc.nodes.list(**kwargs)
+        nodes = sc.list(models.Node, queries)
     except exc.HTTPNotFound:
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
@@ -520,7 +536,8 @@ def do_node_list(sc, args):
 def do_node_show(sc, args):
     '''Show detailed info about the specified node.'''
     try:
-        node = sc.nodes.get(args.id)
+        query = {'id': args.id}
+        node = sc.get(models.Node, query)
     except exc.HTTPNotFound:
         msg = _('Node %(id)s is not found') % args.id
         raise exc.CommandError(msg)
@@ -558,7 +575,7 @@ def do_node_show(sc, args):
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 def do_event_list(sc, args):
     '''List events.'''
-    fields = {
+    queries = {
         'obj_id': args.id,
         'obj_name': args.name,
         'obj_type': args.type,
@@ -570,7 +587,7 @@ def do_event_list(sc, args):
     }
 
     try:
-        events = sc.events.list(**fields)
+        events = sc.list(models.Event, queries)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
@@ -584,7 +601,8 @@ def do_event_list(sc, args):
 def do_event_show(sc, args):
     '''Describe the event.'''
     try:
-        event = sc.events.get(args.event)
+        query = {'id': args.event}
+        event = sc.get(models.Event, query)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
@@ -605,14 +623,14 @@ def do_event_show(sc, args):
            help=_('Only return action that appear after the given action ID.'))
 def do_action_list(sc, args):
     '''List actions.'''
-    fields = {
+    queries = {
         'limit': args.limit,
         'marker': args.marker,
         'filters': utils.format_parameters(args.filters)
     }
 
     try:
-        actions = sc.actions.list(**fields)
+        actions = sc.list(models.Action, queries)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
