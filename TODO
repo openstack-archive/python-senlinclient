@@ -1,6 +1,7 @@
 High Priority
 =============
 
+  - Implement profile operations (starting from os.senlin.stack)
   - Add http/json request module to make client tool work [Qiming]
   - Support action_create
   - Support action_delete
