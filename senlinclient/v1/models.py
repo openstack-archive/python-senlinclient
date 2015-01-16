@@ -18,8 +18,8 @@ class Version(resource.Resource):
     resource_key = 'version'
     resources_key = 'versions'
     base_path = '/'
-    service = orchestration_service.OrchestrationService(
-        version=orchestration_service.OrchestrationService.UNVERSIONED
+    service = clustering_service.ClusteringService(
+        version=clustering_service.ClusteringService.UNVERSIONED
     )
 
     # capabilities
@@ -225,6 +225,7 @@ class ClusterNode(resource.Resource):
     service = clustering_service.ClusteringService()
 
     # Capabilities
+    allow_list = True
     allow_create = True
     allow_delete = True
 
