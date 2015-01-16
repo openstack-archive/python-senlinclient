@@ -14,6 +14,22 @@ from senlinclient.common import sdk as resource
 from senlinclient.openstack.clustering import clustering_service
 
 
+class Version(resource.Resource):
+    resource_key = 'version'
+    resources_key = 'versions'
+    base_path = '/'
+    service = orchestration_service.OrchestrationService(
+        version=orchestration_service.OrchestrationService.UNVERSIONED
+    )
+
+    # capabilities
+    allow_list = True
+
+    # Properties
+    links = resource.prop('links')
+    status = resource.prop('status')
+
+
 class BuildInfo(resource.Resource):
     base_path = '/build_info'
     service = clustering_service.ClusteringService()
