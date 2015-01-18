@@ -148,12 +148,9 @@ class SenlinShell(object):
         # retrieve a service catalog, it's not required if
         # os_no_client_auth is specified, neither is the auth URL
         if not (args.project_id or args.project_name):
-            msg = _('You must provide tenant ID via either --os-tenant-id'
-                    ' (or env[OS_TENANT_ID]) or a tenant name via '
-                    '--os-tenant-name (or env[OS_TENANT_NAME]) or a '
-                    ' project ID via either --os-project-id (or '
-                    'env[OS_PROJECT_ID]) or a project name via '
-                    '--os-project-name (or env[OS_PROJECT_NAME])')
+            msg = _('You must provide  a project ID via either '
+                    '--os-project-id (or env[OS_PROJECT_ID]) or a project '
+                    'name via --os-project-name (or env[OS_PROJECT_NAME])')
             raise exc.CommandError(msg)
 
         if not args.auth_url:
