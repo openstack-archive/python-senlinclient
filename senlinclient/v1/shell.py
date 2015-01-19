@@ -78,6 +78,55 @@ def do_profile_type_template(sc, args):
 #### PROFILES
 
 
+@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted profiles if any.'))
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of clusters returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return profiles that appear after the given ID.'))
+def do_profile_list(sc, args=None):
+    '''List profiles that meet the criteria.'''
+    queries = {}
+    fields = ['id', 'name', 'type', 'permission', 'created_time']
+    if args:
+        queries = {'limit': args.limit,
+                   'marker': args.marker,
+                   'show_deleted': args.show_deleted}
+
+    profiles = sc.list(models.Profile, queries)
+    utils.print_list(profiles, fields, sortby_index=1)
+
+
+@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>',
+           help=_('Profile type used for this profile.'))
+@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>',
+           help=_('The spec file used to create the profile.'))
+@utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
+           help=_('A string format permission for this profile.'))
+@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Tag values to be attached to the profile. '
+           'This can be specified multiple times, or once with tags'
+           'separated by a semicolon.'),
+           action='append')
+@utils.arg('name', metavar='<PROFILE_NAME>',
+           help=_('Name of the profile to create.'))
+def do_profile_create(sc, args):
+    '''Create a profile.'''
+    spec = utils.get_spec_content(args.spec_file)
+    if args.profile_type == 'os.heat.stack':
+        spec = utils.process_stack_spec(spec)
+    params = {
+        'name': args.name,
+        'type': args.profile_type,
+        'spec': spec,
+        'permission': args.permission,
+        'tags': utils.format_parameters(args.tags),
+    }
+
+    sc.create(models.Profile, params)
+    do_profile_list(sc)
+
+
 #### POLICY TYPES
 
 
@@ -503,14 +552,14 @@ def do_node_join(sc, args):
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return nodes that appear after the given node ID.'))
-@utils.arg('-g', '--global-tenant', action='store_true', default=False,
-           help=_('List nodes from all tenants. Operation only authorized '
+@utils.arg('-g', '--global-project', action='store_true', default=False,
+           help=_('List nodes from all projects. Operation only authorized '
                   'for users who match the policy in policy file.'))
 def do_node_list(sc, args):
     '''Show list of nodes.'''
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'created_time']
-    if args.global_tenant:
+    if args.global_project:
         fields.insert(2, 'project')
 
     queries = {
@@ -519,7 +568,7 @@ def do_node_list(sc, args):
         'filters': utils.format_parameters(args.filters),
         'limit': args.limit,
         'marker': args.marker,
-        'global_tenant': args.global_tenant,
+        'global_project': args.global_project,
     }
 
     try:
