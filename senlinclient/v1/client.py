@@ -43,8 +43,8 @@ class Client(object):
     def thin(self):
         # Authenticate should be done before this.
         request = thins.Thin()
-        for objay in request.list_networks(self.session):
-            print(objay['id'])
+        for obj in request.list_networks(self.session):
+            print(obj['id'])
 
     def session(self, cls_name):
         if cls_name is None:
@@ -73,8 +73,8 @@ class Client(object):
         return objs
 
     def create(self, cls, options):
-        kwargs = self.get_options(options)
-        obj = cls.new(**kwargs)
+        #kwargs = self.get_options(options)
+        obj = cls.new(**options)
         obj.create(self.session)
 
     def get(self, cls, options=None):
