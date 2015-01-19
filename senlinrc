@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
-export VERSION=${IDENTITY_API_VERSION:-2.0}
+# IMPORTANT: Cleanse existing environment varible first
+unset OS_USERNAME
+unset OS_PASSWORD
+unset OS_REGION_NAME
+unset OS_PROJECT_NAME
+unset OS_DOMAIN_NAME
+unset OS_PROJECT_DOMAIN_NAME
+unset OS_USER_DOMAIN_NAME
+unset OS_TENANT_NAME
+unset OS_AUTH_URL
+
+VERSION=${IDENTITY_API_VERSION:-2.0}
 
 if [[ -n "$1" ]]; then
     OS_USERNAME=$1
@@ -9,10 +20,10 @@ if [[ -n "$2" ]]; then
     OS_PROJECT_NAME=$2
 fi
 
-export OS_PROJECT_NAME=${OS_PROJECT_NAME:-demo}
+OS_PROJECT_NAME=${OS_PROJECT_NAME:-demo}
 export OS_USERNAME=${OS_USERNAME:-demo}
-export OS_PASSWORD=${ADMIN_PASSWORD:=secrete}
-export OS_REGION_NAME=${REGION_NAME:-RegionOne}
+export OS_PASSWORD=${OS_PASSWORD:-cheerman}
+export OS_REGION_NAME=${OS_REGION_NAME:-RegionOne}
 
 HOST_IP=${HOST_IP:-127.0.0.1}
 SERVICE_HOST=${SERVICE_HOST:-$HOST_IP}
@@ -22,7 +33,10 @@ HOST=${HOST:-$SERVICE_HOST}
 
 export OS_AUTH_URL=$PROTOCOL://$HOST:5000/v${VERSION}
 if [[ $VERSION == 3 ]]; then
+  export OS_PROJECT_NAME
   export OS_DOMAIN_NAME=${OS_DOMAIN_NAME:-default}
   export OS_PROJECT_DOMAIN_NAME=${OS_PROJECT_DOMAIN_NAME:-default}
   export OS_USER_DOMAIN_NAME=${OS_USER_DOMAIN_NAME:-default}
+else
+  export OS_TENANT_NAME=${OS_PROJECT_NAME}
 fi
