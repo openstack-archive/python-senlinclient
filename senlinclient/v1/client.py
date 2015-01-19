@@ -59,10 +59,7 @@ class Client(object):
         return xport
 
     def list(self, cls, options=None):
-        path_args = None
-        if options:
-            path_args = self.get_options(options)
-        objs = cls.list(self.session, path_args=path_args)
+        objs = cls.list(self.session, path_args=options)
         return objs
 
     def list_short(self, cls, options=None):
