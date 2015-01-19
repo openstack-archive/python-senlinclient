@@ -14,11 +14,15 @@
 # under the License.
 
 import prettytable
+import six
 import yaml
 
 from oslo_serialization import jsonutils
 from oslo_utils import importutils
 
+from heatclient.common import template_utils
+from senlinclient.common import exc
+from senlinclient.common.i18n import _
 from senlinclient.openstack.common import cliutils
 
 
@@ -58,3 +62,65 @@ def print_dict(d, formatters=None):
         else:
             pt.add_row([field, d[field]])
     print(pt.get_string(sortby='Property'))
+
+
+def format_parameters(params):
+    '''Reformat parameters into dict of format expected by the API.'''
+    if not params:
+        return {}
+
+    if len(params) == 1:
+        params = params[0].split(';')
+
+    parameters = {}
+    for p in params:
+        try:
+            (n, v) = p.split(('='), 1)
+        except ValueError:
+            msg = _('Malformed parameter(%s). Use the key=value format.') % p
+            raise exc.CommandError(msg)
+
+        if n not in parameters:
+            parameters[n] = v
+        else:
+            if not isinstance(parameters[n], list):
+                parameters[n] = [parameters[n]]
+            parameters[n].append(v)
+
+    return parameters
+
+
+def get_spec_content(filename):
+    with open(filename, 'r') as f:
+        try:
+            data = yaml.load(f)
+        except Exception as ex:
+            raise exc.CommandError(_('The specified file is not a valid '
+                                     'YAML file: %s') % six.text_type(ex))
+    return data
+
+
+def process_stack_spec(spec):
+    # Heat stack is a headache, because it demands for client side file
+    # content processing
+    tmplfile = spec.get('template', None)
+    if not tmplfile:
+        raise exc.FileFormatError(_('No template found in the given '
+                                    'spec file'))
+
+    tpl_files, template = template_utils.get_template_contents(
+        template_file=tmplfile)
+
+    env_files, env = template_utils.process_multiple_environments_and_files(
+        env_paths=spec.get('environment', None))
+
+    new_spec = {
+        'name': spec.get('name', None),
+        'rollback': spec.get('rollback', False),
+        'parameters': spec.get('parameters', {}),
+        'tempalte': template,
+        'files': dict(list(tpl_files.items()) + list(env_files.items())),
+        'environment': env
+    }
+
+    return new_spec
