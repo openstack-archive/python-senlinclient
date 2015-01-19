@@ -22,3 +22,6 @@ class BaseException(Exception):
 
 class CommandError(BaseException):
     '''Invalid usage of CLI.'''
+
+class FileFormatError(BaseException):
+    '''Illegal file format detected.'''
