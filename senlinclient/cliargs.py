@@ -31,16 +31,12 @@ def add_global_identity_args(parser):
     parser.add_argument(
         '--os-project-id', dest='project_id', metavar='PROJECT_ID',
         default=utils.env('OS_PROJECT_ID'),
-        help=_('Another way to specify tenant ID. '
-               'This option is mutual exclusive with "--os-tenant-id". '
-               'Defaults to env[OS_PROJECT_ID].'))
+        help=_('Defaults to env[OS_PROJECT_ID].'))
 
     parser.add_argument(
         '--os-project-name', dest='project_name', metavar='PROJECT_NAME',
         default=utils.env('OS_PROJECT_NAME'),
-        help=_('Another way to specify tenant name. '
-               'This option is mutual exclusive with "--os-tenant-name". '
-               'Defaults to env[OS_PROJECT_NAME].'))
+        help=_('Defaults to env[OS_PROJECT_NAME].'))
 
     parser.add_argument(
         '--os-domain-id', dest='domain_id', metavar='DOMAIN_ID',
