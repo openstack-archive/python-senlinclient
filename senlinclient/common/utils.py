@@ -118,7 +118,7 @@ def process_stack_spec(spec):
         'name': spec.get('name', None),
         'rollback': spec.get('rollback', False),
         'parameters': spec.get('parameters', {}),
-        'tempalte': template,
+        'template': template,
         'files': dict(list(tpl_files.items()) + list(env_files.items())),
         'environment': env
     }
