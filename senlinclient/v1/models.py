@@ -91,21 +91,11 @@ class Profile(resource.Resource):
     allow_list = True
 
     # properties
-    links = resource.prop('links', type=dict)
-
+    id = resource.prop('id')
     name = resource.prop('name')
-    type_name = resource.prop('type')
+    type = resource.prop('type')
     spec = resource.prop('spec', type=dict)
     permission = resource.prop('permission')
-    tags = resource.prop('tags', type=dict)
-
-    created_time = resource.prop('created_time')
-    updated_time = resource.prop('updated_time')
-    deleted_time = resource.prop('deleted_time')
-    size = resource.prop('size', type=int)
-    timeout = resource.prop('timeout')
-    status = resource.prop('status')
-    status_reason = resource.prop('status_reason')
     tags = resource.prop('tags', type=dict)
 
 
