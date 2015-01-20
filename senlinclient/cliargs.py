@@ -193,5 +193,4 @@ def add_global_args(parser, version):
     parser.add_argument(
         '--senlin-api-version',
         default=utils.env('SENLIN_API_VERSION', default='1'),
-        help=_('Number of seconds to wait for an API response, '
-               'defaults to system socket timeout'))
+        help=_('Version number for Senlin API to use, Default to "1".'))
