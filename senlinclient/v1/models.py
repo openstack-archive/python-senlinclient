@@ -100,6 +100,19 @@ class Profile(resource.Resource):
     created_time = resource.prop('created_time')
     deleted_time = resource.prop('deleted_time')
 
+    def to_dict(self):
+        pb_dict = {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type,
+            'permission': self.permission,
+            'spec': self.spec,
+            'tags': self.tags,
+            'created_time': self.created_time,
+            'deleted_time': self.deleted_time,
+        }
+        return pb_dict
+
 
 class PolicyType(resource.Resource):
     resources_key = 'policy_types'
