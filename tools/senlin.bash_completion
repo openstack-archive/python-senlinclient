@@ -1,0 +1,27 @@
+# bash completion for openstack senlin 
+
+_senlin_opts="" # lazy init
+_senlin_flags="" # lazy init
+_senlin_opts_exp="" # lazy init
+_senlin()
+{
+    local cur prev kbc
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if [ "x$_senlin_opts" == "x" ] ; then
+        kbc="`senlin bash-completion | sed -e "s/ -h / /"`"
+        _senlin_opts="`echo "$kbc" | sed -e "s/--[a-z0-9_-]*//g" -e "s/[ ][ ]*/ /g"`"
+        _senlin_flags="`echo " $kbc" | sed -e "s/ [^-][^-][a-z0-9_-]*//g" -e "s/[ ][ ]*/ /g"`"
+        _senlin_opts_exp="`echo $_senlin_opts | sed -e "s/[ ]/|/g"`"
+    fi
+
+    if [[ " ${COMP_WORDS[@]} " =~ " "($_senlin_opts_exp)" " && "$prev" != "help" ]] ; then
+        COMPREPLY=($(compgen -W "${_senlin_flags}" -- ${cur}))
+    else
+        COMPREPLY=($(compgen -W "${_senlin_opts}" -- ${cur}))
+    fi
+    return 0
+}
+complete -o default -F _senlin senlin 
