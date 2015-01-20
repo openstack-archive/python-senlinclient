@@ -76,10 +76,7 @@ class Client(object):
 
     def get(self, cls, options=None):
         try:
-            kwargs = {}
-            if options:
-                kwargs = self.get_options(options)
-            obj = cls.new(**kwargs)
+            obj = cls.new(**options)
             obj.get(self.session)
             return obj
         except Exception as ex:

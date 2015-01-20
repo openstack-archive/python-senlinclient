@@ -10,7 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
 import logging
 
 from oslo_serialization import jsonutils
@@ -38,7 +37,7 @@ def do_build_info(sc, args):
 
 def do_profile_type_list(sc, args):
     '''List the available profile types.'''
-    types = sc.list_short(models.ProfileType)
+    types = sc.list_short(models.ProfileType, {})
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -129,7 +128,26 @@ def do_profile_create(sc, args):
 
     profile = sc.create(models.Profile, params)
     if profile:
-        print("Profile ID: %s" % profile.id) 
+        print("Profile created: %s" % profile.id)
+
+
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of profile to show.'))
+def do_profile_show(sc, args):
+    '''Show the profile details.'''
+    try:
+        params = {'id': args.id}
+        profile = sc.get(models.Profile, params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Profile not found: %s') % args.id)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'spec': utils.nested_dict_formatter(
+            ['name', 'rollback', 'parameters', 'environment', 'template'],
+            ['property', 'value']),
+    }
+    utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
