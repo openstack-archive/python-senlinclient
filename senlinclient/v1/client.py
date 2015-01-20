@@ -26,7 +26,7 @@ class Client(object):
 
     def get_options(self, options):
         try:
-            iddy = uuid.UUID(options)
+            iddy = uuid.UUID(str(options))
             return {'id': iddy}
         except ValueError:
             return json.loads(options)
@@ -72,7 +72,7 @@ class Client(object):
     def create(self, cls, options):
         #kwargs = self.get_options(options)
         obj = cls.new(**options)
-        obj.create(self.session)
+        return obj.create(self.session)
 
     def get(self, cls, options=None):
         try:
