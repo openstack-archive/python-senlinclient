@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import json
 import logging
 
 from oslo_serialization import jsonutils
@@ -86,15 +87,18 @@ def do_profile_type_template(sc, args):
            help=_('Only return profiles that appear after the given ID.'))
 def do_profile_list(sc, args=None):
     '''List profiles that meet the criteria.'''
-    queries = {}
     fields = ['id', 'name', 'type', 'permission', 'created_time']
-    if args:
-        queries = {'limit': args.limit,
-                   'marker': args.marker,
-                   'show_deleted': args.show_deleted}
+    queries = {'show_deleted': False}
+    if args.limit:
+        queries['limit'] = args.limit
+    if args.marker:
+        queries['marker'] = args.marker
+    if args.show_deleted:
+        queries['show_deleted'] = str(bool(args.show_deleted))
 
-    profiles = sc.list(models.Profile, queries)
-    utils.print_list(profiles, fields, sortby_index=1)
+    profiles = sc.list_short(models.Profile, queries)
+    if profiles:
+        utils.print_list(profiles, fields, sortby_index=1)
 
 
 @utils.arg('-t', '--profile-type', metavar='<TYPE NAME>',
@@ -123,8 +127,28 @@ def do_profile_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    sc.create(models.Profile, params)
-    do_profile_list(sc)
+    profile = sc.create(models.Profile, params)
+    if profile:
+        print("Profile ID: %s" % profile.id) 
+
+
+@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+           help=_('Name or ID of profile(s) to delete.'))
+def do_profile_delete(sc, args):
+    '''Delete profile(s).'''
+    failure_count = 0
+
+    for cid in args.id:
+        try:
+            query = {'id': cid}
+            sc.delete(models.Profile, query)
+        except exc.HTTPNotFound as ex:
+            failure_count += 1
+            print(ex)
+    if failure_count == len(args.id):
+        msg = _('Failed to delete any of the specified profile(s).')
+        raise exc.CommandError(msg)
+    print('Profile deleted: %s' % args.id)
 
 
 #### POLICY TYPES

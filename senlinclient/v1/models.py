@@ -97,6 +97,8 @@ class Profile(resource.Resource):
     spec = resource.prop('spec', type=dict)
     permission = resource.prop('permission')
     tags = resource.prop('tags', type=dict)
+    created_time = resource.prop('created_time')
+    deleted_time = resource.prop('deleted_time')
 
 
 class PolicyType(resource.Resource):

@@ -14,6 +14,7 @@ import inspect
 import json
 import uuid
 
+from openstack import exceptions as exc
 from openstack.identity import identity_service
 from openstack.network.v2 import thin as thins
 from openstack import transport as trans
@@ -25,11 +26,7 @@ class Client(object):
         self.auth = session.authenticator
 
     def get_options(self, options):
-        try:
-            iddy = uuid.UUID(str(options))
-            return {'id': iddy}
-        except ValueError:
-            return json.loads(options)
+        return json.loads(options)
 
     def transport(self, opts):
         '''Create a transport given some options.
@@ -59,19 +56,22 @@ class Client(object):
         return xport
 
     def list(self, cls, options=None):
-        objs = cls.list(self.session, path_args=options)
-        return objs
+        try:
+            result = cls.list(self.session, path_args=options)
+            return result
+        except exc.HttpException as ex:
+            print(ex)
+            return None
 
     def list_short(self, cls, options=None):
-        path_args = None
-        if options:
-            path_args = self.get_options(options)
-        objs = cls.list_short(self.session, path_args=path_args)
-        return objs
+        try:
+            return cls.list_short(self.session, path_args=None, **options)
+        except exc.HttpException as ex:
+            print(ex)
+            return None
 
-    def create(self, cls, options):
-        #kwargs = self.get_options(options)
-        obj = cls.new(**options)
+    def create(self, cls, params):
+        obj = cls.new(**params)
         return obj.create(self.session)
 
     def get(self, cls, options=None):
@@ -94,8 +94,7 @@ class Client(object):
         obj.update(self.session)
 
     def delete(self, cls, options):
-        kwargs = self.get_options(options)
-        obj = cls.new(**kwargs)
+        obj = cls.new(**options)
         obj.delete(self.session)
 
     def head(self, cls, options):
