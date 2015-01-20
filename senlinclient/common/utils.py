@@ -46,6 +46,25 @@ def import_versioned_module(version, submodule=None):
     return importutils.import_module(module)
 
 
+def format_nested_dict(d, fields, column_names):
+    pt = prettytable.PrettyTable(caching=False, print_empty=False,
+                                 header=True, field_names=column_names)
+    for n in column_names:
+        pt.align[n] = 'l'
+
+    for field in d.keys():
+        value = d[field]
+        if value is six.string_types:
+            pt.add_row([field, value])
+        else:
+            pt.add_row([field, jsonutils.dumps(value, indent=2,
+                                               ensure_ascii=False)])
+
+    return pt.get_string()
+
+def nested_dict_formatter(d, column_names):
+    return lambda o: format_nested_dict(o, d, column_names)
+
 def json_formatter(js):
     return jsonutils.dumps(js, indent=2, ensure_ascii=False)
 
