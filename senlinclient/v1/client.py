@@ -18,7 +18,7 @@ from openstack import exceptions as exc
 from openstack.identity import identity_service
 from openstack.network.v2 import thin as thins
 from openstack import transport as trans
-
+from senlinclient.common import exc as client_exc
 
 class Client(object):
     def __init__(self, session):
@@ -57,7 +57,7 @@ class Client(object):
 
     def list(self, cls, options=None):
         try:
-            result = cls.list(self.session, path_args=options)
+            result = cls.list(self.session, path_args=None, **options)
             return result
         except exc.HttpException as ex:
             print(ex)
@@ -79,8 +79,8 @@ class Client(object):
             obj = cls.new(**options)
             obj.get(self.session)
             return obj
-        except Exception as ex:
-            print(ex)
+        except exc.HttpException as ex:
+            raise client_exc.HTTPException(ex.details)
 
     def find(self, cls, options):
         return cls.find(self.session, options)
