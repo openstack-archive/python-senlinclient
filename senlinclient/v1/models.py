@@ -272,6 +272,24 @@ class Node(resource.Resource):
     tags = resource.prop('tags', type=dict)
     data = resource.prop('data', type=dict)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'physical_id': self.physical_id,
+            'cluster_id': self.cluster_id,
+            'profile_id': self.profile_id,
+            'index': self.index,
+            'role': self.role,
+            'created_time': self.created_time,
+            'updated_time': self.updated_time,
+            'deleted_time': self.deleted_time,
+            'status': self.status,
+            'status_reason': self.status_reason,
+            'tags': self.tags,
+            'data': self.data,
+        }
+
 
 class Action(resource.Resource):
     resources_key = 'actions'

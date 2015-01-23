@@ -571,6 +571,25 @@ def do_node_create(sc, args):
             'node %s') % (resp['action_id'], resp['id']))
 
 
+@utils.arg('id', metavar='<NODE ID>',
+           help=_('Name or ID of the node to show the details for.'))
+def do_node_show(sc, args):
+    '''Show detailed info about the specified node.'''
+    try:
+        query = {'id': args.id}
+        node = sc.get(models.Node, query)
+    except exc.HTTPNotFound:
+        msg = _('Node %(id)s is not found') % args.id
+        raise exc.CommandError(msg)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'data': utils.json_formatter,
+    }
+   
+    utils.print_dict(node.to_dict(), formatters=formatters)
+
+
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
            help=_('Name or ID of node(s) to delete.'))
 def do_node_delete(sc, args):
@@ -643,25 +662,6 @@ def do_node_join(sc, args):
 
     sc.update(models.Node, params)
     do_node_list(sc)
-
-
-@utils.arg('id', metavar='<NODE ID>',
-           help=_('Name or ID of the node to show the details for.'))
-def do_node_show(sc, args):
-    '''Show detailed info about the specified node.'''
-    try:
-        query = {'id': args.id}
-        node = sc.get(models.Node, query)
-    except exc.HTTPNotFound:
-        msg = _('Node %(id)s is not found') % args.id
-        raise exc.CommandError(msg)
-
-    formatters = {
-        'links': utils.link_formatter,
-        'required_by': utils.newline_list_formatter
-    }
-
-    utils.print_dict(node.to_dict(), formatters=formatters)
 
 
 ##### EVENTS
