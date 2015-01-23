@@ -303,7 +303,6 @@ class Action(resource.Resource):
     # Properties
     id = resource.prop('id')
     name = resource.prop('name')
-    context = resource.prop('context')
     target = resource.prop('target')
     action = resource.prop('action')
     cause = resource.prop('cause')
@@ -314,12 +313,31 @@ class Action(resource.Resource):
     timeout = resource.prop('timeout')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
-    control = resource.prop('control')
     inputs = resource.prop('inputs', type=dict)
     outputs = resource.prop('outputs', type=dict)
     depends_on = resource.prop('depends_on', type=list)
     depended_by = resource.prop('depended_by', type=list)
-    deleted_time = resource.prop('deleted_time')
+
+    def to_dict(self):
+        action_dict = {
+            'id': self.id,
+            'name': self.name,
+            'action': self.action,
+            'target': self.target,
+            'cause': self.cause,
+            'interval': self.interval,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'interval': self.interval,
+            'timeout': self.timeout,
+            'status': self.status,
+            'status_reason': self.status_reason,
+            'inputs': self.inputs,
+            'outputs': self.outputs,
+            'depends_on': self.depends_on,
+            'depended_by': self.depended_by,
+        }
+        return action_dict
 
 
 class Event(resource.Resource):

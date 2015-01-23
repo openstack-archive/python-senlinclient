@@ -586,7 +586,7 @@ def do_node_show(sc, args):
         'tags': utils.json_formatter,
         'data': utils.json_formatter,
     }
-   
+
     utils.print_dict(node.to_dict(), formatters=formatters)
 
 
@@ -731,24 +731,62 @@ def do_event_show(sc, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned events.'))
+@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of actions returned.'))
+           help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return action that appear after the given action ID.'))
+           help=_('Only return nodes that appear after the given node ID.'))
+@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted nodes if any.'))
 def do_action_list(sc, args):
     '''List actions.'''
-    queries = {
-        'limit': args.limit,
-        'marker': args.marker,
-        'filters': utils.format_parameters(args.filters)
-    }
+    queries = {'show_deleted': False}
+
+    if args.filters:
+        queries['filters'] = utils.format_parameters(args.filters)
+    if args.sort_keys:
+        queries['sort_keys'] = args.sort_keys
+    if args.sort_dir:
+        queries['sort_dir'] = args.sort_dir
+    if args.limit:
+        queries['limit'] = args.limit
+    if args.marker:
+        queries['marker'] = args.marker
+    if args.show_deleted:
+        raw = args.show_deleted.lower()
+        opt = raw in ['true', 'yes', '1', 'ok']
+        queries['show_deleted'] = opt
 
     try:
-        actions = sc.list(models.Action, queries)
+        actions = sc.list_short(models.Action, queries)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
-    fields = ['name', 'action', 'status', 'status_reason', 'depends_on',
+    fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
 
     utils.print_list(actions, fields, sortby_index=0)
+
+
+@utils.arg('id', metavar='<ACTION ID>',
+           help=_('Name or ID of the action to show the details for.'))
+def do_action_show(sc, args):
+    '''Show detailed info about the specified action.'''
+    try:
+        query = {'id': args.id}
+        action = sc.get(models.Action, query)
+    except exc.HTTPNotFound:
+        msg = _('Action %(id)s is not found') % args.id
+        raise exc.CommandError(msg)
+
+    formatters = {
+        'inputs': utils.json_formatter,
+        'outputs': utils.json_formatter,
+        'tags': utils.json_formatter,
+        'data': utils.json_formatter,
+    }
+
+    utils.print_dict(action.to_dict(), formatters=formatters)
