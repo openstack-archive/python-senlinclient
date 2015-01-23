@@ -93,9 +93,16 @@ def do_profile_list(sc, args=None):
     if args.marker:
         queries['marker'] = args.marker
     if args.show_deleted:
-        queries['show_deleted'] = str(bool(args.show_deleted))
+        raw = args.show_deleted.lower()
+        opt = raw in ['true', 'yes', '1', 'ok']
+        queries['show_deleted'] = opt
 
-    profiles = sc.list_short(models.Profile, queries)
+    try:
+        profiles = sc.list_short(models.Profile, queries)
+    except exc.HTTPNotFound:
+        msg = _('No node matching criteria is found')
+        raise exc.CommandError(msg)
+
     if profiles:
         utils.print_list(profiles, fields, sortby_index=1)
 
@@ -126,7 +133,7 @@ def do_profile_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    profile = sc.create(models.Profile, params)
+    profile, _ = sc.create(models.Profile, params)
     if profile:
         print("Profile created: %s" % profile.id)
 
@@ -227,6 +234,10 @@ def do_policy_type_template(sc, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned events.'))
+@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of clusters returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -237,11 +248,13 @@ def do_cluster_list(sc, args=None):
     queries = {}
     fields = ['id', 'cluster_name', 'status', 'created_time']
     if args:
-        queries = {'limit': args.limit,
-                   'marker': args.marker,
-                   'filters': utils.format_parameters(args.filters),
-                   'show_deleted': args.show_deleted,
-                   'show_nested': args.show_nested}
+        queries = {
+            'limit': args.limit,
+            'marker': args.marker,
+            'filters': utils.format_parameters(args.filters),
+            'show_deleted': args.show_deleted,
+            'show_nested': args.show_nested
+        }
         if args.show_nested:
             fields.append('parent')
 
@@ -480,6 +493,56 @@ def do_cluster_policy_update(sc, args):
 #### NODES
 
 
+@utils.arg('-c', '--cluster', default=None,
+           help=_('ID or name of cluster for nodes to list.'))
+@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted nodes if any.'))
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned nodes. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned events.'))
+@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of nodes returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return nodes that appear after the given node ID.'))
+def do_node_list(sc, args):
+    '''Show list of nodes.'''
+
+    fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
+              'created_time']
+
+    queries = {'show_deleted': False}
+    if args.cluster:
+        queries['cluster_id'] = args.cluster
+    if args.filters:
+        queries['filters'] = utils.format_parameters(args.filters)
+    if args.sort_keys:
+        queries['sort_keys'] = args.sort_keys
+    if args.sort_dir:
+        queries['sort_dir'] = args.sort_dir
+    if args.limit:
+        queries['limit'] = args.limit
+    if args.marker:
+        queries['marker'] = args.marker
+    if args.show_deleted:
+        raw = args.show_deleted.lower()
+        opt = raw in ['true', 'yes', '1', 'ok']
+        queries['show_deleted'] = opt
+
+    try:
+        nodes = sc.list_short(models.Node, queries)
+    except exc.HTTPNotFound:
+        msg = _('No node matching criteria is found')
+        raise exc.CommandError(msg)
+
+    utils.print_list(nodes, fields, sortby_index=5)
+
+
 @utils.arg('-c', '--cluster', metavar='<CLUSTER_ID>',
            help=_('Cluster Id for this node.'))
 @utils.arg('-p', '--profile', metavar='<PROFILE_ID>',
@@ -503,8 +566,9 @@ def do_node_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    sc.create(models.Node, params)
-    do_node_list(sc)
+    node, resp = sc.create(models.Node, params)
+    print(_('Action NODE_CREATE(%s) scheduled for '
+            'node %s') % (resp['action_id'], resp['id']))
 
 
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
@@ -523,7 +587,7 @@ def do_node_delete(sc, args):
     if failure_count == len(args.id):
         msg = _('Failed to delete any of the specified nodes.')
         raise exc.CommandError(msg)
-    do_node_list(sc)
+    print('Request accepted')
 
 
 @utils.arg('-n', '--name', metavar='<NAME>',
@@ -579,47 +643,6 @@ def do_node_join(sc, args):
 
     sc.update(models.Node, params)
     do_node_list(sc)
-
-
-@utils.arg('-c', '--cluster', default=None,
-           help=_('ID or name of cluster for nodes to list.'))
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted nodes if any.'))
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Filter parameters to apply on returned nodes. '
-                  'This can be specified multiple times, or once with '
-                  'parameters separated by a semicolon.'),
-           action='append')
-@utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of nodes returned.'))
-@utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return nodes that appear after the given node ID.'))
-@utils.arg('-g', '--global-project', action='store_true', default=False,
-           help=_('List nodes from all projects. Operation only authorized '
-                  'for users who match the policy in policy file.'))
-def do_node_list(sc, args):
-    '''Show list of nodes.'''
-    fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-              'created_time']
-    if args.global_project:
-        fields.insert(2, 'project')
-
-    queries = {
-        'cluster_id': args.cluster,
-        'show_deleted': args.show_deleted,
-        'filters': utils.format_parameters(args.filters),
-        'limit': args.limit,
-        'marker': args.marker,
-        'global_project': args.global_project,
-    }
-
-    try:
-        nodes = sc.list(models.Node, queries)
-    except exc.HTTPNotFound:
-        msg = _('No node matching criteria is found')
-        raise exc.CommandError(msg)
-
-    utils.print_list(nodes, fields, sortby_index=5)
 
 
 @utils.arg('id', metavar='<NODE ID>',
