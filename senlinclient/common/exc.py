@@ -10,6 +10,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from oslo_serialization import jsonutils
+from openstack import exceptions as sdkexc
+
+from senlinclient.common.i18n import _
+
+verbose = False
+
 
 class BaseException(Exception):
     '''An error occurred.'''
@@ -32,18 +39,17 @@ class HTTPException(BaseException):
     """Base exception for all HTTP-derived exceptions."""
     code = 'N/A'
 
-    def __init__(self, message=None):
-        super(HTTPException, self).__init__(message)
+    def __init__(self, details=None):
+        super(HTTPException, self).__init__(details)
         try:
-            self.error = jsonutils.loads(message)
+            self.error = jsonutils.loads(details)
             if 'error' not in self.error:
                 raise KeyError(_('Key "error" not exists'))
         except KeyError:
-            # NOTE(jianingy): If key 'error' happens not exist,
-            # self.message becomes no sense. In this case, we
-            # return doc of current exception class instead.
-            self.error = {'error':
-                          {'message': self.__class__.__doc__}}
+            # If key 'error' does not exist, self.message becomes
+            # no sense. In this case, we return doc of current
+            # exception class instead.
+            self.error = {'error': { 'message': self.__class__.__doc__}}
         except Exception:
             self.error = {'error':
                           {'message': self.message or self.__class__.__doc__}}
@@ -57,6 +63,5 @@ class HTTPException(BaseException):
         else:
             return _('ERROR: %s') % message
 
-
 class HTTPNotFound(HTTPException):
-    code = 404
+    code = '404'
