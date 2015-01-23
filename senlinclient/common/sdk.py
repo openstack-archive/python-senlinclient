@@ -104,3 +104,14 @@ class Resource(base.Resource):
         for data in resp:
             value = cls.existing(**data)
             yield value
+
+    def create(self, session):
+        '''
+        Overriden version of the create method.
+        We want to know more about the object being created, so the response
+        should not be just thrown away
+        '''
+        resp = self.create_by_id(session, self._attrs, self.id, path_args=self)
+        self._attrs[self.id_attribute] = resp[self.id_attribute]
+        self._reset_dirty()
+        return self, resp
