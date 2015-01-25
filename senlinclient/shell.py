@@ -33,7 +33,7 @@ from senlinclient.common import sdk
 from senlinclient.common import utils
 
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
-
+USER_AGENT='python-senlinclient'
 LOG = logging.getLogger(__name__)
 
 
@@ -144,18 +144,67 @@ class SenlinShell(object):
             self.parser.print_help()
 
     def _check_identity_arguments(self, args):
-        # project name or ID is needed to make keystoneclient
-        # retrieve a service catalog, it's not required if
-        # os_no_client_auth is specified, neither is the auth URL
-        if not (args.project_id or args.project_name):
-            msg = _('You must provide  a project ID via either '
-                    '--os-project-id (or env[OS_PROJECT_ID]) or a project '
-                    'name via --os-project-name (or env[OS_PROJECT_NAME])')
-            raise exc.CommandError(msg)
+        # TODO(Qiming): validate the token authentication path and the trust
+        # authentication path
 
         if not args.auth_url:
             msg = _('You must provide an auth url via --os-auth-url (or '
                     ' env[OS_AUTH_URL])')
+            raise exc.CommandError(msg)
+
+        # username or user_id or token must be specified
+        if not (args.username or args.user_id or args.token):
+            msg = _('You must provide a user name, a user_id or a '
+                    'token for authentication')
+            raise exc.CommandError(msg)
+
+        # if both username and user_id are specified, user_id takes precedence
+        if (args.username and args.user_id):
+            msg = _('Both user name and user ID are specified, Senin will use '
+                    'user ID for authentication')
+            print(_('WARNING: %s') % msg)
+
+        if (args.username and not args.user_id) and (not
+            args.user_domain_id or args.user_domain_name):
+            msg = _('Either user domain ID (--user-domain-id / '
+                    'env[OS_USER_DOMAIN_ID]) or user domain name '
+                    '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
+                    'must be specified, because user name may not be '
+                    'unique.')
+            raise exc.CommandError(msg)
+
+        # password is needed if username or user_id is present
+        if (args.username or args.user_id) and not (args.password):
+            msg = _('You must provide a password for user %s') % (
+                    args.username or args.user_id)
+            raise exc.CommandError(msg)
+
+        # project name or ID is needed, or else sdk may find the wrong project
+        if not (args.project_id or args.project_name):
+            if not (args.user_id):
+                msg = _('Either project ID or project name must be specified, '
+                        'because user name may not be unique.')
+                raise exc.CommandError(msg)
+            else:
+                msg = _('Neither project ID nor project name is specified. '
+                        'Senlin will use user\'s default project which may '
+                        'result in authentication error.')
+                print(_('WARINING: %s') % msg)
+
+        # both project name and ID are specified, ID takes precedence
+        if args.project_id and args.project_name:
+            msg = _('Both project name and project ID are specified, Senin '
+                    'will use project ID for authentication')
+            print(_('WARNING: %s') % msg)
+
+        # project name may not be unique
+        if not args.project_id and args.project_name and not (
+                args.project_domain_id or args.project_domain_name):
+            msg = _('Either project domain ID (--project-domain-id / '
+                    'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
+                    '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
+                    'must be specified, because project name may not be '
+                    'unique.')
             raise exc.CommandError(msg)
 
     def _setup_senlin_client(self, api_ver, args):
@@ -164,16 +213,21 @@ class SenlinShell(object):
             'auth_plugin': args.auth_plugin,
             'auth_url': args.auth_url,
             'project_name': args.project_name,
+            'project_id': args.project_id,
             'domain_name': args.domain_name,
+            'domain_id': args.domain_id,
             'project_domain_name': args.project_domain_name,
+            'project_domain_id': args.project_domain_id,
             'user_domain_name': args.user_domain_name,
+            'user_domain_id': args.user_domain_id,
             'user_name': args.username,
+            'user_id': args.user_id,
             'password': args.password,
             'verify': args.verify,
             'token': args.token,
         }
-        conn = sdk.connection.Connection(preference=args.user_preferences,
-                                         **kwargs)
+        conn = sdk.create_connection(args.user_preferences,
+                                     USER_AGENT, **kwargs)
 
         return client.Client('1', conn.session)
 
