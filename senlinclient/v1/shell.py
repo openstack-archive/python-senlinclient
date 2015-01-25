@@ -16,6 +16,7 @@ from oslo_serialization import jsonutils
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
+from senlinclient.common import sdk
 from senlinclient.common import utils
 from senlinclient.v1 import models
 
@@ -81,7 +82,7 @@ def do_profile_type_template(sc, args):
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted profiles if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of clusters returned.'))
+           help=_('Limit the number of profiles returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return profiles that appear after the given ID.'))
 def do_profile_list(sc, args=None):
@@ -97,14 +98,8 @@ def do_profile_list(sc, args=None):
         opt = raw in ['true', 'yes', '1', 'ok']
         queries['show_deleted'] = opt
 
-    try:
-        profiles = sc.list_short(models.Profile, queries)
-    except exc.HTTPNotFound:
-        msg = _('No node matching criteria is found')
-        raise exc.CommandError(msg)
-
-    if profiles:
-        utils.print_list(profiles, fields, sortby_index=1)
+    profiles = sc.list_short(models.Profile, queries)
+    utils.print_list(profiles, fields, sortby_index=1)
 
 
 @utils.arg('-t', '--profile-type', metavar='<TYPE NAME>',
@@ -534,12 +529,7 @@ def do_node_list(sc, args):
         opt = raw in ['true', 'yes', '1', 'ok']
         queries['show_deleted'] = opt
 
-    try:
-        nodes = sc.list_short(models.Node, queries)
-    except exc.HTTPNotFound:
-        msg = _('No node matching criteria is found')
-        raise exc.CommandError(msg)
-
+    nodes = sc.list_short(models.Node, queries)
     utils.print_list(nodes, fields, sortby_index=5)
 
 
@@ -602,7 +592,7 @@ def do_node_delete(sc, args):
             sc.delete(models.Node, query)
         except exc.HTTPNotFound as ex:
             failure_count += 1
-            print(ex)
+            print('Node id "%s" not found' % nid)
     if failure_count == len(args.id):
         msg = _('Failed to delete any of the specified nodes.')
         raise exc.CommandError(msg)
