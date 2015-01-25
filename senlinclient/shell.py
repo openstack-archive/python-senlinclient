@@ -33,7 +33,7 @@ from senlinclient.common import sdk
 from senlinclient.common import utils
 
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
-USER_AGENT='python-senlinclient'
+USER_AGENT = 'python-senlinclient'
 LOG = logging.getLogger(__name__)
 
 
@@ -164,19 +164,19 @@ class SenlinShell(object):
                     'user ID for authentication')
             print(_('WARNING: %s') % msg)
 
-        if (args.username and not args.user_id) and (not
-            args.user_domain_id or args.user_domain_name):
-            msg = _('Either user domain ID (--user-domain-id / '
-                    'env[OS_USER_DOMAIN_ID]) or user domain name '
-                    '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
-                    'must be specified, because user name may not be '
-                    'unique.')
-            raise exc.CommandError(msg)
+        if (args.username and not args.user_id):
+            if not (args.user_domain_id or args.user_domain_name):
+                msg = _('Either user domain ID (--user-domain-id / '
+                        'env[OS_USER_DOMAIN_ID]) or user domain name '
+                        '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
+                        'must be specified, because user name may not be '
+                        'unique.')
+                raise exc.CommandError(msg)
 
         # password is needed if username or user_id is present
         if (args.username or args.user_id) and not (args.password):
             msg = _('You must provide a password for user %s') % (
-                    args.username or args.user_id)
+                args.username or args.user_id)
             raise exc.CommandError(msg)
 
         # project name or ID is needed, or else sdk may find the wrong project

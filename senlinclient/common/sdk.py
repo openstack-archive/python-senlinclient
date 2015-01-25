@@ -15,17 +15,16 @@ import os
 
 from openstack import connection
 from openstack import exceptions
-from openstack import user_preference 
-from openstack.identity import identity_service
 from openstack import resource as base
+from openstack import user_preference
 from senlinclient.common import exc
 
 # Alias here for consistency
 prop = base.prop
 
+
 class UserPreferenceAction(argparse.Action):
-    '''
-    A custom action to parse user preferences as key=value pairs
+    '''A custom action to parse user preferences as key=value pairs
 
     Stores results in users preferences object.
     '''
@@ -77,16 +76,14 @@ class UserPreferenceAction(argparse.Action):
 
 
 class Resource(base.Resource):
-    '''
-    Senlin version of resource.
+    '''Senlin version of resource.
 
     These classes are here because the OpenStack SDK base version is making
     some assumptions about operations that cannot be satisfied in Senlin.
     '''
     @classmethod
     def list_short(cls, session, path_args=None, **params):
-        '''
-        Return a generator that will page through results of GET requests.
+        '''Return a generator that will page through results of GET requests.
 
         This method bypasses the DB session support and retrieves list that
         is directly exposed by server.
@@ -108,8 +105,8 @@ class Resource(base.Resource):
             yield value
 
     def create(self, session):
-        '''
-        Overriden version of the create method.
+        '''Overriden version of the create method.
+
         We want to know more about the object being created, so the response
         should not be just thrown away
         '''

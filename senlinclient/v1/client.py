@@ -12,13 +12,13 @@
 
 import inspect
 import json
-import uuid
 
 from openstack import exceptions as exc
 from openstack.identity import identity_service
 from openstack.network.v2 import thin as thins
 from openstack import transport as trans
 from senlinclient.common import exc as client_exc
+
 
 class Client(object):
     def __init__(self, session):

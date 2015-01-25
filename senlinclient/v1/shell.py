@@ -16,7 +16,6 @@ from oslo_serialization import jsonutils
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
-from senlinclient.common import sdk
 from senlinclient.common import utils
 from senlinclient.v1 import models
 
@@ -557,8 +556,10 @@ def do_node_create(sc, args):
     }
 
     node, resp = sc.create(models.Node, params)
-    print(_('Action NODE_CREATE(%s) scheduled for '
-            'node %s') % (resp['action_id'], resp['id']))
+    print(_('Action NODE_CREATE(%(action)s) scheduled for '
+            'node %(node)s') % {
+                'action': resp['action_id'],
+                'node': resp['id']})
 
 
 @utils.arg('id', metavar='<NODE ID>',
@@ -590,7 +591,7 @@ def do_node_delete(sc, args):
         try:
             query = {'id': nid}
             sc.delete(models.Node, query)
-        except exc.HTTPNotFound as ex:
+        except exc.HTTPNotFound:
             failure_count += 1
             print('Node id "%s" not found' % nid)
     if failure_count == len(args.id):

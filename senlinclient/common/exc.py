@@ -12,8 +12,8 @@
 
 import six
 
-from oslo_serialization import jsonutils
 from openstack import exceptions as sdkexc
+from oslo_serialization import jsonutils
 
 from senlinclient.common.i18n import _
 
@@ -64,7 +64,8 @@ class HTTPException(BaseException):
                     {'message': message, 'traceback': traceback})
         else:
             code = self.error['error'].get('code', 'Unknown')
-            return _('ERROR(%s): %s') % (code, message)
+            return _('ERROR(%(code)s): %(message)s') % {'code': code,
+                                                        'message': message}
 
 
 class ClientError(HTTPException):
@@ -238,7 +239,7 @@ def parse_exception(exc):
             record['error']['code'] = code
         except KeyError as err:
             print(_('Malformed exception record, missing field "%s"') % err)
-            print(_('Original error record: %s' % record))
+            print(_('Original error record: %s') % record)
             return
 
     if code in _EXCEPTION_MAP:
