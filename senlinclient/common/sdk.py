@@ -14,9 +14,11 @@ import argparse
 import os
 
 from openstack import connection
+from openstack import exceptions
 from openstack import user_preference 
 from openstack.identity import identity_service
 from openstack import resource as base
+from senlinclient.common import exc
 
 # Alias here for consistency
 prop = base.prop
@@ -115,3 +117,14 @@ class Resource(base.Resource):
         self._attrs[self.id_attribute] = resp[self.id_attribute]
         self._reset_dirty()
         return self, resp
+
+
+def create_connection(preferences, user_agent, **kwargs):
+        try:
+            conn = connection.Connection(preference=preferences,
+                                         user_agent=user_agent,
+                                         **kwargs)
+        except exceptions.HttpException as ex:
+            exc.parse_exception(ex.details)
+
+        return conn
