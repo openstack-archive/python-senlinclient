@@ -23,6 +23,7 @@ from oslo_utils import importutils
 from heatclient.common import template_utils
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
+from senlinclient.common import sdk
 from senlinclient.openstack.common import cliutils
 
 
@@ -62,11 +63,29 @@ def format_nested_dict(d, fields, column_names):
 
     return pt.get_string()
 
+
 def nested_dict_formatter(d, column_names):
     return lambda o: format_nested_dict(o, d, column_names)
 
+
 def json_formatter(js):
     return jsonutils.dumps(js, indent=2, ensure_ascii=False)
+
+
+def print_list(objs, fields, formatters=None, sortby_index=0,
+               mixed_case_fields=None, field_labels=None):
+    # This wrapper is needed because sdk may yield a generator that will
+    # escape the exception catching previously
+    if not objs:
+        objs = []
+
+    try:
+        cliutils.print_list(objs, fields, formatters=formatters,
+                            sortby_index=sortby_index,
+                            mixed_case_fields=mixed_case_fields,
+                            field_labels=field_labels)
+    except sdk.exceptions.HttpException as ex:
+        exc.parse_exception(ex.details)
 
 
 def print_dict(d, formatters=None):
