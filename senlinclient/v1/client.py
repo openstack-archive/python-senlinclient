@@ -57,18 +57,15 @@ class Client(object):
 
     def list(self, cls, options=None):
         try:
-            result = cls.list(self.session, path_args=None, **options)
-            return result
+            return cls.list(self.session, path_args=None, **options)
         except exc.HttpException as ex:
-            print(ex)
-            return None
+            client_exc.parse_exception(ex)
 
     def list_short(self, cls, options=None):
         try:
             return cls.list_short(self.session, path_args=None, **options)
         except exc.HttpException as ex:
-            print(ex)
-            return None
+            client_exc.parse_exception(ex)
 
     def create(self, cls, params):
         obj = cls.new(**params)
@@ -77,22 +74,26 @@ class Client(object):
     def get(self, cls, options=None):
         try:
             obj = cls.new(**options)
-            obj.get(self.session)
-            return obj
+            return obj.get(self.session)
         except exc.HttpException as ex:
-            raise client_exc.HTTPException(ex.details)
+            client_exc.parse_exception(ex)
 
     def find(self, cls, options):
         return cls.find(self.session, options)
 
     def update(self, cls, options):
-        kwargs = self.get_options(options)
-        obj = cls.new(**kwargs)
-        obj.update(self.session)
+        obj = cls.new(**options)
+        try:
+            obj.update(self.session)
+        except exc.HttpException as ex:
+            client_exc.parse_exception(ex)
 
     def delete(self, cls, options):
         obj = cls.new(**options)
-        obj.delete(self.session)
+        try:
+            obj.delete(self.session)
+        except exc.HttpException as ex:
+            client_exc.parse_exception(ex)
 
     def head(self, cls, options):
         kwargs = self.get_options(options)
