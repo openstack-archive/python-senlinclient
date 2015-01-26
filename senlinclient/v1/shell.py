@@ -727,6 +727,7 @@ def do_action_list(sc, args):
     '''List actions.'''
     def _short_id(obj):
         return obj.id[:8] + ' ...'
+
     def _short_target(obj):
         return obj.target[:8] + ' ...'
 
