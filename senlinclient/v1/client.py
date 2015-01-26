@@ -69,7 +69,10 @@ class Client(object):
 
     def create(self, cls, params):
         obj = cls.new(**params)
-        return obj.create(self.session)
+        try:
+            return obj.create(self.session)
+        except exc.HttpException as ex:
+            client_exc.parse_exception(ex)
 
     def get(self, cls, options=None):
         try:

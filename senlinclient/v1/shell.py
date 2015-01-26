@@ -260,8 +260,9 @@ def do_cluster_list(sc, args=None):
            help=_('Profile Id used for this cluster.'))
 @utils.arg('-n', '--size', metavar='<NUMBER>',
            help=_('Initial size of the cluster.'))
-@utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
-           type=int,
+@utils.arg('-o', '--parent', metavar='<PARENT_ID>',
+           help=_('ID of the parent cluster, if exists.'))
+@utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in minutes.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the cluster. '
@@ -275,13 +276,17 @@ def do_cluster_create(sc, args):
     params = {
         'name': args.name,
         'profile_id': args.profile,
-        'tags': utils.format_parameters(args.tags),
         'size': args.size,
+        'parent': args.parent,
+        'tags': utils.format_parameters(args.tags),
         'timeout': args.timeout
     }
 
-    sc.create(models.Cluster, params)
-    do_cluster_list(sc)
+    cluster, resp = sc.create(models.Cluster, params)
+    print(_('Action CLUSTER_CREATE(%(action)s) scheduled for '
+            'cluster %(cluster)s') % {
+                'action': resp['action_id'],
+                'cluster': resp['id']})
 
 
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',

@@ -186,7 +186,7 @@ class Cluster(resource.Resource):
     allow_list = True
 
     # Properties
-    links = resource.prop('links', type=dict)
+    id = resource.prop('id')
     name = resource.prop('name')
     profile_id = resource.prop('profile_id')
     user = resource.prop('user')
@@ -256,7 +256,6 @@ class Node(resource.Resource):
     allow_list = True
 
     # Properties
-    links = resource.prop('links', type=dict)
     id = resource.prop('id')
     name = resource.prop('name')
     physical_id = resource.prop('physical_id')
