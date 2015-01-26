@@ -201,6 +201,32 @@ class Cluster(resource.Resource):
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
     tags = resource.prop('tags', type=dict)
+    data = resource.prop('data', type=dict)
+    nodes = resource.prop('nodes')
+    profile_name = resource.prop('profile_name')
+
+    def to_dict(self):
+        info = {
+            'id': self.id,
+            'name': self.name,
+            'profile_id': self.profile_id,
+            'user': self.user,
+            'project': self.project,
+            'domain': self.domain,
+            'parent': self.parent,
+            'created_time': self.created_time,
+            'updated_time': self.updated_time,
+            'deleted_time': self.deleted_time,
+            'size': self.size,
+            'timeout': self.timeout,
+            'status': self.status,
+            'status_reason': self.status_reason,
+            'tags': self.tags or {},
+            'data': self.data or {},
+            'nodes': self.nodes or [],
+            'profile_name': self.profile_name,
+        }
+        return info
 
 
 class ClusterPolicy(resource.Resource):
