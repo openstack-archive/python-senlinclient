@@ -18,6 +18,7 @@ Middle Priority
   - Add unit tests
   - Figure out how to use access_info and reauthenticate parameters for
     authentication.
+  - Support trust based authentication
 
 Low Priority
 ============
