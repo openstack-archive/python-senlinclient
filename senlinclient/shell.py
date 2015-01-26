@@ -183,7 +183,7 @@ class SenlinShell(object):
         if not (args.project_id or args.project_name):
             if not (args.user_id):
                 msg = _('Either project ID or project name must be specified, '
-                        'because user name may not be unique.')
+                        'or else Senlin cannot know which project to use.')
                 raise exc.CommandError(msg)
             else:
                 msg = _('Neither project ID nor project name is specified. '
