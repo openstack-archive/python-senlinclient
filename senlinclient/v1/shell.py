@@ -346,16 +346,13 @@ def do_cluster_show(sc, args):
         query = {'id': args.id}
         cluster = sc.get(models.Cluster, query)
     except exc.HTTPNotFound:
-        raise exc.CommandError(_('Cluster not found: %s') % args.id)
-    else:
-        formatters = {
-            'profile': utils.json_formatter,
-            'status': utils.text_wrap_formatter,
-            'status_reason': utils.text_wrap_formatter,
-            'tags': utils.json_formatter,
-            'links': utils.link_formatter
-        }
-        utils.print_dict(cluster.to_dict(), formatters=formatters)
+        raise exc.CommandError(_('Cluster %s is not found') % args.id)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'nodes': utils.list_formatter,
+    }
+    utils.print_dict(cluster.to_dict(), formatters=formatters)
 
 
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
