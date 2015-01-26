@@ -55,9 +55,9 @@ class Client(object):
         print(self.auth.authorize(xport))
         return xport
 
-    def list(self, cls, options=None):
+    def list(self, cls, **options):
         try:
-            return cls.list(self.session, path_args=None, **options)
+            return cls.list(self.session, **options)
         except exc.HttpException as ex:
             client_exc.parse_exception(ex)
 

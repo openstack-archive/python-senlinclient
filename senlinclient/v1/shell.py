@@ -78,7 +78,7 @@ def do_profile_type_template(sc, args):
 #### PROFILES
 
 
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+@utils.arg('-d', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted profiles if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of profiles returned.'))
@@ -87,17 +87,13 @@ def do_profile_type_template(sc, args):
 def do_profile_list(sc, args=None):
     '''List profiles that meet the criteria.'''
     fields = ['id', 'name', 'type', 'permission', 'created_time']
-    queries = {'show_deleted': False}
-    if args.limit:
-        queries['limit'] = args.limit
-    if args.marker:
-        queries['marker'] = args.marker
-    if args.show_deleted:
-        raw = args.show_deleted.lower()
-        opt = raw in ['true', 'yes', '1', 'ok']
-        queries['show_deleted'] = opt
+    queries = {
+        'show_deleted': args.show_deleted,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
 
-    profiles = sc.list_short(models.Profile, queries)
+    profiles = sc.list(models.Profile, **queries)
     utils.print_list(profiles, fields, sortby_index=1)
 
 
@@ -239,20 +235,18 @@ def do_policy_type_template(sc, args):
                   'ID.'))
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
-    queries = {}
     fields = ['id', 'cluster_name', 'status', 'created_time']
-    if args:
-        queries = {
-            'limit': args.limit,
-            'marker': args.marker,
-            'filters': utils.format_parameters(args.filters),
-            'show_deleted': args.show_deleted,
-            'show_nested': args.show_nested
-        }
-        if args.show_nested:
-            fields.append('parent')
+    queries = {
+        'limit': args.limit,
+        'marker': args.marker,
+        'filters': utils.format_parameters(args.filters),
+        'show_deleted': args.show_deleted,
+        'show_nested': args.show_nested
+    }
+    if args.show_nested:
+        fields.append('parent')
 
-    clusters = sc.list(models.Cluster, queries)
+    clusters = sc.list(models.Cluster, **queries)
     utils.print_list(clusters, fields, sortby_index=3)
 
 
@@ -510,27 +504,20 @@ def do_node_list(sc, args):
     '''Show list of nodes.'''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-              'created_time']
+              'profile_name', 'init_time', 'created_time', 'updated_time',
+              'deleted_time']
 
-    queries = {'show_deleted': False}
-    if args.cluster:
-        queries['cluster_id'] = args.cluster
-    if args.filters:
-        queries['filters'] = utils.format_parameters(args.filters)
-    if args.sort_keys:
-        queries['sort_keys'] = args.sort_keys
-    if args.sort_dir:
-        queries['sort_dir'] = args.sort_dir
-    if args.limit:
-        queries['limit'] = args.limit
-    if args.marker:
-        queries['marker'] = args.marker
-    if args.show_deleted:
-        raw = args.show_deleted.lower()
-        opt = raw in ['true', 'yes', '1', 'ok']
-        queries['show_deleted'] = opt
+    queries = {
+        'show_deleted': args.show_deleted,
+        'cluster_id': args.cluster,
+        'filters': utils.format_parameters(args.filters),
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
 
-    nodes = sc.list_short(models.Node, queries)
+    nodes = sc.list(models.Node, **queries)
     utils.print_list(nodes, fields, sortby_index=5)
 
 
@@ -743,27 +730,16 @@ def do_action_list(sc, args):
     def _short_target(obj):
         return obj.target[:8] + ' ...'
 
-    queries = {'show_deleted': False}
+    queries = {
+        'show_deleted': args.show_deleted,
+        'filters': utils.format_parameters(args.filters),
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
 
-    if args.filters:
-        queries['filters'] = utils.format_parameters(args.filters)
-    if args.sort_keys:
-        queries['sort_keys'] = args.sort_keys
-    if args.sort_dir:
-        queries['sort_dir'] = args.sort_dir
-    if args.limit:
-        queries['limit'] = args.limit
-    if args.marker:
-        queries['marker'] = args.marker
-    if args.show_deleted:
-        raw = args.show_deleted.lower()
-        opt = raw in ['true', 'yes', '1', 'ok']
-        queries['show_deleted'] = opt
-
-    try:
-        actions = sc.list_short(models.Action, queries)
-    except exc.HTTPNotFound as ex:
-        raise exc.CommandError(str(ex))
+    actions = sc.list(models.Action, **queries)
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']

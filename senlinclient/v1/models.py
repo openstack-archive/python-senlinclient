@@ -287,8 +287,10 @@ class Node(resource.Resource):
     physical_id = resource.prop('physical_id')
     cluster_id = resource.prop('cluster_id')
     profile_id = resource.prop('profile_id')
+    profile_name = resource.prop('profile_name')
     index = resource.prop('index', type=int)
     role = resource.prop('role')
+    init_time = resource.prop('init_time')
     created_time = resource.prop('created_time')
     updated_time = resource.prop('updated_time')
     deleted_time = resource.prop('deleted_time')
@@ -304,8 +306,10 @@ class Node(resource.Resource):
             'physical_id': self.physical_id,
             'cluster_id': self.cluster_id,
             'profile_id': self.profile_id,
+            'profile_name': self.profile_name,
             'index': self.index,
             'role': self.role,
+            'init_time': self.init_time,
             'created_time': self.created_time,
             'updated_time': self.updated_time,
             'deleted_time': self.deleted_time,
