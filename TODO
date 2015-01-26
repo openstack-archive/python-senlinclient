@@ -1,8 +1,6 @@
 High Priority
 =============
 
-  - Implement profile operations (starting from os.senlin.stack)
-  - Add http/json request module to make client tool work [Qiming]
   - Support action_create
   - Support action_delete
   - Support action_cancel
@@ -10,16 +8,13 @@ High Priority
   - Add support to HTTPS connection
     * This means a cert and key option using plain HTTP package, while
       it means using Transport when we switched to OpenStackSDK
-  - Add checking of required identity arguments
+  - Add checking for token based authentication
 
 Middle Priority
 ===============
 
-  - Figure out how to set USER_AGENT
-
   - Use code from https://review.openstack.org/#/c/95679/ to replace
     _append_global_identity_args(parser)
-
   - Add unit tests
 
 Low Priority
