@@ -232,15 +232,9 @@ def parse_exception(exc):
     try:
         code = record['error']['code']
     except KeyError as err:
-        # Some exception are not caught by SDK, we need to try again
-        # The 'code' field may be misplaced
-        try:
-            code = record['code']
-            record['error']['code'] = code
-        except KeyError as err:
-            print(_('Malformed exception record, missing field "%s"') % err)
-            print(_('Original error record: %s') % record)
-            return
+        print(_('Malformed exception record, missing field "%s"') % err)
+        print(_('Original error record: %s') % record)
+        return
 
     if code in _EXCEPTION_MAP:
         inst = _EXCEPTION_MAP.get(code)
