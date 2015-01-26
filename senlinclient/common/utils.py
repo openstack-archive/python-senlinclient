@@ -72,6 +72,10 @@ def json_formatter(js):
     return jsonutils.dumps(js, indent=2, ensure_ascii=False)
 
 
+def list_formatter(record):
+    return '\n'.join(record or [])
+
+
 def print_list(objs, fields, formatters=None, sortby_index=0,
                mixed_case_fields=None, field_labels=None):
     # This wrapper is needed because sdk may yield a generator that will
