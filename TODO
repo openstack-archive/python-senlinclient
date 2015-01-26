@@ -16,6 +16,8 @@ Middle Priority
   - Use code from https://review.openstack.org/#/c/95679/ to replace
     _append_global_identity_args(parser)
   - Add unit tests
+  - Figure out how to use access_info and reauthenticate parameters for
+    authentication.
 
 Low Priority
 ============
