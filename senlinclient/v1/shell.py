@@ -737,8 +737,15 @@ def do_event_show(sc, args):
            help=_('Only return nodes that appear after the given node ID.'))
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted nodes if any.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
     '''List actions.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+    def _short_target(obj):
+        return obj.target[:8] + ' ...'
+
     queries = {'show_deleted': False}
 
     if args.filters:
@@ -764,7 +771,15 @@ def do_action_list(sc, args):
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
 
-    utils.print_list(actions, fields, sortby_index=0)
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+            'target': _short_target,
+        }
+    else:
+        formatters = {}
+
+    utils.print_list(actions, fields, formatters=formatters, sortby_index=0)
 
 
 @utils.arg('id', metavar='<ACTION ID>',
