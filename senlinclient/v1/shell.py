@@ -235,7 +235,7 @@ def do_policy_type_template(sc, args):
                   'ID.'))
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
-    fields = ['id', 'cluster_name', 'status', 'created_time']
+    fields = ['id', 'name', 'status', 'created_time']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
