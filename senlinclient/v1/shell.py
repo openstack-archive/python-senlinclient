@@ -299,7 +299,8 @@ def do_cluster_delete(sc, args):
     if failure_count == len(args.id):
         msg = _('Failed to delete any of the specified clusters.')
         raise exc.CommandError(msg)
-    do_cluster_list(sc)
+
+    print('Request accepted')
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
