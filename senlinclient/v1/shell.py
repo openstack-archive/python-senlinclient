@@ -505,8 +505,7 @@ def do_node_list(sc, args):
     '''Show list of nodes.'''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-              'profile_name', 'init_time', 'created_time', 'updated_time',
-              'deleted_time']
+              'profile_name', 'created_time', 'updated_time', 'deleted_time']
 
     queries = {
         'show_deleted': args.show_deleted,
