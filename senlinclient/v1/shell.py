@@ -505,7 +505,7 @@ def do_node_list(sc, args):
     '''Show list of nodes.'''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-              'profile_name', 'created_time', 'updated_time', 'deleted_time']
+              'profile_name', 'created_time', 'updated_time']
 
     queries = {
         'show_deleted': args.show_deleted,
@@ -516,6 +516,9 @@ def do_node_list(sc, args):
         'limit': args.limit,
         'marker': args.marker,
     }
+
+    if args.show_deleted:
+        fields.append('deleted_time')
 
     nodes = sc.list(models.Node, **queries)
     utils.print_list(nodes, fields, sortby_index=5)
