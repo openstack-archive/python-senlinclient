@@ -26,7 +26,7 @@ from oslo_utils import importutils
 
 import senlinclient
 from senlinclient import cliargs
-from senlinclient import client
+from senlinclient import client as senlin_client
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import sdk
@@ -229,7 +229,7 @@ class SenlinShell(object):
         conn = sdk.create_connection(args.user_preferences,
                                      USER_AGENT, **kwargs)
 
-        return client.Client('1', conn.session)
+        return senlin_client.Client('1', conn.session)
 
     def main(self, argv):
         # Parse args once to find version
