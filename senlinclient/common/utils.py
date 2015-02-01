@@ -23,7 +23,6 @@ from oslo_utils import importutils
 from heatclient.common import template_utils
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
-from senlinclient.common import sdk
 from senlinclient.openstack.common import cliutils
 
 
