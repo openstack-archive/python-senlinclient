@@ -13,7 +13,6 @@
 import inspect
 import json
 
-from openstack import exceptions as exc
 from openstack.identity import identity_service
 from openstack.network.v2 import thin as thins
 from openstack import transport as trans
@@ -58,27 +57,29 @@ class Client(object):
     def list(self, cls, **options):
         try:
             return cls.list(self.session, **options)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def list_short(self, cls, options=None):
         try:
             return cls.list_short(self.session, path_args=None, **options)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def create(self, cls, params):
         obj = cls.new(**params)
         try:
             return obj.create(self.session)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def get(self, cls, options=None):
+        if options is None:
+            options = {}
         try:
             obj = cls.new(**options)
             return obj.get(self.session)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def find(self, cls, options):
@@ -88,14 +89,14 @@ class Client(object):
         obj = cls.new(**options)
         try:
             obj.update(self.session)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def delete(self, cls, options):
         obj = cls.new(**options)
         try:
             obj.delete(self.session)
-        except exc.HttpException as ex:
+        except Exception as ex:
             client_exc.parse_exception(ex)
 
     def head(self, cls, options):
