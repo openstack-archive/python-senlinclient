@@ -361,10 +361,18 @@ def do_cluster_show(sc, args):
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return nodes that appear after the given node ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
+    def _short_physical_id(obj):
+        return obj.physical_id[:8] + ' ...'
+
     fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
 
     query = {
@@ -381,7 +389,15 @@ def do_cluster_node_list(sc, args):
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
 
-    utils.print_list(nodes, fields, sortby_index=5)
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+            'physical_id': _short_physical_id,
+        }
+    else:
+        formatters = {}
+
+    utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
 @utils.arg('-n', '--nodes', metavar='<NODE_IDs>',
@@ -501,8 +517,18 @@ def do_cluster_policy_update(sc, args):
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return nodes that appear after the given node ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 def do_node_list(sc, args):
     '''Show list of nodes.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
+    def _short_cluster_id(obj):
+        return obj.cluster_id[:8] + ' ...' if obj.cluster_id else ''
+
+    def _short_physical_id(obj):
+        return obj.physical_id[:8] + ' ...' if obj.physical_id else ''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_time', 'updated_time']
@@ -521,7 +547,17 @@ def do_node_list(sc, args):
         fields.append('deleted_time')
 
     nodes = sc.list(models.Node, **queries)
-    utils.print_list(nodes, fields, sortby_index=5)
+
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+            'cluster_id': _short_cluster_id,
+            'physical_id': _short_physical_id,
+        }
+    else:
+        formatters = {}
+
+    utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
 @utils.arg('-c', '--cluster', metavar='<CLUSTER_ID>',
