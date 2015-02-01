@@ -14,6 +14,7 @@ import six
 
 from openstack import exceptions as sdkexc
 from oslo_serialization import jsonutils
+from requests import exceptions as reqexc
 
 from senlinclient.common.i18n import _
 
@@ -191,7 +192,13 @@ class HTTPVersionNotSupported(ServerError):
     pass
 
 
+class ConnectionRefused(HTTPException):
+    # 111
+    pass
+
+
 _EXCEPTION_MAP = {
+    111: ConnectionRefused,
     400: HTTPBadRequest,
     401: HTTPUnauthorized,
     403: HTTPForbidden,
@@ -224,11 +231,22 @@ def parse_exception(exc):
     '''
     if isinstance(exc, sdkexc.HttpException):
         record = jsonutils.loads(exc.details)
+    elif isinstance(exc, reqexc.RequestException):
+        # Exceptions that are not captured by SDK
+        code = exc.message[1].errno
+        record = {
+            'error': {
+                'code': code,
+                'message': exc.message[0],
+            }
+        }
+
     elif isinstance(exc, six.string_types):
         record = jsonutils.loads(exc)
     else:
         print(_('Unknown exception: %s') % exc)
         return
+
     try:
         code = record['error']['code']
     except KeyError as err:
