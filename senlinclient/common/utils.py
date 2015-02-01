@@ -88,8 +88,8 @@ def print_list(objs, fields, formatters=None, sortby_index=0,
                             sortby_index=sortby_index,
                             mixed_case_fields=mixed_case_fields,
                             field_labels=field_labels)
-    except sdk.exceptions.HttpException as ex:
-        exc.parse_exception(ex.details)
+    except Exception as ex:
+        exc.parse_exception(ex)
 
 
 def print_dict(d, formatters=None):
