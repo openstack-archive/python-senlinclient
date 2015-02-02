@@ -17,6 +17,7 @@ class ClusteringService(service_filter.ServiceFilter):
     """The clustering service."""
 
     valid_versions = [service_filter.ValidVersion('v1')]
+    UNVERSIONED = None
 
     def __init__(self, version=None):
         """Create a clustering service."""
