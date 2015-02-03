@@ -123,7 +123,7 @@ def do_profile_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    profile, _ = sc.create(models.Profile, params)
+    profile = sc.create(models.Profile, params)
     if profile:
         print("Profile created: %s" % profile.id)
 

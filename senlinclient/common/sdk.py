@@ -113,7 +113,7 @@ class Resource(base.Resource):
         resp = self.create_by_id(session, self._attrs, self.id, path_args=self)
         self._attrs[self.id_attribute] = resp[self.id_attribute]
         self._reset_dirty()
-        return self, resp
+        return self
 
 
 def create_connection(preferences, user_agent, **kwargs):
