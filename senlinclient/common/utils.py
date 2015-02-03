@@ -47,6 +47,8 @@ def import_versioned_module(version, submodule=None):
 
 
 def format_nested_dict(d, fields, column_names):
+    if d is None:
+        return ''
     pt = prettytable.PrettyTable(caching=False, print_empty=False,
                                  header=True, field_names=column_names)
     for n in column_names:
