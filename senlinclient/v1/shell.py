@@ -144,9 +144,12 @@ def do_profile_show(sc, args):
             ['name', 'rollback', 'parameters', 'environment', 'template'],
             ['property', 'value']),
     }
+    print(profile.to_dict())
     utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
+@utils.arg('-f', '--force', default=False, action="store_true",
+           help=_('Delete the profile completely from database.'))
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
            help=_('Name or ID of profile(s) to delete.'))
 def do_profile_delete(sc, args):
@@ -155,7 +158,10 @@ def do_profile_delete(sc, args):
 
     for cid in args.id:
         try:
-            query = {'id': cid}
+            query = {
+                'id': cid,
+                'force': args.force
+            }
             sc.delete(models.Profile, query)
         except exc.HTTPNotFound as ex:
             failure_count += 1

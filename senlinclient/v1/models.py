@@ -80,6 +80,7 @@ class ProfileTypeTemplate(resource.Resource):
 
 
 class Profile(resource.Resource):
+    resource_key = 'profile'
     resources_key = 'profiles'
     base_path = '/profiles'
     service = clustering_service.ClusteringService()
