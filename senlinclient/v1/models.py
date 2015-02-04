@@ -175,6 +175,7 @@ class Policy(resource.Resource):
 
 
 class Cluster(resource.Resource):
+    resource_key = 'cluster'
     resources_key = 'clusters'
     base_path = '/clusters'
     service = clustering_service.ClusteringService()
@@ -203,8 +204,11 @@ class Cluster(resource.Resource):
     status_reason = resource.prop('status_reason')
     tags = resource.prop('tags', type=dict)
     data = resource.prop('data', type=dict)
+
     nodes = resource.prop('nodes')
+
     profile_name = resource.prop('profile_name')
+    action = resource.prop('action')
 
     def to_dict(self):
         info = {

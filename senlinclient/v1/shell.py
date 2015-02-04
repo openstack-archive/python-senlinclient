@@ -256,6 +256,20 @@ def do_cluster_list(sc, args=None):
     utils.print_list(clusters, fields, sortby_index=3)
 
 
+def _show_cluster(sc, cluster_id):
+    try:
+        query = {'id': cluster_id}
+        cluster = sc.get(models.Cluster, query)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Cluster %s is not found') % args.id)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'nodes': utils.list_formatter,
+    }
+    utils.print_dict(cluster.to_dict(), formatters=formatters)
+
+
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
            help=_('Profile Id used for this cluster.'))
 @utils.arg('-n', '--size', metavar='<NUMBER>',
@@ -282,11 +296,8 @@ def do_cluster_create(sc, args):
         'timeout': args.timeout
     }
 
-    cluster, resp = sc.create(models.Cluster, params)
-    print(_('Action CLUSTER_CREATE(%(action)s) scheduled for '
-            'cluster %(cluster)s') % {
-                'action': resp['action_id'],
-                'cluster': resp['id']})
+    cluster = sc.create(models.Cluster, params)
+    _show_cluster(sc, cluster.id)
 
 
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
@@ -343,17 +354,7 @@ def do_cluster_update(sc, args):
            help=_('Name or ID of cluster to show.'))
 def do_cluster_show(sc, args):
     '''Show details of the cluster.'''
-    try:
-        query = {'id': args.id}
-        cluster = sc.get(models.Cluster, query)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Cluster %s is not found') % args.id)
-
-    formatters = {
-        'tags': utils.json_formatter,
-        'nodes': utils.list_formatter,
-    }
-    utils.print_dict(cluster.to_dict(), formatters=formatters)
+    _show_cluster(sc, args.id)
 
 
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
