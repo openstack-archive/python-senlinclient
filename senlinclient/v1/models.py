@@ -275,6 +275,7 @@ class ClusterNode(resource.Resource):
 
 
 class Node(resource.Resource):
+    resource_key = 'node'
     resources_key = 'nodes'
     base_path = '/nodes'
     service = clustering_service.ClusteringService()
@@ -303,6 +304,8 @@ class Node(resource.Resource):
     status_reason = resource.prop('status_reason')
     tags = resource.prop('tags', type=dict)
     data = resource.prop('data', type=dict)
+
+    action = resource.prop('action')
 
     def to_dict(self):
         return {

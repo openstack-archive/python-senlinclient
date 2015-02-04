@@ -567,6 +567,23 @@ def do_node_list(sc, args):
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
+def _show_node(sc, id):
+    '''Show detailed info about the specified node.'''
+    try:
+        query = {'id': id}
+        node = sc.get(models.Node, query)
+    except exc.HTTPNotFound:
+        msg = _('Node %(id)s is not found') % args.id
+        raise exc.CommandError(msg)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'data': utils.json_formatter,
+    }
+
+    utils.print_dict(node.to_dict(), formatters=formatters)
+
+
 @utils.arg('-c', '--cluster', metavar='<CLUSTER_ID>',
            help=_('Cluster Id for this node.'))
 @utils.arg('-p', '--profile', metavar='<PROFILE_ID>',
@@ -590,30 +607,15 @@ def do_node_create(sc, args):
         'tags': utils.format_parameters(args.tags),
     }
 
-    node, resp = sc.create(models.Node, params)
-    print(_('Action NODE_CREATE(%(action)s) scheduled for '
-            'node %(node)s') % {
-                'action': resp['action_id'],
-                'node': resp['id']})
+    node = sc.create(models.Node, params)
+    _show_node(sc, node.id)
 
 
 @utils.arg('id', metavar='<NODE ID>',
            help=_('Name or ID of the node to show the details for.'))
 def do_node_show(sc, args):
     '''Show detailed info about the specified node.'''
-    try:
-        query = {'id': args.id}
-        node = sc.get(models.Node, query)
-    except exc.HTTPNotFound:
-        msg = _('Node %(id)s is not found') % args.id
-        raise exc.CommandError(msg)
-
-    formatters = {
-        'tags': utils.json_formatter,
-        'data': utils.json_formatter,
-    }
-
-    utils.print_dict(node.to_dict(), formatters=formatters)
+    _show_node(sc, args.id)
 
 
 @utils.arg('id', metavar='<NAME or ID>', nargs='+',
