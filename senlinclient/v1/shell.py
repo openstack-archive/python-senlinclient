@@ -84,8 +84,13 @@ def do_profile_type_template(sc, args):
            help=_('Limit the number of profiles returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return profiles that appear after the given ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 def do_profile_list(sc, args=None):
     '''List profiles that meet the criteria.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
     fields = ['id', 'name', 'type', 'permission', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
@@ -94,7 +99,29 @@ def do_profile_list(sc, args=None):
     }
 
     profiles = sc.list(models.Profile, **queries)
-    utils.print_list(profiles, fields, sortby_index=1)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+        }
+    utils.print_list(profiles, fields, formatters=formatters, sortby_index=1)
+
+
+def _show_profile(sc, profile_id):
+    try:
+        params = {'id': profile_id}
+        profile = sc.get(models.Profile, params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Profile not found: %s') % profile_id)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'spec': utils.nested_dict_formatter(
+            ['name', 'rollback', 'parameters', 'environment', 'template'],
+            ['property', 'value']),
+    }
+    print(profile.to_dict())
+    utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
 @utils.arg('-t', '--profile-type', metavar='<TYPE NAME>',
@@ -124,28 +151,14 @@ def do_profile_create(sc, args):
     }
 
     profile = sc.create(models.Profile, params)
-    if profile:
-        print("Profile created: %s" % profile.id)
+    _show_profile(sc, profile.id)
 
 
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of profile to show.'))
 def do_profile_show(sc, args):
     '''Show the profile details.'''
-    try:
-        params = {'id': args.id}
-        profile = sc.get(models.Profile, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Profile not found: %s') % args.id)
-
-    formatters = {
-        'tags': utils.json_formatter,
-        'spec': utils.nested_dict_formatter(
-            ['name', 'rollback', 'parameters', 'environment', 'template'],
-            ['property', 'value']),
-    }
-    print(profile.to_dict())
-    utils.print_dict(profile.to_dict(), formatters=formatters)
+    _show_profile(sc, args.id)
 
 
 @utils.arg('-f', '--force', default=False, action="store_true",
@@ -239,8 +252,13 @@ def do_policy_type_template(sc, args):
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return clusters that appear after the given cluster '
                   'ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
     fields = ['id', 'name', 'status', 'created_time']
     queries = {
         'limit': args.limit,
@@ -253,7 +271,12 @@ def do_cluster_list(sc, args=None):
         fields.append('parent')
 
     clusters = sc.list(models.Cluster, **queries)
-    utils.print_list(clusters, fields, sortby_index=3)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+        }
+    utils.print_list(clusters, fields, formatters=formatters, sortby_index=3)
 
 
 def _show_cluster(sc, cluster_id):
@@ -261,7 +284,7 @@ def _show_cluster(sc, cluster_id):
         query = {'id': cluster_id}
         cluster = sc.get(models.Cluster, query)
     except exc.HTTPNotFound:
-        raise exc.CommandError(_('Cluster %s is not found') % args.id)
+        raise exc.CommandError(_('Cluster %s is not found') % cluster_id)
 
     formatters = {
         'tags': utils.json_formatter,
@@ -567,13 +590,13 @@ def do_node_list(sc, args):
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
-def _show_node(sc, id):
+def _show_node(sc, node_id):
     '''Show detailed info about the specified node.'''
     try:
-        query = {'id': id}
+        query = {'id': node_id}
         node = sc.get(models.Node, query)
     except exc.HTTPNotFound:
-        msg = _('Node %(id)s is not found') % args.id
+        msg = _('Node %s is not found') % node_id
         raise exc.CommandError(msg)
 
     formatters = {
@@ -661,7 +684,7 @@ def do_node_update(sc, args):
     }
 
     sc.update(models.Node, params)
-    do_node_list(sc)
+    _show_node(sc, args.id)
 
 
 @utils.arg('id', metavar='<NAME or ID>',
@@ -674,7 +697,7 @@ def do_node_leave(sc, args):
     }
 
     sc.update(models.Node, params)
-    do_node_list(sc)
+    _show_node(sc, args.id)
 
 
 @utils.arg('-c', '--cluster',
@@ -689,7 +712,7 @@ def do_node_join(sc, args):
     }
 
     sc.update(models.Node, params)
-    do_node_list(sc)
+    _show_node(sc, args.id)
 
 
 ##### EVENTS
