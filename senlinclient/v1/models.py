@@ -10,6 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from openstack import utils
+
 from senlinclient.common import sdk as resource
 from senlinclient.openstack.clustering import clustering_service
 
@@ -208,7 +210,20 @@ class Cluster(resource.Resource):
     nodes = resource.prop('nodes')
 
     profile_name = resource.prop('profile_name')
-    action = resource.prop('action')
+    # action = resource.prop('action')
+
+    def action(self, session, body):
+        url = utils.urljoin(self.base_path, self.id, 'action')
+        resp = session.put(url, service=self.service, json=body).body
+        return resp
+
+    def add_nodes(self, session, nodes):
+        body = {
+            'add_nodes': {
+                'nodes': nodes,
+            }
+        }
+        return self.action(session, body)
 
     def to_dict(self):
         info = {
@@ -256,7 +271,7 @@ class ClusterPolicy(resource.Resource):
 
 
 class ClusterNode(resource.Resource):
-    resources_key = 'policies'
+    resources_key = 'nodes'
     base_path = '/clusters/%(cluster_id)s/nodes'
     service = clustering_service.ClusteringService()
 
@@ -268,10 +283,7 @@ class ClusterNode(resource.Resource):
     # Properties
     id = resource.prop('id')
     cluster_id = resource.prop('cluster_id')
-    policy_id = resource.prop('policy_id')
-    cooldown = resource.prop('cooldown')
-    level = resource.prop('level', type=int)
-    enabled = resource.prop('enabled')
+    policy_id = resource.prop('node_id')
 
 
 class Node(resource.Resource):

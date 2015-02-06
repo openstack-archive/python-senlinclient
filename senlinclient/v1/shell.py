@@ -13,6 +13,7 @@
 import logging
 
 from oslo_serialization import jsonutils
+from oslo_utils import encodeutils
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
@@ -430,25 +431,23 @@ def do_cluster_node_list(sc, args):
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
-@utils.arg('-n', '--nodes', metavar='<NODE_IDs>',
-           help=_('ID of nodes to be added.'))
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('-n', '--nodes', metavar='<NODE>',
+           help=_('ID of nodes to be added; multiple nodes can be separated '
+                  'with ","'))
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_add(sc, args):
     '''Add specified nodes to cluster.'''
-    failure_count = 0
-    for nid in args.nodes:
-        try:
-            params = {'cluster_id': args.id, 'id': nid}
-            sc.create(models.ClusterNode, params)
-        except Exception as ex:
-            failure_count += 1
-            print(ex)
-    if failure_count == len(args.nodes):
-        msg = _('Failed to add any of the specified nodes.')
-        raise exc.CommandError(msg)
-
-    do_cluster_node_list(sc, id=args.id)
+    node_ids = args.nodes.split(',')
+    params = {
+        'id': args.id,
+        'action': 'add_nodes',
+        'action_args': {
+            'nodes': node_ids,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print(encodeutils.safe_decode(resp))
 
 
 @utils.arg('-n', '--nodes', metavar='<NODE_IDs>',

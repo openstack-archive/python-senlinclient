@@ -106,19 +106,10 @@ class Client(object):
         return obj
 
     def action(self, cls, options):
-        '''Examples:
-        <cls> --data '{"alarm_id": "33109eea-24dd-45ff-93f7-82292d1dd38c",
-                       "action": "change_state",
-                       "action_args": {"next_state": "insufficient data"}'
-
-        <cls> --data '{"id": "a1369557-748f-429c-bd3e-fc385aacaec7",
-                       "action": "reboot",
-                       "action_args": {"reboot_type": "SOFT"}}'
-        '''
         def filter_args(method, params):
             expected_args = inspect.getargspec(method).args
             accepted_args = ([a for a in expected_args if a != 'self'])
-            filtered_args = [{d: params[d]} for d in accepted_args]
+            filtered_args = dict((d, params[d]) for d in accepted_args)
             return filtered_args
 
         def invoke_method(target, method_name, params):
@@ -127,14 +118,15 @@ class Client(object):
             reply = action(**filtered_args)
             return reply
 
-        kwargs = self.get_options(options)
-        action = kwargs.pop('action')
-        if 'action_args' in kwargs:
-            args = kwargs.pop('action_args')
+        action = options.pop('action')
+        if 'action_args' in options:
+            args = options.pop('action_args')
         else:
             args = {}
 
         args.update(session=self.session)
-        obj = cls.new(**kwargs)
-        reply = invoke_method(obj, action, args)
-        return reply
+        obj = cls.new(**options)
+        try:
+            return invoke_method(obj, action, args)
+        except Exception as ex:
+            client_exc.parse_exception(ex)
