@@ -225,6 +225,14 @@ class Cluster(resource.Resource):
         }
         return self.action(session, body)
 
+    def del_nodes(self, session, nodes):
+        body = {
+            'del_nodes': {
+                'nodes': nodes,
+            }
+        }
+        return self.action(session, body)
+
     def to_dict(self):
         info = {
             'id': self.id,
