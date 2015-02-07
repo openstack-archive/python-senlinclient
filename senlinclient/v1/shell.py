@@ -13,7 +13,6 @@
 import logging
 
 from oslo_serialization import jsonutils
-from oslo_utils import encodeutils
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
@@ -125,9 +124,9 @@ def _show_profile(sc, profile_id):
     utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
-@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>',
+@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>', required=True,
            help=_('Profile type used for this profile.'))
-@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>',
+@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
            help=_('The spec file used to create the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
@@ -294,6 +293,8 @@ def _show_cluster(sc, cluster_id):
     utils.print_dict(cluster.to_dict(), formatters=formatters)
 
 
+@utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
+           help=_('Profile Id used for this cluster.'))
 @utils.arg('-n', '--size', metavar='<SIZE>', default=0,
            help=_('Initial size of the cluster. Default to 0.'))
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
@@ -304,9 +305,7 @@ def _show_cluster(sc, cluster_id):
            help=_('Tag values to be attached to the cluster. '
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
-          action='append')
-@utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
-           help=_('Profile Id used for this cluster.'))
+           action='append')
 @utils.arg('name', metavar='<CLUSTER_NAME>',
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
@@ -344,7 +343,7 @@ def do_cluster_delete(sc, args):
     print('Request accepted')
 
 
-@utils.arg('-p', '--profile', metavar='<PROFILE ID>',
+@utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID of new profile to use.'))
 @utils.arg('-n', '--size', metavar='<SIZE>',
            help=_('Initial size of the cluster.'))
@@ -415,7 +414,7 @@ def do_cluster_node_list(sc, args):
     }
 
     try:
-        nodes = sc.list(models.ClusterNode, query)
+        nodes = sc.list(models.Node, **query)
     except exc.HTTPNotFound:
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
@@ -431,7 +430,7 @@ def do_cluster_node_list(sc, args):
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
-@utils.arg('-n', '--nodes', metavar='<NODE>',
+@utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
            help=_('ID of nodes to be added; multiple nodes can be separated '
                   'with ","'))
 @utils.arg('id', metavar='<CLUSTER>',
@@ -447,28 +446,26 @@ def do_cluster_node_add(sc, args):
         }
     }
     resp = sc.action(models.Cluster, params)
-    print(encodeutils.safe_decode(resp))
+    print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-n', '--nodes', metavar='<NODE_IDs>',
-           help=_('ID of nodes to be deleted.'))
+@utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
+           help=_('ID of nodes to be deleted; multiple nodes can be separated'
+                  'with ",".'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_del(sc, args):
     '''Delete specified nodes from cluster.'''
-    failure_count = 0
-    for nid in args.nodes:
-        try:
-            query = {'cluster_id': args.id, 'id': nid}
-            sc.delete(models.ClusterNode, query)
-        except Exception as ex:
-            failure_count += 1
-            print(ex)
-    if failure_count == len(args.nodes):
-        msg = _('Failed to delete any of the specified nodes.')
-        raise exc.CommandError(msg)
-
-    do_cluster_node_list(sc, id=args.id)
+    node_ids = args.nodes.split(',')
+    params = {
+        'id': args.id,
+        'action': 'del_nodes',
+        'action_args': {
+            'nodes': node_ids,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
 
 
 @utils.arg('id', metavar='<NAME or ID>',
@@ -606,10 +603,10 @@ def _show_node(sc, node_id):
     utils.print_dict(node.to_dict(), formatters=formatters)
 
 
-@utils.arg('-c', '--cluster', metavar='<CLUSTER_ID>',
-           help=_('Cluster Id for this node.'))
-@utils.arg('-p', '--profile', metavar='<PROFILE_ID>',
+@utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
            help=_('Profile Id used for this node.'))
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+           help=_('Cluster Id for this node.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -699,7 +696,7 @@ def do_node_leave(sc, args):
     _show_node(sc, args.id)
 
 
-@utils.arg('-c', '--cluster',
+@utils.arg('-c', '--cluster', required=True,
            help=_('ID or name of cluster for node to join.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of node to operate on.'))
