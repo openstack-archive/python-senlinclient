@@ -294,10 +294,8 @@ def _show_cluster(sc, cluster_id):
     utils.print_dict(cluster.to_dict(), formatters=formatters)
 
 
-@utils.arg('-p', '--profile', metavar='<PROFILE ID>',
-           help=_('Profile Id used for this cluster.'))
-@utils.arg('-n', '--size', metavar='<NUMBER>',
-           help=_('Initial size of the cluster.'))
+@utils.arg('-n', '--size', metavar='<SIZE>', default=0,
+           help=_('Initial size of the cluster. Default to 0.'))
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
            help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
@@ -306,7 +304,9 @@ def _show_cluster(sc, cluster_id):
            help=_('Tag values to be attached to the cluster. '
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
-           action='append')
+          action='append')
+@utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
+           help=_('Profile Id used for this cluster.'))
 @utils.arg('name', metavar='<CLUSTER_NAME>',
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
@@ -346,7 +346,7 @@ def do_cluster_delete(sc, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
            help=_('ID of new profile to use.'))
-@utils.arg('-n', '--size', metavar='<NUMBER>',
+@utils.arg('-n', '--size', metavar='<SIZE>',
            help=_('Initial size of the cluster.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            type=int,
