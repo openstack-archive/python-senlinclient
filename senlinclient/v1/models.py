@@ -325,7 +325,24 @@ class Node(resource.Resource):
     tags = resource.prop('tags', type=dict)
     data = resource.prop('data', type=dict)
 
-    action = resource.prop('action')
+    def action(self, session, body):
+        url = utils.urljoin(self.base_path, self.id, 'action')
+        resp = session.put(url, service=self.service, json=body).body
+        return resp
+
+    def join(self, session, cluster_id):
+        body = {
+            'join': {
+                'cluster_id': cluster_id,
+            }
+        }
+        return self.action(session, body)
+
+    def leave(self, session):
+        body = {
+            'leave': {}
+        }
+        return self.action(session, body)
 
     def to_dict(self):
         return {

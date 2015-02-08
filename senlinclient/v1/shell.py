@@ -683,19 +683,6 @@ def do_node_update(sc, args):
     _show_node(sc, args.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of node to operate on.'))
-def do_node_leave(sc, args):
-    '''Make node leave its current cluster.'''
-    params = {
-        'id': args.id,
-        'cluster_id': '',
-    }
-
-    sc.update(models.Node, params)
-    _show_node(sc, args.id)
-
-
 @utils.arg('-c', '--cluster', required=True,
            help=_('ID or name of cluster for node to join.'))
 @utils.arg('id', metavar='<NAME or ID>',
@@ -704,10 +691,26 @@ def do_node_join(sc, args):
     '''Make node join the specified cluster.'''
     params = {
         'id': args.id,
-        'cluster_id': args.cluster,
+        'action': 'join',
+        'action_args': {
+            'cluster_id': args.cluster,
+        }
     }
+    resp = sc.action(models.Node, params)
+    print('Request accepted by action %s' % resp['action'])
+    _show_node(sc, args.id)
 
-    sc.update(models.Node, params)
+
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of node to operate on.'))
+def do_node_leave(sc, args):
+    '''Make node leave its current cluster.'''
+    params = {
+        'id': args.id,
+        'action': 'leave',
+    }
+    resp = sc.action(models.Node, params)
+    print('Request accepted by action %s' % resp['action'])
     _show_node(sc, args.id)
 
 
