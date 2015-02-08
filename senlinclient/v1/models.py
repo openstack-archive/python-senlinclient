@@ -154,6 +154,7 @@ class PolicyTypeTemplate(resource.Resource):
 
 
 class Policy(resource.Resource):
+    resource_key = 'policy'
     resources_key = 'policies'
     base_path = '/policies'
     service = clustering_service.ClusteringService()
@@ -171,9 +172,26 @@ class Policy(resource.Resource):
     type = resource.prop('type')
     cooldown = resource.prop('cooldown')
     level = resource.prop('level', type=int)
+    created_time = resource.prop('created_time')
+    updated_time = resource.prop('updated_time')
     deleted_time = resource.prop('deleted_time')
     spec = resource.prop('spec', type=dict)
     data = resource.prop('data', type=dict)
+
+    def to_dict(self):
+        pb_dict = {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type,
+            'spec': self.spec,
+            'level': self.level,
+            'cooldown': self.cooldown,
+            'created_time': self.created_time,
+            'updated_time': self.updated_time,
+            'deleted_time': self.deleted_time,
+        }
+        return pb_dict
+
 
 
 class Cluster(resource.Resource):

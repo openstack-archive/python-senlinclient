@@ -116,11 +116,13 @@ def _show_profile(sc, profile_id):
 
     formatters = {
         'tags': utils.json_formatter,
-        'spec': utils.nested_dict_formatter(
-            ['name', 'rollback', 'parameters', 'environment', 'template'],
-            ['property', 'value']),
     }
-    print(profile.to_dict())
+
+    if profile.type == 'os.heat.stack':
+        formatters['spec'] = utils.nested_dict_formatter(
+            ['name', 'rollback', 'parameters', 'environment', 'template'],
+            ['property', 'value'])
+
     utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
@@ -190,7 +192,7 @@ def do_profile_delete(sc, args):
 
 def do_policy_type_list(sc, args):
     '''List the available policy types.'''
-    types = sc.list_short(models.PolicyType)
+    types = sc.list_short(models.PolicyType, {})
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -229,6 +231,107 @@ def do_policy_type_template(sc, args):
 
 
 #### POLICIES
+
+
+@utils.arg('-d', '--show-deleted', default=False, action="store_true",
+           help=_('Include soft-deleted policies if any.'))
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of policies returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return policies that appear after the given ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
+def do_policy_list(sc, args=None):
+    '''List policies that meet the criteria.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
+    fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
+    queries = {
+        'show_deleted': args.show_deleted,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
+
+    policies = sc.list(models.Policy, **queries)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+        }
+    utils.print_list(policies, fields, formatters=formatters, sortby_index=1)
+
+
+def _show_policy(sc, policy_id):
+    try:
+        params = {'id': policy_id}
+        policy = sc.get(models.Policy, params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Policy not found: %s') % policy_id)
+
+    formatters = {
+        'tags': utils.json_formatter,
+        'spec': utils.json_formatter,
+    }
+    utils.print_dict(policy.to_dict(), formatters=formatters)
+
+
+@utils.arg('-t', '--policy-type', metavar='<TYPE_NAME>', required=True,
+           help=_('Policy type used for this policy.'))
+@utils.arg('-s', '--spec-file', metavar='<SPEC_FILE>', required=True,
+           help=_('The spec file used to create the policy.'))
+@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
+           help=_('An integer indicating the cooldown seconds once the '
+                  'policy is effected. Default to 0.'))
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
+           help=_('An integer beteen 0 and 100 representing the enforcement '
+                  'level. Default to 0.'))
+@utils.arg('name', metavar='<NAME>',
+           help=_('Name of the policy to create.'))
+def do_policy_create(sc, args):
+    '''Create a policy.'''
+    spec = utils.get_spec_content(args.spec_file)
+    params = {
+        'name': args.name,
+        'type': args.policy_type,
+        'spec': spec,
+        'cooldown': args.cooldown,
+        'level': args.enforcement_level,
+    }
+
+    policy = sc.create(models.Policy, params)
+    _show_policy(sc, policy.id)
+
+
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of policy to show.'))
+def do_policy_show(sc, args):
+    '''Show the policy details.'''
+    _show_policy(sc, args.id)
+
+
+@utils.arg('-f', '--force', default=False, action="store_true",
+           help=_('Delete the policy completely from database.'))
+@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+           help=_('Name or ID of policy(s) to delete.'))
+def do_policy_delete(sc, args):
+    '''Delete policy(s).'''
+    failure_count = 0
+
+    for cid in args.id:
+        try:
+            query = {
+                'id': cid,
+                'force': args.force
+            }
+            sc.delete(models.Policy, query)
+        except exc.HTTPNotFound as ex:
+            failure_count += 1
+            print(ex)
+    if failure_count == len(args.id):
+        msg = _('Failed to delete any of the specified policy(s).')
+        raise exc.CommandError(msg)
+    print('Policy deleted: %s' % args.id)
 
 
 #### CLUSTERS
