@@ -156,7 +156,7 @@ def do_profile_create(sc, args):
     _show_profile(sc, profile.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<PROFILE>',
            help=_('Name or ID of profile to show.'))
 def do_profile_show(sc, args):
     '''Show the profile details.'''
@@ -165,7 +165,7 @@ def do_profile_show(sc, args):
 
 @utils.arg('-f', '--force', default=False, action="store_true",
            help=_('Delete the profile completely from database.'))
-@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+@utils.arg('id', metavar='<PROFILE>', nargs='+',
            help=_('Name or ID of profile(s) to delete.'))
 def do_profile_delete(sc, args):
     '''Delete profile(s).'''
@@ -303,7 +303,7 @@ def do_policy_create(sc, args):
     _show_policy(sc, policy.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<POLICY>',
            help=_('Name or ID of policy to show.'))
 def do_policy_show(sc, args):
     '''Show the policy details.'''
@@ -312,7 +312,7 @@ def do_policy_show(sc, args):
 
 @utils.arg('-f', '--force', default=False, action="store_true",
            help=_('Delete the policy completely from database.'))
-@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+@utils.arg('id', metavar='<POLICY>', nargs='+',
            help=_('Name or ID of policy(s) to delete.'))
 def do_policy_delete(sc, args):
     '''Delete policy(s).'''
@@ -426,7 +426,7 @@ def do_cluster_create(sc, args):
     _show_cluster(sc, cluster.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+@utils.arg('id', metavar='<CLUSTER>', nargs='+',
            help=_('Name or ID of cluster(s) to delete.'))
 def do_cluster_delete(sc, args):
     '''Delete the cluster(s).'''
@@ -458,7 +458,7 @@ def do_cluster_delete(sc, args):
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
            action='append')
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to update.'))
 def do_cluster_update(sc, args):
     '''Update the cluster.'''
@@ -476,7 +476,7 @@ def do_cluster_update(sc, args):
     do_cluster_list(sc)
 
 
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to show.'))
 def do_cluster_show(sc, args):
     '''Show details of the cluster.'''
@@ -496,7 +496,7 @@ def do_cluster_show(sc, args):
            help=_('Only return nodes that appear after the given node ID.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
@@ -555,7 +555,7 @@ def do_cluster_node_add(sc, args):
 @utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
            help=_('ID of nodes to be deleted; multiple nodes can be separated'
                   'with ",".'))
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_del(sc, args):
     '''Delete specified nodes from cluster.'''
@@ -571,59 +571,163 @@ def do_cluster_node_del(sc, args):
     print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('-c', '--count', metavar='<COUNT>', default=1,
+           help=_('Number of nodes to be added.'))
+@utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
+def do_cluster_scale_out(sc, args):
+    '''Scale out a cluster by the specified number of nodes.'''
+    params = {
+        'id': args.id,
+        'action': 'scale_out',
+        'action_args': {
+            'count': args.count,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
+
+
+@utils.arg('-c', '--count', metavar='<COUNT>', default=1,
+           help=_('Number of nodes to be added.'))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_scale_in(sc, args):
+    '''Scale in a cluster by the specified number of nodes.'''
+    params = {
+        'id': args.id,
+        'action': 'scale_in',
+        'action_args': {
+            'count': args.count,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
+
+
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned results. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of profiles returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return profiles that appear after the given ID.'))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(sc, args):
     '''List policies from cluster.'''
     query = {'id': args.id}
-    policies = sc.list(models.ClusterPolicy, query)
-    fields = ['id', 'name', 'enabled', 'level']
+    cluster = sc.get(models.Cluster, query)
+
+    queries = {
+        'limit': args.limit,
+        'marker': args.marker,
+        'filters': utils.format_parameters(args.filters),
+    }
+    policies = sc.list(models.ClusterPolicy,
+                       path_args={'cluster_id': cluster.id},
+                       **queries)
+    fields = ['cluster_id', 'policy_id', 'priority', 'level', 'cooldown',
+              'enabled']
     utils.print_list(policies, fields, sortby_index=1)
 
 
-@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
-           help=_('ID of policy to be attached.'))
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of policy to be attached.'))
+@utils.arg('-r', '--priority', metavar='<PRIORITY>',
+           help=_('An integer specifying the relative priority among '
+                  'all policies attached to a cluster. The lower the '
+                  'value, the higher the priority. Default is 50.'))
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
+           help=_('An integer beteen 0 and 100 representing the enforcement '
+                  'level. Default to enforcement level of policy.'))
+@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
+           help=_('An integer indicating the cooldown seconds once the '
+                  'policy is effected. Default to cooldown of policy.'))
+@utils.arg('-e', '--enabled', default=True, action="store_true",
+           help=_('Whether the policy should be enabled once attached. '
+                  'Default to enabled.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_attach(sc, args):
     '''Attach policy to cluster.'''
-    params = {'cluster_id': args.id, 'policy_id': args.policy}
-    sc.create(models.ClusterPolicy, params)
-    do_cluster_policy_list(sc, args.id)
+    params = {
+        'id': args.id,
+        'action': 'attach_policy',
+        'action_args': {
+            'policy_id': args.policy,
+            'priority': args.priority,
+            'level': args.enforcement_level,
+            'enabled': args.enabled,
+            'cooldown': args.cooldown,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
-           help=_('ID of policy to be detached.'))
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of policy to be detached.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(sc, args):
     '''Detach policy from cluster.'''
-    params = {'cluster_id': args.id, 'policy_id': args.policy}
-    sc.delete(models.ClusterPolicy, params)
-    do_cluster_policy_list(sc, args.id)
+    params = {
+        'id': args.id,
+        'action': 'detach_policy',
+        'action_args': {
+            'policy_id': args.policy,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-p', '--policy', metavar='<POLICY_ID>',
-           help=_('ID of policy to be enabled.'))
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of policy to be enabled.'))
+@utils.arg('-r', '--priority', metavar='<PRIORITY>',
+           help=_('An integer specifying the relative priority among '
+                  'all policies attached to a cluster. The lower the '
+                  'value, the higher the priority. Default is 50.'))
+@utils.arg('-l', '--level', metavar='<LEVEL>',
+           help=_('New enforcement level.'))
 @utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
            help=_('Cooldown interval in seconds.'))
-@utils.arg('-l', '--level', metavar='<LEVEL>',
-           help=_('Enforcement level.'))
-@utils.arg('-e', '--enabled', metavar='<BOOLEAN>',
-           help=_('Specify whether to enable policy.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_update(sc, args):
-    '''Enable policy on cluster.'''
+def do_cluster_policy_enable(sc, args):
+    '''Enable a policy on cluster.'''
     params = {
-        'cluster_id': args.id,
-        'policy_id': args.policy,
-        'cooldown': args.cooldown,
-        'enabled': args.enabled,
-        'level': args.level,
+        'id': args.id,
+        'action': 'enable_policy',
+        'action_args': {
+            'policy_id': args.policy,
+            'priority': args.priority,
+            'level': args.enforcement_level,
+            'cooldown': args.cooldown,
+        }
     }
-    sc.update(models.ClusterPolicy, params)
-    do_cluster_policy_list(sc, args.id)
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
+
+
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of policy to be disabled.'))
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_policy_disable(sc, args):
+    '''Disable a policy on a cluster.'''
+    params = {
+        'id': args.id,
+        'action': 'disable_policy',
+        'action_args': {
+            'policy_id': args.policy,
+        }
+    }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
 
 
 #### NODES
@@ -733,14 +837,14 @@ def do_node_create(sc, args):
     _show_node(sc, node.id)
 
 
-@utils.arg('id', metavar='<NODE ID>',
+@utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of the node to show the details for.'))
 def do_node_show(sc, args):
     '''Show detailed info about the specified node.'''
     _show_node(sc, args.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>', nargs='+',
+@utils.arg('id', metavar='<NODE>', nargs='+',
            help=_('Name or ID of node(s) to delete.'))
 def do_node_delete(sc, args):
     '''Delete the node(s).'''
@@ -770,8 +874,8 @@ def do_node_delete(sc, args):
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
            action='append')
-@utils.arg('id', metavar='<ID>',
-           help=_('ID of node to update.'))
+@utils.arg('id', metavar='<NODE>',
+           help=_('Name or ID of node to update.'))
 def do_node_update(sc, args):
     '''Update the node.'''
     params = {
@@ -788,7 +892,7 @@ def do_node_update(sc, args):
 
 @utils.arg('-c', '--cluster', required=True,
            help=_('ID or name of cluster for node to join.'))
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to operate on.'))
 def do_node_join(sc, args):
     '''Make node join the specified cluster.'''
@@ -804,7 +908,7 @@ def do_node_join(sc, args):
     _show_node(sc, args.id)
 
 
-@utils.arg('id', metavar='<NAME or ID>',
+@utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to operate on.'))
 def do_node_leave(sc, args):
     '''Make node leave its current cluster.'''
@@ -929,7 +1033,7 @@ def do_action_list(sc, args):
     utils.print_list(actions, fields, formatters=formatters, sortby_index=0)
 
 
-@utils.arg('id', metavar='<ACTION ID>',
+@utils.arg('id', metavar='<ACTION>',
            help=_('Name or ID of the action to show the details for.'))
 def do_action_show(sc, args):
     '''Show detailed info about the specified action.'''

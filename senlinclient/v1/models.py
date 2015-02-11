@@ -193,7 +193,6 @@ class Policy(resource.Resource):
         return pb_dict
 
 
-
 class Cluster(resource.Resource):
     resource_key = 'cluster'
     resources_key = 'clusters'
@@ -251,6 +250,62 @@ class Cluster(resource.Resource):
         }
         return self.action(session, body)
 
+    def attach_policy(self, session, policy_id, priority, level, enabled,
+                      cooldown):
+        body = {
+            'attach_policy': {
+                'policy_id': policy_id,
+                'priority': priority,
+                'level': level,
+                'enabled': enabled,
+                'cooldown': cooldown,
+            }
+        }
+        return self.action(session, body)
+
+    def detach_policy(self, session, policy_id):
+        body = {
+            'detach_policy': {
+                'policy_id': policy_id,
+            }
+        }
+        return self.action(session, body)
+
+    def enable_policy(self, session, policy_id, priority, level, cooldown):
+        body = {
+            'attach_policy': {
+                'policy_id': policy_id,
+                'priority': priority,
+                'level': level,
+                'cooldown': cooldown,
+            }
+        }
+        return self.action(session, body)
+
+    def disable_policy(self, session, policy_id):
+        body = {
+            'disable_policy': {
+                'policy_id': policy_id,
+            }
+        }
+        return self.action(session, body)
+
+    def scale_out(self, session, count):
+        body = {
+            'scale_out': {
+                'count': count,
+            }
+        }
+        return self.action(session, body)
+
+    def scale_in(self, session, count):
+        body = {
+            'scale_in': {
+                'count': count,
+            }
+        }
+        return self.action(session, body)
+
     def to_dict(self):
         info = {
             'id': self.id,
@@ -276,7 +331,8 @@ class Cluster(resource.Resource):
 
 
 class ClusterPolicy(resource.Resource):
-    resources_key = 'policies'
+    resource_key = 'cluster_policy'
+    resources_key = 'cluster_policies'
     base_path = '/clusters/%(cluster_id)s/policies'
     service = clustering_service.ClusteringService()
 
