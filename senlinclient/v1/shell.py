@@ -636,11 +636,11 @@ def do_cluster_policy_list(sc, args):
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
            help=_('ID or name of policy to be attached.'))
-@utils.arg('-r', '--priority', metavar='<PRIORITY>',
+@utils.arg('-r', '--priority', metavar='<PRIORITY>', default=50,
            help=_('An integer specifying the relative priority among '
                   'all policies attached to a cluster. The lower the '
                   'value, the higher the priority. Default is 50.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=50,
            help=_('An integer beteen 0 and 100 representing the enforcement '
                   'level. Default to enforcement level of policy.'))
 @utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
@@ -655,15 +655,16 @@ def do_cluster_policy_attach(sc, args):
     '''Attach policy to cluster.'''
     params = {
         'id': args.id,
-        'action': 'attach_policy',
+        'action': 'policy_attach',
         'action_args': {
             'policy_id': args.policy,
             'priority': args.priority,
             'level': args.enforcement_level,
-            'enabled': args.enabled,
             'cooldown': args.cooldown,
+            'enabled': args.enabled,
         }
     }
+
     resp = sc.action(models.Cluster, params)
     print('Request accepted by action %s' % resp['action'])
 
@@ -676,37 +677,59 @@ def do_cluster_policy_detach(sc, args):
     '''Detach policy from cluster.'''
     params = {
         'id': args.id,
-        'action': 'detach_policy',
+        'action': 'policy_detach',
         'action_args': {
             'policy_id': args.policy,
         }
     }
+
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
+
+
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of policy to be updated.'))
+@utils.arg('-r', '--priority', metavar='<PRIORITY>',
+           help=_('An integer specifying the relative priority among '
+                  'all policies attached to a cluster. The lower the '
+                  'value, the higher the priority. Default is 50.'))
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
+           help=_('New enforcement level.'))
+@utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
+           help=_('Cooldown interval in seconds.'))
+@utils.arg('-e', '--enabled', metavar='<BOOLEAN>',
+           help=_('Whether the policy should be enabled.'))
+@utils.arg('id', metavar='<NAME or ID>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_policy_update(sc, args):
+    '''Update a policy on cluster.'''
+    params = {
+        'id': args.id,
+        'action': 'policy_update',
+        'action_args': {
+            'policy_id': args.policy,
+            'priority': args.priority,
+            'level': args.enforcement_level,
+            'cooldown': args.cooldown,
+            'enabled': args.enabled,
+        }
+    }
+
     resp = sc.action(models.Cluster, params)
     print('Request accepted by action %s' % resp['action'])
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
            help=_('ID or name of policy to be enabled.'))
-@utils.arg('-r', '--priority', metavar='<PRIORITY>',
-           help=_('An integer specifying the relative priority among '
-                  'all policies attached to a cluster. The lower the '
-                  'value, the higher the priority. Default is 50.'))
-@utils.arg('-l', '--level', metavar='<LEVEL>',
-           help=_('New enforcement level.'))
-@utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
-           help=_('Cooldown interval in seconds.'))
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_enable(sc, args):
     '''Enable a policy on cluster.'''
     params = {
         'id': args.id,
-        'action': 'enable_policy',
+        'action': 'policy_enable',
         'action_args': {
             'policy_id': args.policy,
-            'priority': args.priority,
-            'level': args.enforcement_level,
-            'cooldown': args.cooldown,
         }
     }
     resp = sc.action(models.Cluster, params)
@@ -721,7 +744,7 @@ def do_cluster_policy_disable(sc, args):
     '''Disable a policy on a cluster.'''
     params = {
         'id': args.id,
-        'action': 'disable_policy',
+        'action': 'policy_disable',
         'action_args': {
             'policy_id': args.policy,
         }
