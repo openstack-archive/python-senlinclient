@@ -401,7 +401,10 @@ class ClusterPolicy(resource.Resource):
     # Properties
     id = resource.prop('id')
     cluster_id = resource.prop('cluster_id')
+    cluster_name = resource.prop('cluster_name')
     policy_id = resource.prop('policy_id')
+    type = resource.prop('policy_type')
+    policy = resource.prop('policy_name')
     cooldown = resource.prop('cooldown')
     level = resource.prop('level', type=int)
     enabled = resource.prop('enabled')

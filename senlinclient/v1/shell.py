@@ -629,9 +629,9 @@ def do_cluster_policy_list(sc, args):
     policies = sc.list(models.ClusterPolicy,
                        path_args={'cluster_id': cluster.id},
                        **queries)
-    fields = ['cluster_id', 'policy_id', 'priority', 'level', 'cooldown',
+    fields = ['policy_id', 'policy', 'type', 'priority', 'level', 'cooldown',
               'enabled']
-    utils.print_list(policies, fields, sortby_index=1)
+    utils.print_list(policies, fields, sortby_index=3)
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
