@@ -506,7 +506,6 @@ def do_cluster_node_list(sc, args):
     def _short_physical_id(obj):
         return obj.physical_id[:8] + ' ...'
 
-    fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
 
     query = {
         'cluster_id': args.id,
@@ -530,6 +529,7 @@ def do_cluster_node_list(sc, args):
     else:
         formatters = {}
 
+    fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
@@ -813,7 +813,7 @@ def do_node_list(sc, args):
     else:
         formatters = {}
 
-    utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
+    utils.print_list(nodes, fields, formatters=formatters, sortby_index=6)
 
 
 def _show_node(sc, node_id):
