@@ -306,6 +306,64 @@ class Cluster(resource.Resource):
         }
         return self.action(session, body)
 
+    def policy_attach(self, session, policy_id, priority, level, cooldown,
+                      enabled):
+        body = {
+            'policy_attach': {
+                'policy_id': policy_id,
+                'priority': priority,
+                'level': level,
+                'cooldown': cooldown,
+                'enabled': enabled,
+            }
+        }
+        return self.action(session, body)
+
+    def policy_detach(self, session, policy_id):
+        body = {
+            'policy_detach': {
+                'policy_id': policy_id,
+            }
+        }
+        return self.action(session, body)
+
+    def policy_update(self, session, policy_id, priority, level, cooldown,
+                      enabled):
+
+        body = {
+            'policy_update': {
+                'policy_id': policy_id,
+            }
+        }
+        if priority is not None:
+            body['policy_update']['priority'] = priority
+        if level is not None:
+            body['policy_update']['level'] = level
+        if cooldown is not None:
+            body['policy_update']['cooldown'] = cooldown
+        if enabled is not None:
+            body['policy_update']['enabled'] = enabled
+
+        return self.action(session, body)
+
+    def policy_enable(self, session, policy_id):
+        body = {
+            'policy_update': {
+                'policy_id': policy_id,
+                'enabled': True,
+            }
+        }
+        return self.action(session, body)
+
+    def policy_disable(self, session, policy_id):
+        body = {
+            'policy_update': {
+                'policy_id': policy_id,
+                'enabled': False,
+            }
+        }
+        return self.action(session, body)
+
     def to_dict(self):
         info = {
             'id': self.id,
@@ -339,9 +397,6 @@ class ClusterPolicy(resource.Resource):
     # Capabilities
     allow_list = True
     allow_retrieve = True
-    allow_create = True
-    allow_delete = True
-    allow_update = True
 
     # Properties
     id = resource.prop('id')
