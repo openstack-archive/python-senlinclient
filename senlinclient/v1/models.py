@@ -290,12 +290,10 @@ class Cluster(resource.Resource):
         }
         return self.action(session, body)
 
-    def scale_out(self, session, count):
-        body = {
-            'scale_out': {
-                'count': count,
-            }
-        }
+    def scale_out(self, session, count=None):
+        body = {'scale_out': {}}
+        if count is not None:
+            body['scale_out'] = {'count': count}
         return self.action(session, body)
 
     def scale_in(self, session, count):
