@@ -237,6 +237,28 @@ def do_policy_type_show(sc, args):
 @utils.arg('-F', '--format', metavar='<FORMAT>',
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
+def do_policy_type_schema(sc, args):
+    '''Get the spec of a policy type.'''
+    try:
+        params = {'policy_type': args.policy_type}
+        schema = sc.get(models.PolicyTypeSchema, params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(
+            _('Policy type %s not found.') % args.policy_type)
+
+    schema = dict(schema)
+
+    if args.format:
+        print(utils.format_output(schema, format=args.format))
+    else:
+        print(utils.format_output(schema))
+
+
+@utils.arg('policy_type', metavar='<POLICY_TYPE>',
+           help=_('Policy type to generate a template for.'))
+@utils.arg('-F', '--format', metavar='<FORMAT>',
+           help=_("The template output format, one of: %s.")
+                 % ', '.join(utils.supported_formats.keys()))
 def do_policy_type_template(sc, args):
     '''Generate a template based on a policy type.'''
     try:
@@ -527,7 +549,6 @@ def do_cluster_node_list(sc, args):
 
     def _short_physical_id(obj):
         return obj.physical_id[:8] + ' ...'
-
 
     query = {
         'cluster_id': args.id,
