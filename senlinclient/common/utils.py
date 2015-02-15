@@ -35,7 +35,7 @@ exit = cliutils.exit
 
 supported_formats = {
     "json": lambda x: jsonutils.dumps(x, indent=2),
-    "yaml": yaml.safe_dump
+    "yaml": lambda x: yaml.safe_dump(x, default_flow_style=False) 
 }
 
 
