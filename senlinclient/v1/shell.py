@@ -60,6 +60,28 @@ def do_profile_type_show(sc, args):
 @utils.arg('-F', '--format', metavar='<FORMAT>',
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
+def do_profile_type_schema(sc, args):
+    '''Get the spec of a profile type.'''
+    try:
+        params = {'profile_type': args.profile_type}
+        schema = sc.get(models.ProfileTypeSchema, params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(
+            _('Profile Type %s not found.') % args.profile_type)
+
+    schema = dict(schema)
+
+    if args.format:
+        print(utils.format_output(schema, format=args.format))
+    else:
+        print(utils.format_output(schema))
+
+
+@utils.arg('profile_type', metavar='<PROFILE_TYPE>',
+           help=_('Profile type to generate a template for.'))
+@utils.arg('-F', '--format', metavar='<FORMAT>',
+           help=_("The template output format, one of: %s.")
+                 % ', '.join(utils.supported_formats.keys()))
 def do_profile_type_template(sc, args):
     '''Generate a template based on a profile type.'''
     try:
@@ -571,7 +593,7 @@ def do_cluster_node_del(sc, args):
     print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-c', '--count', metavar='<COUNT>', default=1,
+@utils.arg('-c', '--count', metavar='<COUNT>',
            help=_('Number of nodes to be added.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
@@ -581,25 +603,29 @@ def do_cluster_scale_out(sc, args):
         'id': args.id,
         'action': 'scale_out',
         'action_args': {
-            'count': args.count,
+            'count': args.count
         }
     }
+
     resp = sc.action(models.Cluster, params)
     print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-c', '--count', metavar='<COUNT>', default=1,
+@utils.arg('-c', '--count', metavar='<COUNT>',
            help=_('Number of nodes to be added.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(sc, args):
     '''Scale in a cluster by the specified number of nodes.'''
+    if args.count is not None:
+        action_args = {'count': args.count}
+    else:
+        action_args = {}
+
     params = {
         'id': args.id,
         'action': 'scale_in',
-        'action_args': {
-            'count': args.count,
-        }
+        'action_args': action_args,
     }
     resp = sc.action(models.Cluster, params)
     print('Request accepted by action %s' % resp['action'])
