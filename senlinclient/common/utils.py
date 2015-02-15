@@ -167,3 +167,12 @@ def process_stack_spec(spec):
     }
 
     return new_spec
+
+
+def format_output(output, format='yaml'):
+    fmt = format.lower()
+    try:
+        return supported_formats[fmt](output)
+    except KeyError:
+        raise exc.HTTPUnsupported(_('The format(%s) is unsupported.')
+                                  % fmt)
