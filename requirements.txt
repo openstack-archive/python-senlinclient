@@ -15,4 +15,4 @@ python-keystoneclient>=0.11.1
 python-heatclient>=0.2.11
 PyYAML>=3.1.0
 requests>=2.2.0,!=2.4.0
-six>=1.7.0
+six>=1.9.0
