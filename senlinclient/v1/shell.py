@@ -77,26 +77,6 @@ def do_profile_type_schema(sc, args):
         print(utils.format_output(schema))
 
 
-@utils.arg('profile_type', metavar='<PROFILE_TYPE>',
-           help=_('Profile type to generate a template for.'))
-@utils.arg('-F', '--format', metavar='<FORMAT>',
-           help=_("The template output format, one of: %s.")
-                 % ', '.join(utils.supported_formats.keys()))
-def do_profile_type_template(sc, args):
-    '''Generate a template based on a profile type.'''
-    try:
-        params = {'profile_type': args.profile_type}
-        template = sc.get(models.ProfileTypeTemplate, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(
-            _('Profile Type %s not found.') % args.profile_type)
-
-    if args.format:
-        print(utils.format_output(template, format=args.format))
-    else:
-        print(utils.format_output(template))
-
-
 #### PROFILES
 
 
@@ -252,26 +232,6 @@ def do_policy_type_schema(sc, args):
         print(utils.format_output(schema, format=args.format))
     else:
         print(utils.format_output(schema))
-
-
-@utils.arg('policy_type', metavar='<POLICY_TYPE>',
-           help=_('Policy type to generate a template for.'))
-@utils.arg('-F', '--format', metavar='<FORMAT>',
-           help=_("The template output format, one of: %s.")
-                 % ', '.join(utils.supported_formats.keys()))
-def do_policy_type_template(sc, args):
-    '''Generate a template based on a policy type.'''
-    try:
-        params = {'policy_type': args.policy_type}
-        template = sc.get(models.PolicyTypeTemplate, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(
-            _('Policy Type %s not found.') % args.policy_type)
-
-    if args.format:
-        print(utils.format_output(template, format=args.format))
-    else:
-        print(utils.format_output(template))
 
 
 #### POLICIES
