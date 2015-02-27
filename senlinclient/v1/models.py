@@ -559,8 +559,27 @@ class Event(resource.Resource):
     obj_id = resource.prop('obj_id')
     obj_name = resource.prop('obj_name')
     obj_type = resource.prop('obj_type')
+    cluster_id = resource.prop('cluster_id')
     level = resource.prop('level')
     user = resource.prop('user')
+    project = resource.prop('project')
     action = resource.prop('action')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
+
+    def to_dict(self):
+        event_dict = {
+            'id': self.id,
+            'timestamp': self.timestamp,
+            'obj_id': self.obj_id,
+            'obj_type': self.obj_type,
+            'obj_name': self.obj_name,
+            'cluster_id': self.cluster_id,
+            'level': self.level,
+            'user': self.user,
+            'project': self.project,
+            'action': self.action,
+            'status': self.status,
+            'status_reason': self.status_reason,
+        }
+        return event_dict
