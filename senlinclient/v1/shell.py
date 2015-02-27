@@ -954,13 +954,6 @@ def do_node_leave(sc, args):
 ##### EVENTS
 
 
-@utils.arg('-i', '--id', metavar='<ID>',
-           help=_('ID of objects to show the events for.'))
-@utils.arg('-n', '--name', metavar='<NAME>',
-           help=_('Name of objects to show the events for.'))
-@utils.arg('-t', '--type', metavar='<OBJECT TYPE>',
-           help=_('Types of the objects to filter events by.'
-                  'The types can be CLUSTER, NODE, PROFILE, POLICY.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned events. '
                   'This can be specified multiple times, or once with '
@@ -974,25 +967,31 @@ def do_node_leave(sc, args):
            help=_('Name of keys used for sorting the returned events.'))
 @utils.arg('-d', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-g', '--global-tenant', default=False, action="store_true",
+           help=_('Whether events from all projects(tenants) should be '
+                  'listed. Default to False. Setting this to True may demand '
+                  'for an admin privilege.'))
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
+           help=_('Whether deleted events should be listed as well. '
+                  'Default to False.'))
 def do_event_list(sc, args):
     '''List events.'''
     queries = {
-        'obj_id': args.id,
-        'obj_name': args.name,
-        'obj_type': args.type,
         'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'limit': args.limit,
         'marker': args.marker,
+        'global_tenant': args.global_tenant,
+        'show_deleted': args.show_deleted,
     }
 
     try:
-        events = sc.list(models.Event, queries)
+        events = sc.list(models.Event, **queries)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
-    fields = ['timestamp', 'obj_type', 'obj_id', 'action', 'status',
+    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
               'status_reason']
     utils.print_list(events, fields, sortby_index=0)
 
@@ -1010,7 +1009,7 @@ def do_event_show(sc, args):
     utils.print_dict(event.to_dict())
 
 
-#### EVENTS
+#### ACTIONS
 
 
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
