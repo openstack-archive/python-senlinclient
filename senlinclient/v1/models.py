@@ -443,6 +443,7 @@ class Node(resource.Resource):
     physical_id = resource.prop('physical_id')
     cluster_id = resource.prop('cluster_id')
     profile_id = resource.prop('profile_id')
+    project = resource.prop('project')
     profile_name = resource.prop('profile_name')
     index = resource.prop('index', type=int)
     role = resource.prop('role')
@@ -482,6 +483,7 @@ class Node(resource.Resource):
             'cluster_id': self.cluster_id,
             'profile_id': self.profile_id,
             'profile_name': self.profile_name,
+            'project': self.project,
             'index': self.index,
             'role': self.role,
             'init_time': self.init_time,

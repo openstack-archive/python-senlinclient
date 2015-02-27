@@ -209,7 +209,6 @@ class SenlinShell(object):
 
     def _setup_senlin_client(self, api_ver, args):
         '''Create senlin client using given args.'''
-        print(args.username)
         kwargs = {
             'auth_plugin': args.auth_plugin,
             'auth_url': args.auth_url,
