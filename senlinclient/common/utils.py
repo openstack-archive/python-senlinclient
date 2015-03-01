@@ -158,9 +158,10 @@ def process_stack_spec(spec):
         env_paths=spec.get('environment', None))
 
     new_spec = {
-        'name': spec.get('name', None),
-        'rollback': spec.get('rollback', False),
+        # TODO(Qiming): add context support
+        'disable_rollback': spec.get('disable_rollback', False),
         'parameters': spec.get('parameters', {}),
+        'timeout': spec.get('timeout', 60),
         'template': template,
         'files': dict(list(tpl_files.items()) + list(env_files.items())),
         'environment': env

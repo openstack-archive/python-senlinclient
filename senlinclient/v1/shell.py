@@ -122,7 +122,8 @@ def _show_profile(sc, profile_id):
 
     if profile.type == 'os.heat.stack':
         formatters['spec'] = utils.nested_dict_formatter(
-            ['name', 'rollback', 'parameters', 'environment', 'template'],
+            ['disable_rollback', 'environment', 'files', 'parameters',
+              'template', 'timeout'],
             ['property', 'value'])
 
     utils.print_dict(profile.to_dict(), formatters=formatters)
