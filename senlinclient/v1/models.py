@@ -90,6 +90,7 @@ class Profile(resource.Resource):
     # capabilities
     allow_create = True
     allow_retrieve = True
+    allow_update = True
     allow_delete = True
     allow_list = True
 
