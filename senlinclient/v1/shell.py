@@ -123,7 +123,7 @@ def _show_profile(sc, profile_id):
     if profile.type == 'os.heat.stack':
         formatters['spec'] = utils.nested_dict_formatter(
             ['disable_rollback', 'environment', 'files', 'parameters',
-              'template', 'timeout'],
+             'template', 'timeout'],
             ['property', 'value'])
 
     utils.print_dict(profile.to_dict(), formatters=formatters)
@@ -163,6 +163,44 @@ def do_profile_create(sc, args):
            help=_('Name or ID of profile to show.'))
 def do_profile_show(sc, args):
     '''Show the profile details.'''
+    _show_profile(sc, args.id)
+
+
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('The new name for the profile.'))
+@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>',
+           help=_('The new spec file for the profile.'))
+@utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
+           help=_('A string format permission for this profile.'))
+@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Tag values to be attached to the profile. '
+           'This can be specified multiple times, or once with tags'
+           'separated by a semicolon.'),
+           action='append')
+@utils.arg('id', metavar='<PROFILE_ID>',
+           help=_('Name or ID of the profile to update.'))
+def do_profile_update(sc, args):
+    '''Update a profile.'''
+    spec = None
+    if args.spec_file:
+        spec = utils.get_spec_content(args.spec_file)
+        if args.profile_type == 'os.heat.stack':
+            spec = utils.process_stack_spec(spec)
+    params = {
+        'name': args.name,
+        'spec': spec,
+        'permission': args.permission,
+        'tags': utils.format_parameters(args.tags),
+    }
+
+    # Find the profile first, we need its id
+    try:
+        profile = sc.get(models.Profile, {'id': args.id})
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Profile not found: %s') % args.id)
+
+    params['id'] = profile.id
+    sc.update(models.Profile, params)
     _show_profile(sc, args.id)
 
 
