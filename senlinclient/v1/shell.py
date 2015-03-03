@@ -354,10 +354,10 @@ def do_policy_show(sc, args):
     _show_policy(sc, policy_id=args.id)
 
 
-@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
+@utils.arg('-c', '--cooldown', metavar='<SECONDS>',
            help=_('An integer indicating the cooldown seconds once the '
                   'policy is effected. Default to 0.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
            help=_('An integer beteen 0 and 100 representing the enforcement '
                   'level. Default to 0.'))
 @utils.arg('-n', '--name', metavar='<NAME>',
@@ -517,32 +517,33 @@ def do_cluster_delete(sc, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID of new profile to use.'))
-@utils.arg('-n', '--size', metavar='<SIZE>',
-           help=_('Initial size of the cluster.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
-           type=int,
-           help=_('Cluster update timeout in minutes.'))
+           help=_('New timeout (in minutes) value for the cluster.'))
+@utils.arg('-r', '--parent', metavar='<PARENT>',
+           help=_('ID of parent cluster for the cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the cluster. '
            'This can be specified multiple times, or once with tags'
            'separated by a semicolon.'),
            action='append')
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('New name for the cluster to update.'))
 @utils.arg('id', metavar='<CLUSTER>',
-           help=_('Name or ID of cluster to update.'))
+           help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(sc, args):
     '''Update the cluster.'''
 
     params = {
+        'id': args.id,
+        'name': args.name,
         'profile_id': args.profile,
-        'size': args.size,
+        'parent': args.parent,
         'tags': utils.format_parameters(args.tags),
+        'timeout': args.timeout,
     }
 
-    if args.timeout:
-        params['timeout'] = args.timeout
-
     sc.update(models.Cluster, params)
-    do_cluster_list(sc)
+    _show_cluster(sc, args.id)
 
 
 @utils.arg('id', metavar='<CLUSTER>',
