@@ -532,9 +532,9 @@ def do_cluster_delete(sc, args):
            help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(sc, args):
     '''Update the cluster.'''
-
+    cluster = sc.get(models.Cluster, {'id': args.id})
     params = {
-        'id': args.id,
+        'id': cluster.id,
         'name': args.name,
         'profile_id': args.profile,
         'parent': args.parent,
@@ -543,7 +543,7 @@ def do_cluster_update(sc, args):
     }
 
     sc.update(models.Cluster, params)
-    _show_cluster(sc, args.id)
+    _show_cluster(sc, cluster.id)
 
 
 @utils.arg('id', metavar='<CLUSTER>',
