@@ -88,7 +88,7 @@ class Client(object):
     def update(self, cls, options):
         obj = cls.new(**options)
         try:
-            obj.update(self.session)
+            return obj.update(self.session)
         except Exception as ex:
             client_exc.parse_exception(ex)
 

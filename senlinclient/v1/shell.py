@@ -305,12 +305,13 @@ def do_policy_list(sc, args=None):
     utils.print_list(policies, fields, formatters=formatters, sortby_index=1)
 
 
-def _show_policy(sc, policy_id):
-    try:
-        params = {'id': policy_id}
-        policy = sc.get(models.Policy, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Policy not found: %s') % policy_id)
+def _show_policy(sc, policy_id=None, policy=None):
+    if policy is None:
+        try:
+            params = {'id': policy_id}
+            policy = sc.get(models.Policy, params)
+        except exc.HTTPNotFound:
+            raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
     formatters = {
         'tags': utils.json_formatter,
@@ -343,14 +344,39 @@ def do_policy_create(sc, args):
     }
 
     policy = sc.create(models.Policy, params)
-    _show_policy(sc, policy.id)
+    _show_policy(sc, policy=policy)
 
 
 @utils.arg('id', metavar='<POLICY>',
-           help=_('Name or ID of policy to show.'))
+           help=_('Name of the policy to be updated.'))
 def do_policy_show(sc, args):
     '''Show the policy details.'''
-    _show_policy(sc, args.id)
+    _show_policy(sc, policy_id=args.id)
+
+
+@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
+           help=_('An integer indicating the cooldown seconds once the '
+                  'policy is effected. Default to 0.'))
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
+           help=_('An integer beteen 0 and 100 representing the enforcement '
+                  'level. Default to 0.'))
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('New name of the policy to be updated.'))
+@utils.arg('id', metavar='<POLICY>',
+           help=_('Name of the policy to be updated.'))
+def do_policy_update(sc, args):
+    '''Update a policy.'''
+    params = {
+        'name': args.name,
+        'cooldown': args.cooldown,
+        'level': args.enforcement_level,
+    }
+
+    policy = sc.get(models.Policy, {'id': args.id})
+    if policy is not None:
+        params['id'] = policy.id
+        sc.update(models.Policy, params)
+        _show_policy(sc, policy_id=policy.id)
 
 
 @utils.arg('-f', '--force', default=False, action="store_true",
