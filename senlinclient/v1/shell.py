@@ -683,10 +683,10 @@ def do_cluster_scale_in(sc, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of profiles returned.'))
-@utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return profiles that appear after the given ID.'))
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned events.'))
+@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(sc, args):
@@ -695,9 +695,9 @@ def do_cluster_policy_list(sc, args):
     cluster = sc.get(models.Cluster, query)
 
     queries = {
-        'limit': args.limit,
-        'marker': args.marker,
         'filters': utils.format_parameters(args.filters),
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
     }
     policies = sc.list(models.ClusterPolicy,
                        path_args={'cluster_id': cluster.id},
