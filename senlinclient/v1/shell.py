@@ -860,6 +860,10 @@ def do_cluster_policy_disable(sc, args):
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return nodes that appear after the given node ID.'))
+@utils.arg('-g', '--global-tenant', default=False, action="store_true",
+           help=_('Indicate that this node list should include nodes from '
+                  'all tenants. This option is subject to access policy '
+                  'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_node_list(sc, args):
@@ -884,6 +888,7 @@ def do_node_list(sc, args):
         'sort_dir': args.sort_dir,
         'limit': args.limit,
         'marker': args.marker,
+        'global_tenant': args.global_tenant,
     }
 
     if args.show_deleted:
