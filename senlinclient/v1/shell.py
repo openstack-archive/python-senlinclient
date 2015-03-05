@@ -993,8 +993,14 @@ def do_node_delete(sc, args):
            help=_('Name or ID of node to update.'))
 def do_node_update(sc, args):
     '''Update the node.'''
+    # Find the node first, we need its UUID 
+    try:
+        node = sc.get(models.Node, {'id': args.id})
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Node not found: %s') % args.id)
+
     params = {
-        'id': args.id,
+        'id': node.id,
         'name': args.name,
         'role': args.role,
         'profile': args.profile,
@@ -1002,7 +1008,7 @@ def do_node_update(sc, args):
     }
 
     sc.update(models.Node, params)
-    _show_node(sc, args.id)
+    _show_node(sc, node.id)
 
 
 @utils.arg('-c', '--cluster', required=True,
