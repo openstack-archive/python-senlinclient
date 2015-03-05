@@ -93,6 +93,11 @@ def add_global_identity_args(parser):
         default=utils.env('OS_PASSWORD'),
         help=_('Defaults to env[OS_PASSWORD]'))
 
+    parser.add_argument(
+        '--os-trust-id', dest='trust_id', metavar='TRUST_ID',
+        default=utils.env('OS_TRUST_ID'),
+        help=_('Defaults to env[OS_TRUST_ID]'))
+
     verify_group = parser.add_mutually_exclusive_group()
 
     verify_group.add_argument(

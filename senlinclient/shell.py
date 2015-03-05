@@ -225,6 +225,7 @@ class SenlinShell(object):
             'password': args.password,
             'verify': args.verify,
             'token': args.token,
+            'trust_id': args.trust_id,
         }
         conn = sdk.create_connection(args.user_preferences,
                                      USER_AGENT, **kwargs)
