@@ -388,6 +388,7 @@ class Cluster(resource.Resource):
 
 
 class ClusterPolicy(resource.Resource):
+    id_attribute = 'policy_id'
     resource_key = 'cluster_policy'
     resources_key = 'cluster_policies'
     base_path = '/clusters/%(cluster_id)s/policies'
@@ -398,15 +399,29 @@ class ClusterPolicy(resource.Resource):
     allow_retrieve = True
 
     # Properties
-    id = resource.prop('id')
+    policy_id = resource.prop('policy_id')
     cluster_id = resource.prop('cluster_id')
     cluster_name = resource.prop('cluster_name')
-    policy_id = resource.prop('policy_id')
-    type = resource.prop('policy_type')
     policy = resource.prop('policy_name')
-    cooldown = resource.prop('cooldown')
+    type = resource.prop('policy_type')
+    priority = resource.prop('priority')
     level = resource.prop('level', type=int)
+    cooldown = resource.prop('cooldown')
     enabled = resource.prop('enabled')
+
+    def to_dict(self):
+        info = {
+            'cluster_id': self.cluster_id,
+            'cluster_name': self.cluster_name,
+            'policy_id': self.policy_id,
+            'policy': self.policy,
+            'type': self.type,
+            'priority': self.priority,
+            'level': self.level,
+            'cooldown': self.cooldown,
+            'enabled': self.enabled,
+        }
+        return info
 
 
 class ClusterNode(resource.Resource):

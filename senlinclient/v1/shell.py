@@ -702,9 +702,23 @@ def do_cluster_policy_list(sc, args):
     policies = sc.list(models.ClusterPolicy,
                        path_args={'cluster_id': cluster.id},
                        **queries)
-    fields = ['policy_id', 'policy', 'type', 'priority', 'level', 'cooldown',
-              'enabled']
+    fields = ['policy_id', 'policy', 'type', 'priority', 'level',
+              'cooldown', 'enabled']
     utils.print_list(policies, fields, sortby_index=3)
+
+
+@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
+           help=_('ID or name of the policy to query on.'))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('ID or name of the cluster to query on.'))
+def do_cluster_policy_show(sc, args):
+    '''Show a specific policy that is bound to the specified cluster.'''
+    queries = {
+        'cluster_id': args.id,
+        'policy_id': args.policy
+    }
+    binding = sc.get(models.ClusterPolicy, queries)
+    utils.print_dict(binding.to_dict())
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
