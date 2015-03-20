@@ -227,6 +227,7 @@ _EXCEPTION_MAP = {
 
 def parse_exception(exc):
     '''Parse exception code and yield useful information.
+
     :param details: details of the exception.
     '''
     if isinstance(exc, sdkexc.HttpException):

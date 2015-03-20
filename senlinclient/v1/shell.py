@@ -32,7 +32,7 @@ def do_build_info(sc, args):
     utils.print_dict(result, formatters=formatters)
 
 
-#### PROFILE TYPES
+# PROFILE TYPES
 
 
 def do_profile_type_list(sc, args):
@@ -77,7 +77,7 @@ def do_profile_type_schema(sc, args):
         print(utils.format_output(schema))
 
 
-#### PROFILES
+# PROFILES
 
 
 @utils.arg('-d', '--show-deleted', default=False, action="store_true",
@@ -137,8 +137,8 @@ def _show_profile(sc, profile_id):
            help=_('A string format permission for this profile.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the profile. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<PROFILE_NAME>',
            help=_('Name of the profile to create.'))
@@ -174,8 +174,8 @@ def do_profile_show(sc, args):
            help=_('A string format permission for this profile.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the profile. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('id', metavar='<PROFILE_ID>',
            help=_('Name or ID of the profile to update.'))
@@ -228,7 +228,7 @@ def do_profile_delete(sc, args):
     print('Profile deleted: %s' % args.id)
 
 
-#### POLICY TYPES
+# POLICY TYPES
 
 
 def do_policy_type_list(sc, args):
@@ -273,7 +273,7 @@ def do_policy_type_schema(sc, args):
         print(utils.format_output(schema))
 
 
-#### POLICIES
+# POLICIES
 
 
 @utils.arg('-d', '--show-deleted', default=False, action="store_true",
@@ -403,7 +403,7 @@ def do_policy_delete(sc, args):
     print('Policy deleted: %s' % args.id)
 
 
-#### CLUSTERS
+# CLUSTERS
 
 
 @utils.arg('-s', '--show-deleted', default=False, action="store_true",
@@ -475,8 +475,8 @@ def _show_cluster(sc, cluster_id):
            help=_('Cluster creation timeout in minutes.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the cluster. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<CLUSTER_NAME>',
            help=_('Name of the cluster to create.'))
@@ -523,8 +523,8 @@ def do_cluster_delete(sc, args):
            help=_('ID of parent cluster for the cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the cluster. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name for the cluster to update.'))
@@ -840,7 +840,7 @@ def do_cluster_policy_disable(sc, args):
     print('Request accepted by action %s' % resp['action'])
 
 
-#### NODES
+# NODES
 
 
 @utils.arg('-c', '--cluster', default=None,
@@ -933,8 +933,8 @@ def _show_node(sc, node_id):
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the cluster. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<NODE_NAME>',
            help=_('Name of the node to create.'))
@@ -986,14 +986,14 @@ def do_node_delete(sc, args):
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Tag values to be attached to the node. '
-           'This can be specified multiple times, or once with tags'
-           'separated by a semicolon.'),
+                  'This can be specified multiple times, or once with tags '
+                  'separated by a semicolon.'),
            action='append')
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to update.'))
 def do_node_update(sc, args):
     '''Update the node.'''
-    # Find the node first, we need its UUID 
+    # Find the node first, we need its UUID
     try:
         node = sc.get(models.Node, {'id': args.id})
     except exc.HTTPNotFound:
@@ -1042,7 +1042,7 @@ def do_node_leave(sc, args):
     _show_node(sc, args.id)
 
 
-##### EVENTS
+# EVENTS
 
 
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -1100,7 +1100,7 @@ def do_event_show(sc, args):
     utils.print_dict(event.to_dict())
 
 
-#### ACTIONS
+# ACTIONS
 
 
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',

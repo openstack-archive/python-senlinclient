@@ -37,12 +37,12 @@ htmlcov/
 .tox/
 .coverage
 .cache
+.testrepository
 nosetests.xml
 coverage.xml
 
 # Translations
 *.mo
-*.pot
 
 # Django stuff:
 *.log

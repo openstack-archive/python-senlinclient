@@ -28,10 +28,8 @@ class Client(object):
         return json.loads(options)
 
     def transport(self, opts):
-        '''Create a transport given some options.
-        E.g.
-        https://region-a.geo-1.identity.hpcloudsvc.com:35357/
-        '''
+        '''Create a transport given some options.'''
+
         argument = opts.argument
         xport = trans.Transport(verify=opts.verify)
         return xport.get(argument).text
