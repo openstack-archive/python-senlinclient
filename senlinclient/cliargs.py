@@ -39,6 +39,16 @@ def add_global_identity_args(parser):
         help=_('Defaults to env[OS_PROJECT_NAME].'))
 
     parser.add_argument(
+        '--os-tenant-id', dest='tenant_id', metavar='TENANT_ID',
+        default=utils.env('OS_TENANT_ID'),
+        help=_('Defaults to env[OS_TENANT_ID].'))
+
+    parser.add_argument(
+        '--os-tenant-name', dest='tenant_name', metavar='TENANT_NAME',
+        default=utils.env('OS_TENANT_NAME'),
+        help=_('Defaults to env[OS_TENANT_NAME].'))
+
+    parser.add_argument(
         '--os-domain-id', dest='domain_id', metavar='DOMAIN_ID',
         default=utils.env('OS_DOMAIN_ID'),
         help=_('Domain ID for scope of authorization, defaults to '

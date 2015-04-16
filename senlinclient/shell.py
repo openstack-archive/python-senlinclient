@@ -180,10 +180,12 @@ class SenlinShell(object):
             raise exc.CommandError(msg)
 
         # project name or ID is needed, or else sdk may find the wrong project
-        if not (args.project_id or args.project_name):
+        if (not (args.project_id or args.project_name or args.tenant_id
+                 or args.tenant_name)):
             if not (args.user_id):
-                msg = _('Either project ID or project name must be specified, '
-                        'or else Senlin cannot know which project to use.')
+                msg = _('Either project/tenant ID or project/tenant name '
+                        'must be specified, or else Senlin cannot know '
+                        'which project to use.')
                 raise exc.CommandError(msg)
             else:
                 msg = _('Neither project ID nor project name is specified. '
@@ -192,19 +194,21 @@ class SenlinShell(object):
                 print(_('WARINING: %s') % msg)
 
         # both project name and ID are specified, ID takes precedence
-        if args.project_id and args.project_name:
-            msg = _('Both project name and project ID are specified, Senin '
-                    'will use project ID for authentication')
+        if ((args.project_id or args.tenant_id) and
+                (args.project_name or args.tenant_name)):
+            msg = _('Both project/tenant name and project/tenant ID are '
+                    'specified, Senin will use project ID for authentication')
             print(_('WARNING: %s') % msg)
 
         # project name may not be unique
-        if not args.project_id and args.project_name and not (
-                args.project_domain_id or args.project_domain_name):
+        if (not (args.project_id or args.tenant_id) and
+                (args.project_name or args.tenant_name) and
+                not (args.project_domain_id or args.project_domain_name)):
             msg = _('Either project domain ID (--project-domain-id / '
                     'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
                     '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
-                    'must be specified, because project name may not be '
-                    'unique.')
+                    'must be specified, because project/tenant name may not '
+                    'be unique.')
             raise exc.CommandError(msg)
 
     def _setup_senlin_client(self, api_ver, args):
@@ -212,8 +216,8 @@ class SenlinShell(object):
         kwargs = {
             'auth_plugin': args.auth_plugin,
             'auth_url': args.auth_url,
-            'project_name': args.project_name,
-            'project_id': args.project_id,
+            'project_name': args.project_name or args.tenant_name,
+            'project_id': args.project_id or args.tenant_id,
             'domain_name': args.domain_name,
             'domain_id': args.domain_id,
             'project_domain_name': args.project_domain_name,
