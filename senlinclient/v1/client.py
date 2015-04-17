@@ -64,10 +64,10 @@ class Client(object):
         except Exception as ex:
             client_exc.parse_exception(ex)
 
-    def create(self, cls, params):
+    def create(self, cls, params, extra_attrs=False):
         obj = cls.new(**params)
         try:
-            return obj.create(self.session)
+            return obj.create(self.session, extra_attrs=extra_attrs)
         except Exception as ex:
             client_exc.parse_exception(ex)
 

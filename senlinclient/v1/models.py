@@ -194,6 +194,52 @@ class Policy(resource.Resource):
         return pb_dict
 
 
+class Webhook(resource.Resource):
+    resource_key = 'webhook'
+    resources_key = 'webhooks'
+    base_path = '/webhooks'
+    service = clustering_service.ClusteringService()
+
+    # Capabilities
+    allow_list = True
+    allow_retrieve = True
+    allow_create = True
+    allow_delete = True
+
+    # Properties
+    id = resource.prop('id')
+    user = resource.prop('user')
+    domain = resource.prop('domain')
+    project = resource.prop('project')
+    name = resource.prop('name')
+    obj_type = resource.prop('obj_type')
+    obj_id = resource.prop('obj_id')
+    action = resource.prop('action')
+    created_time = resource.prop('created_time')
+    deleted_time = resource.prop('deleted_time')
+    credential = resource.prop('credential', type=dict)
+    params = resource.prop('params', type=dict)
+    url = resource.prop('url')
+
+    def to_dict(self):
+        webhook_dict = {
+            'id': self.id,
+            'user': self.user,
+            'domain': self.domain,
+            'project': self.project,
+            'name': self.name,
+            'obj_type': self.obj_type,
+            'obj_id': self.obj_id,
+            'action': self.action,
+            'credential': self.credential,
+            'params': self.params,
+            'created_time': self.created_time,
+            'deleted_time': self.deleted_time,
+            'url': self.url,
+        }
+        return webhook_dict
+
+
 class Cluster(resource.Resource):
     resource_key = 'cluster'
     resources_key = 'clusters'
