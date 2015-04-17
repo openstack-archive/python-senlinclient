@@ -273,6 +273,109 @@ def do_policy_type_schema(sc, args):
         print(utils.format_output(schema))
 
 
+# WEBHOOKS
+
+
+@utils.arg('-d', '--show-deleted', default=False, action="store_true",
+           help=_('Include deleted webhooks if any.'))
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of webhooks returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return webhooks that appear after the given ID.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
+def do_webhook_list(sc, args=None):
+    '''List webhooks that meet the criteria.'''
+    def _short_id(obj):
+        return obj.id[:8] + ' ...'
+
+    fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time']
+    queries = {
+        'show_deleted': args.show_deleted,
+        'limit': args.limit,
+        'marker': args.marker,
+    }
+
+    webhooks = sc.list(models.Webhook, **queries)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'id': _short_id,
+        }
+    utils.print_list(webhooks, fields, formatters=formatters, sortby_index=1)
+
+
+def _show_webhook(sc, webhook_id=None, webhook=None):
+    if webhook is None:
+        try:
+            params = {'id': webhook_id}
+            webhook = sc.get(models.Webhook, params)
+        except exc.HTTPNotFound:
+            raise exc.CommandError(_('Webhook not found: %s') % webhook_id)
+
+    formatters = {}
+    utils.print_dict(webhook.to_dict(), formatters=formatters)
+
+
+@utils.arg('id', metavar='<WEBHOOK>',
+           help=_('Name of the webhook to be updated.'))
+def do_webhook_show(sc, args):
+    '''Show the webhook details.'''
+    _show_webhook(sc, webhook_id=args.id)
+
+
+@utils.arg('-t', '--obj-type', metavar='<OBJECT_TYPE>', required=True,
+           help=_('Object type name used for this webhook.'))
+@utils.arg('-i', '--obj-id', metavar='<OBJECT_ID>', required=True,
+           help=_('Object id used for this webhook.'))
+@utils.arg('-a', '--action', metavar='<ACTION>', required=True,
+           help=_('Name of action used for this webhook.'))
+@utils.arg('-c', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           required=True,
+           help=_('The credential used when triggering the webhook.'),
+           action='append')
+@utils.arg('-p', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('A dictionary of parameters that will be passed to object '
+                  'action when webhook is triggered.'),
+           action='append')
+@utils.arg('name', metavar='<NAME>',
+           help=_('Name of the webhook to create.'))
+def do_webhook_create(sc, args):
+    '''Create a webhook.'''
+    params = {
+        'name': args.name,
+        'obj_id': args.obj_id,
+        'obj_type': args.obj_type,
+        'action': args.action,
+        'credential': utils.format_parameters(args.credential),
+        'params': utils.format_parameters(args.params)
+    }
+
+    webhook = sc.create(models.Webhook, params, True)
+    _show_webhook(sc, webhook=webhook)
+
+
+@utils.arg('id', metavar='<WEBHOOK>', nargs='+',
+           help=_('Name or ID of webhook(s) to delete.'))
+def do_webhook_delete(sc, args):
+    '''Delete webhook(s).'''
+    failure_count = 0
+
+    for cid in args.id:
+        try:
+            query = {
+                'id': cid,
+            }
+            sc.delete(models.Webhook, query)
+        except exc.HTTPNotFound as ex:
+            failure_count += 1
+            print(ex)
+    if failure_count == len(args.id):
+        msg = _('Failed to delete any of the specified webhook(s).')
+        raise exc.CommandError(msg)
+    print('Webhook deleted: %s' % args.id)
+
+
 # POLICIES
 
 

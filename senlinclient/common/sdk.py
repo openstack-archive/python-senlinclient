@@ -104,6 +104,22 @@ class Resource(base.Resource):
             value = cls.existing(**data)
             yield value
 
+    def create(self, session, extra_attrs=False):
+        """Create a remote resource from this instance.
+
+        :param extra_attrs: If true, all attributions that
+        included in response will be collected and returned
+        to user after resource creation
+
+        """
+        resp = self.create_by_id(session, self._attrs, self.id, path_args=self)
+        self._attrs[self.id_attribute] = resp[self.id_attribute]
+        if extra_attrs:
+            for attr in resp:
+                self._attrs[attr] = resp[attr]
+        self._reset_dirty()
+        return self
+
 
 def create_connection(preferences, user_agent, **kwargs):
         try:
