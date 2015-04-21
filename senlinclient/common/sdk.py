@@ -13,10 +13,13 @@
 import argparse
 import os
 
+from six.moves.urllib import parse as url_parse
+
 from openstack import connection
 from openstack import exceptions
 from openstack import resource as base
 from openstack import user_preference
+from openstack import utils
 from senlinclient.common import exc
 
 # Alias here for consistency
@@ -118,6 +121,31 @@ class Resource(base.Resource):
             for attr in resp:
                 self._attrs[attr] = resp[attr]
         self._reset_dirty()
+
+        return self
+
+    @classmethod
+    def get_data_with_args(cls, session, resource_id, args=None):
+        if not cls.allow_retrieve:
+            raise exceptions.MethodNotSupported('list')
+
+        url = utils.urljoin(cls.base_path, resource_id)
+        if args:
+            args.pop('id')
+            url = '%s?%s' % (url, url_parse.urlencode(args))
+        resp = session.get(url, service=cls.service)
+        body = resp.body
+        if cls.resource_key:
+            body = body[cls.resource_key]
+
+        return body
+
+    def get_with_args(self, session, args=None):
+        body = self.get_data_with_args(session, self.id, args=args)
+
+        self._attrs.update(body)
+        self._loaded = True
+
         return self
 
 

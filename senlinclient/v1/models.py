@@ -517,6 +517,7 @@ class Node(resource.Resource):
     status_reason = resource.prop('status_reason')
     tags = resource.prop('tags', type=dict)
     data = resource.prop('data', type=dict)
+    details = resource.prop('details', type=dict)
 
     def action(self, session, body):
         url = utils.urljoin(self.base_path, self.id, 'action')
@@ -556,6 +557,7 @@ class Node(resource.Resource):
             'status_reason': self.status_reason,
             'tags': self.tags,
             'data': self.data,
+            'details': self.details,
         }
 
 

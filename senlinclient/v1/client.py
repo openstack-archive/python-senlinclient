@@ -71,6 +71,15 @@ class Client(object):
         except Exception as ex:
             client_exc.parse_exception(ex)
 
+    def get_with_args(self, cls, options=None):
+        if options is None:
+            options = {}
+        try:
+            obj = cls.new(**options)
+            return obj.get_with_args(self.session, options)
+        except Exception as ex:
+            client_exc.parse_exception(ex)
+
     def get(self, cls, options=None):
         if options is None:
             options = {}

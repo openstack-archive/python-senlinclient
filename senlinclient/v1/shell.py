@@ -177,6 +177,8 @@ def do_profile_show(sc, args):
                   'This can be specified multiple times, or once with tags '
                   'separated by a semicolon.'),
            action='append')
+@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>', required=True,
+           help=_('Profile type used for this profile.'))
 @utils.arg('id', metavar='<PROFILE_ID>',
            help=_('Name or ID of the profile to update.'))
 def do_profile_update(sc, args):
@@ -1011,11 +1013,14 @@ def do_node_list(sc, args):
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=6)
 
 
-def _show_node(sc, node_id):
+def _show_node(sc, node_id, show_details=False):
     '''Show detailed info about the specified node.'''
     try:
-        query = {'id': node_id}
-        node = sc.get(models.Node, query)
+        query = {
+            'id': node_id,
+            'show_details': show_details,
+        }
+        node = sc.get_with_args(models.Node, query)
     except exc.HTTPNotFound:
         msg = _('Node %s is not found') % node_id
         raise exc.CommandError(msg)
@@ -1024,8 +1029,12 @@ def _show_node(sc, node_id):
         'tags': utils.json_formatter,
         'data': utils.json_formatter,
     }
+    data = node.to_dict()
+    if show_details:
+        formatters['details'] = utils.nested_dict_formatter(
+            list(node['details'].keys()), ['property', 'value'])
 
-    utils.print_dict(node.to_dict(), formatters=formatters)
+    utils.print_dict(data, formatters=formatters)
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
@@ -1055,11 +1064,13 @@ def do_node_create(sc, args):
     _show_node(sc, node.id)
 
 
+@utils.arg('-D', '--details', default=False, action="store_true",
+           help=_('Include physical object details.'))
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of the node to show the details for.'))
 def do_node_show(sc, args):
     '''Show detailed info about the specified node.'''
-    _show_node(sc, args.id)
+    _show_node(sc, args.id, args.details)
 
 
 @utils.arg('id', metavar='<NODE>', nargs='+',
