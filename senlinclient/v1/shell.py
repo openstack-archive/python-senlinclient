@@ -91,7 +91,7 @@ def do_profile_type_schema(sc, args):
 def do_profile_list(sc, args=None):
     '''List profiles that meet the criteria.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     fields = ['id', 'name', 'type', 'permission', 'created_time']
     queries = {
@@ -289,7 +289,7 @@ def do_policy_type_schema(sc, args):
 def do_webhook_list(sc, args=None):
     '''List webhooks that meet the criteria.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time']
     queries = {
@@ -392,7 +392,7 @@ def do_webhook_delete(sc, args):
 def do_policy_list(sc, args=None):
     '''List policies that meet the criteria.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
     queries = {
@@ -534,7 +534,7 @@ def do_policy_delete(sc, args):
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     fields = ['id', 'name', 'status', 'created_time']
     queries = {
@@ -676,10 +676,10 @@ def do_cluster_show(sc, args):
 def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     def _short_physical_id(obj):
-        return obj.physical_id[:8] + ' ...'
+        return obj.physical_id[:8]
 
     query = {
         'cluster_id': args.id,
@@ -974,13 +974,13 @@ def do_cluster_policy_disable(sc, args):
 def do_node_list(sc, args):
     '''Show list of nodes.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     def _short_cluster_id(obj):
-        return obj.cluster_id[:8] + ' ...' if obj.cluster_id else ''
+        return obj.cluster_id[:8] if obj.cluster_id else ''
 
     def _short_physical_id(obj):
-        return obj.physical_id[:8] + ' ...' if obj.physical_id else ''
+        return obj.physical_id[:8] if obj.physical_id else ''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_time', 'updated_time']
@@ -1237,10 +1237,10 @@ def do_event_show(sc, args):
 def do_action_list(sc, args):
     '''List actions.'''
     def _short_id(obj):
-        return obj.id[:8] + ' ...'
+        return obj.id[:8]
 
     def _short_target(obj):
-        return obj.target[:8] + ' ...'
+        return obj.target[:8]
 
     queries = {
         'show_deleted': args.show_deleted,
