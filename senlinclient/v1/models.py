@@ -264,7 +264,7 @@ class Cluster(resource.Resource):
     created_time = resource.prop('created_time')
     updated_time = resource.prop('updated_time')
     deleted_time = resource.prop('deleted_time')
-    size = resource.prop('size', type=int)
+    desired_capacity = resource.prop('desired_capacity', type=int)
     timeout = resource.prop('timeout')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
@@ -421,7 +421,7 @@ class Cluster(resource.Resource):
             'created_time': self.created_time,
             'updated_time': self.updated_time,
             'deleted_time': self.deleted_time,
-            'size': self.size,
+            'desired_capacity': self.desired_capacity,
             'timeout': self.timeout,
             'status': self.status,
             'status_reason': self.status_reason,
