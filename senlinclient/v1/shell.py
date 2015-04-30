@@ -572,6 +572,10 @@ def _show_cluster(sc, cluster_id):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
            help=_('Profile Id used for this cluster.'))
+@utils.arg('-i', '--min-size', metavar='<MIN-SIZE>', default=0,
+           help=_('Min size of the cluster. Default to 0.'))
+@utils.arg('-a', '--max-size', metavar='<MAX-SIZE>', default=0,
+           help=_('Max size of the cluster. Default to 0, means unlimtated.'))
 @utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>', default=0,
            help=_('Desired capacity of the cluster. Default to 0.'))
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
@@ -590,6 +594,8 @@ def do_cluster_create(sc, args):
     params = {
         'name': args.name,
         'profile_id': args.profile,
+        'min_size': args.min_size,
+        'max_size': args.max_size,
         'desired_capacity': args.desired_capacity,
         'parent': args.parent,
         'tags': utils.format_parameters(args.tags),
@@ -622,6 +628,14 @@ def do_cluster_delete(sc, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID of new profile to use.'))
+@utils.arg('-i', '--min-size', metavar='<MIN-SIZE>', default=None,
+           help=_('New min size of the cluster. Default to None.'))
+@utils.arg('-a', '--max-size', metavar='<MAX-SIZE>', default=None,
+           help=_('New max size of the cluster. Default to 0, means '
+                  'unlimtated.'))
+@utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>',
+           default=None,
+           help=_('New Desired capacity of the cluster. Default to None.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in minutes) value for the cluster.'))
 @utils.arg('-r', '--parent', metavar='<PARENT>',
@@ -642,6 +656,9 @@ def do_cluster_update(sc, args):
         'id': cluster.id,
         'name': args.name,
         'profile_id': args.profile,
+        'min_size': args.min_size,
+        'max_size': args.max_size,
+        'desired_capacity': args.desired_capacity,
         'parent': args.parent,
         'tags': utils.format_parameters(args.tags),
         'timeout': args.timeout,
