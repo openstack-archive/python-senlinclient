@@ -1,0 +1,178 @@
+CHANGES
+=======
+
+* Sync package version requirements
+* Add min_size and max_size properties to Cluster
+* Replace cluster size with new property desired_capacity
+* Remove '...' from short-id style listing
+* Add --details argument to node-show
+* Add webhook support
+* Add options for tennat_id/tenant_name
+* Fix initial gate errors
+* add context support for profile
+* Make update always do a node retrieval first
+* Added support to OS_TRUST_ID
+* Added support to list nodes with global tenant
+* Added support to cluster-policy-show operation
+* Make ; parsing optional
+* Revised cluster-policy-list operation
+* Fixed cluster_update operation error
+* Ignore return value from update()
+* Revised cluster-update operation support
+* Added support to policy-update operation
+* Added support to profile-update operation
+* Allow profile to be updated
+* Fixed profile creation errors
+* Added support to project field in node objects
+* Revised event list/show support
+* Fixed PEP8 error
+* Improved Event object model
+* Removed support to profile/policy type template
+* Fix user name argument parsing
+* Bump six version to 1.9.0
+* Always use block for YAML dumping
+* Added policy schema show support
+* Initial support to profile-type-schema
+* Make scale-out argument count optional
+* Added format_output method
+* Make node-list ordered by created_time by default
+* Added support to other useful fields when listing policies
+* Reworkd policy operations
+* Revised cluster model and clusterpolicy model
+* Cluster policy listing support
+* Initial support to policy operations
+* Initial support to node-join/leave operations
+* Added required constraints to some operations
+* Added del_nodes support
+* Added one TODO item
+* Make profile a required argument
+* Support to cluster-node-add operation
+* Added formatter for ID fields
+* Make node_create/node_show work with new API design
+* Revised cluster-create and cluster-show commands
+* Make at least profile-create API work
+* Support profile resource_key when do profile-show
+* Tolerate empty dict in print_dict
+* Define UNVERSIONED=None in clustering_service.py
+* Added short ID support for node-list
+* Enable client module to handle any exception
+* Remove unused imports
+* Make list_short capable of handling other exceptions
+* Handle requests exception
+* Make deleted_time show conditional
+* assign alias to client module
+* Remove init_time from list show
+* Added cluster deletion support
+* Fixed one PEP8 error
+* Fixed cluster list column name error
+* Make error message more clear when username is assigned
+* Fixed object listing logic
+* Simplified exception translation
+* Basic support for cluster show
+* Added dict dump method for clusters
+* Added formatter for list in the context of a dict
+* Added feature to show IDs in short-form
+* Move senlinrc into tools subdir
+* Initial support to cluster create
+* Added trust-based authentication as TODO
+* New item about setting up senlin connection
+* Removed some items that were completed
+* Fixed flake8 errors
+* Major revision to shell main module
+* Revised listing functions to take advantage of exception handling
+* Implement exception handling for client module
+* Override print_list function for exception catching
+* Added function to create connection via SDK
+* Major revision to client side exception handling
+* Added action-list and action-show support
+* Added node show support
+* Added node list command and fixed related errors
+* Fixed list() method errors
+* Added customization of create() method
+* Added exception support (WIP)
+* Bump oslo.i18n version requirement
+* Added support to bash completion
+* Add support to profile show
+* Add conversion to dict for profile
+* Added capabiity to print nested table
+* Revised profile list implementation
+* Introduce HTTP exception into common
+* Fixed typo in dictionary key
+* Removed non-existant fields from Profile
+* Fixed common client to return object from create
+* Fixed help message for API VERSION option
+* Make v3 the default backend for authentication
+* Added profile_create and profile_list operation
+* Remove dict translation for list operation
+* Remove dict translation for create action
+* Clarified help message
+* Added version information
+* Added support to both v2.0 and v3 authentication
+* Revised requirements file
+* Added utility functions to process spec files
+* Added FileFormatError exception
+* Fixed pbr version string error
+* Remove old client module
+* Added keystone V3 support
+* Fix oslo.i18n namespace error
+* Add heatclient to requirements.txt
+* Revised error message for project_id validation
+* Added build info alike dictionary retrieval support
+* Senlin RC file initial version
+* Initial version of V1 client
+* New version of V1 shell
+* Fix error in service name imported
+* Top priority task: create os.senlin.stack profile
+* Reimplemented client shell
+* Added Versions to the client-side models
+* Initial version of command line argument parser
+* Added new item about checking identity arguments
+* Fix oslo namespace errors
+* Revised sdk interface
+* Revised common client to use session
+* Added TODO item about support to HTTPS
+* Revised TODO list
+* Remove http.py since we don't use this client
+* Modify i18n import
+* Clustering service module for openstacksdk
+* Fix import errors in cliutils
+* Remove deprecating apiclient module
+* Rename old client.py to old_client.py
+* New object models for interacting with server
+* Remove old-style object models
+* Added sort_keys and sort_dirs support
+* Fixed error in original reference
+* New clusters file, replacing old ones
+* Remove clusters file, to be replaced
+* Placeholder for openstacksdk interface
+* Add openstacksdk to the dependency list
+* Revised TODO list
+* Bump oslo.utils to 1.2.0
+* Added todos for apiclient migration
+* Removed httpretty as suggested in other projects
+* New item for unit tests
+* Remove node_join and node_leave operations
+* Replace enable/disable with policy_update
+* Remove list_nodes method from cluster
+* Removed enable/disable cluster policy operations
+* Added supported_formats
+* Move exc module to common subdir
+* Added more operations to clusters
+* Added several TODO items
+* More operations added
+* Remove profile method, not needed now
+* Move exception file
+* Fix typo error
+* Initial version
+* Initial version
+* Initial version
+* Initial version
+* Initial version
+* Fixed left error
+* Initial version
+* Initial version
+* Initial version
+* Initial version
+* Initial version
+* Initial version
+* Initial commit
