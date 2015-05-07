@@ -100,7 +100,7 @@ class Profile(resource.Resource):
     type = resource.prop('type')
     spec = resource.prop('spec', type=dict)
     permission = resource.prop('permission')
-    tags = resource.prop('tags', type=dict)
+    metadata = resource.prop('metadata', type=dict)
     created_time = resource.prop('created_time')
     deleted_time = resource.prop('deleted_time')
 
@@ -111,7 +111,7 @@ class Profile(resource.Resource):
             'type': self.type,
             'permission': self.permission,
             'spec': self.spec,
-            'tags': self.tags,
+            'metadata': self.metadata,
             'created_time': self.created_time,
             'deleted_time': self.deleted_time,
         }
@@ -270,7 +270,7 @@ class Cluster(resource.Resource):
     timeout = resource.prop('timeout')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
-    tags = resource.prop('tags', type=dict)
+    metadata = resource.prop('metadata', type=dict)
     data = resource.prop('data', type=dict)
 
     nodes = resource.prop('nodes')
@@ -429,7 +429,7 @@ class Cluster(resource.Resource):
             'timeout': self.timeout,
             'status': self.status,
             'status_reason': self.status_reason,
-            'tags': self.tags or {},
+            'metadata': self.metadata or {},
             'data': self.data or {},
             'nodes': self.nodes or [],
             'profile_name': self.profile_name,
@@ -519,7 +519,7 @@ class Node(resource.Resource):
     deleted_time = resource.prop('deleted_time')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
-    tags = resource.prop('tags', type=dict)
+    metadata = resource.prop('metadata', type=dict)
     data = resource.prop('data', type=dict)
     details = resource.prop('details', type=dict)
 
@@ -559,7 +559,7 @@ class Node(resource.Resource):
             'deleted_time': self.deleted_time,
             'status': self.status,
             'status_reason': self.status_reason,
-            'tags': self.tags,
+            'metadata': self.metadata,
             'data': self.data,
             'details': self.details,
         }

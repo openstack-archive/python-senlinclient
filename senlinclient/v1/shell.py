@@ -117,7 +117,7 @@ def _show_profile(sc, profile_id):
         raise exc.CommandError(_('Profile not found: %s') % profile_id)
 
     formatters = {
-        'tags': utils.json_formatter,
+        'metadata': utils.json_formatter,
     }
 
     if profile.type == 'os.heat.stack':
@@ -135,10 +135,10 @@ def _show_profile(sc, profile_id):
            help=_('The spec file used to create the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the profile. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the profile. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<PROFILE_NAME>',
            help=_('Name of the profile to create.'))
@@ -152,7 +152,7 @@ def do_profile_create(sc, args):
         'type': args.profile_type,
         'spec': spec,
         'permission': args.permission,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
     }
 
     profile = sc.create(models.Profile, params)
@@ -172,10 +172,10 @@ def do_profile_show(sc, args):
            help=_('The new spec file for the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the profile. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the profile. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('-t', '--profile-type', metavar='<TYPE NAME>', required=True,
            help=_('Profile type used for this profile.'))
@@ -192,7 +192,7 @@ def do_profile_update(sc, args):
         'name': args.name,
         'spec': spec,
         'permission': args.permission,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
     }
 
     # Find the profile first, we need its id
@@ -419,7 +419,7 @@ def _show_policy(sc, policy_id=None, policy=None):
             raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
     formatters = {
-        'tags': utils.json_formatter,
+        'metadata': utils.json_formatter,
         'spec': utils.json_formatter,
     }
     utils.print_dict(policy.to_dict(), formatters=formatters)
@@ -564,7 +564,7 @@ def _show_cluster(sc, cluster_id):
         raise exc.CommandError(_('Cluster %s is not found') % cluster_id)
 
     formatters = {
-        'tags': utils.json_formatter,
+        'metadata': utils.json_formatter,
         'nodes': utils.list_formatter,
     }
     utils.print_dict(cluster.to_dict(), formatters=formatters)
@@ -582,10 +582,10 @@ def _show_cluster(sc, cluster_id):
            help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in minutes.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the cluster. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the cluster. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<CLUSTER_NAME>',
            help=_('Name of the cluster to create.'))
@@ -598,7 +598,7 @@ def do_cluster_create(sc, args):
         'max_size': args.max_size,
         'desired_capacity': args.desired_capacity,
         'parent': args.parent,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout
     }
 
@@ -640,10 +640,10 @@ def do_cluster_delete(sc, args):
            help=_('New timeout (in minutes) value for the cluster.'))
 @utils.arg('-r', '--parent', metavar='<PARENT>',
            help=_('ID of parent cluster for the cluster.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the cluster. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the cluster. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name for the cluster to update.'))
@@ -660,7 +660,7 @@ def do_cluster_update(sc, args):
         'max_size': args.max_size,
         'desired_capacity': args.desired_capacity,
         'parent': args.parent,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout,
     }
 
@@ -1043,7 +1043,7 @@ def _show_node(sc, node_id, show_details=False):
         raise exc.CommandError(msg)
 
     formatters = {
-        'tags': utils.json_formatter,
+        'metadata': utils.json_formatter,
         'data': utils.json_formatter,
     }
     data = node.to_dict()
@@ -1060,10 +1060,10 @@ def _show_node(sc, node_id, show_details=False):
            help=_('Cluster Id for this node.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the cluster. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the cluster. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('name', metavar='<NODE_NAME>',
            help=_('Name of the node to create.'))
@@ -1074,7 +1074,7 @@ def do_node_create(sc, args):
         'cluster_id': args.cluster,
         'profile_id': args.profile,
         'role': args.role,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
     }
 
     node = sc.create(models.Node, params)
@@ -1115,10 +1115,10 @@ def do_node_delete(sc, args):
            help=_('ID of new profile to use.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-g', '--tags', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Tag values to be attached to the node. '
-                  'This can be specified multiple times, or once with tags '
-                  'separated by a semicolon.'),
+@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Metadata values to be attached to the node. '
+                  'Metadata can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
            action='append')
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to update.'))
@@ -1135,7 +1135,7 @@ def do_node_update(sc, args):
         'name': args.name,
         'role': args.role,
         'profile': args.profile,
-        'tags': utils.format_parameters(args.tags),
+        'metadata': utils.format_parameters(args.metadata),
     }
 
     sc.update(models.Node, params)
@@ -1298,7 +1298,7 @@ def do_action_show(sc, args):
     formatters = {
         'inputs': utils.json_formatter,
         'outputs': utils.json_formatter,
-        'tags': utils.json_formatter,
+        'metadata': utils.json_formatter,
         'data': utils.json_formatter,
     }
 
