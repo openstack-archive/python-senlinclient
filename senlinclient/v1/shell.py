@@ -320,7 +320,7 @@ def _show_webhook(sc, webhook_id=None, webhook=None):
 
 
 @utils.arg('id', metavar='<WEBHOOK>',
-           help=_('Name of the webhook to be updated.'))
+           help=_('Name or ID of the webhook to show.'))
 def do_webhook_show(sc, args):
     '''Show the webhook details.'''
     _show_webhook(sc, webhook_id=args.id)
