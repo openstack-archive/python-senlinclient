@@ -12,10 +12,10 @@
 
 import inspect
 import json
-
 from openstack.identity import identity_service
 from openstack.network.v2 import thin as thins
 from openstack import transport as trans
+
 from senlinclient.common import exc as client_exc
 
 

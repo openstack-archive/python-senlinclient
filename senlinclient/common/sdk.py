@@ -11,15 +11,15 @@
 # under the License.
 
 import argparse
-import os
-
-from six.moves.urllib import parse as url_parse
-
 from openstack import connection
 from openstack import exceptions
 from openstack import resource as base
 from openstack import user_preference
 from openstack import utils
+import os
+
+from six.moves.urllib import parse as url_parse
+
 from senlinclient.common import exc
 
 # Alias here for consistency

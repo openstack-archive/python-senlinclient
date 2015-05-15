@@ -13,14 +13,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from heatclient.common import template_utils
+
+from oslo_serialization import jsonutils
+from oslo_utils import importutils
 import prettytable
 import six
 import yaml
 
-from oslo_serialization import jsonutils
-from oslo_utils import importutils
-
-from heatclient.common import template_utils
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.openstack.common import cliutils

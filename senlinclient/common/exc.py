@@ -10,11 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from openstack import exceptions as sdkexc
+
 from oslo_serialization import jsonutils
 from requests import exceptions as reqexc
+import six
 
 from senlinclient.common.i18n import _
 
