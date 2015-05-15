@@ -339,13 +339,29 @@ class Cluster(resource.Resource):
         }
         return self.action(session, body)
 
-    def scale_out(self, session, count=None):
-        body = {'scale_out': {}}
-        if count is not None:
-            body['scale_out'] = {'count': count}
+    def resize(self, session, adjustment_type=None, number=None,
+               min_size=None, max_size=None, min_step=None, strict=False):
+        body = {
+            'resize': {
+                'adjustment_type': adjustment_type,
+                'number': number,
+                'min_size': min_size,
+                'max_size': max_size,
+                'min_step': min_step,
+                'strict': strict,
+            }
+        }
         return self.action(session, body)
 
-    def scale_in(self, session, count):
+    def scale_out(self, session, count=None):
+        body = {
+            'scale_out': {
+                'count': count,
+            }
+        }
+        return self.action(session, body)
+
+    def scale_in(self, session, count=None):
         body = {
             'scale_in': {
                 'count': count,
