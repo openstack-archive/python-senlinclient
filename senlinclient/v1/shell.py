@@ -572,9 +572,9 @@ def _show_cluster(sc, cluster_id):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
            help=_('Profile Id used for this cluster.'))
-@utils.arg('-i', '--min-size', metavar='<MIN-SIZE>', default=0,
+@utils.arg('-n', '--min-size', metavar='<MIN-SIZE>', default=0,
            help=_('Min size of the cluster. Default to 0.'))
-@utils.arg('-a', '--max-size', metavar='<MAX-SIZE>', default=0,
+@utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=0,
            help=_('Max size of the cluster. Default to 0, means unlimtated.'))
 @utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>', default=0,
            help=_('Desired capacity of the cluster. Default to 0.'))
@@ -628,14 +628,6 @@ def do_cluster_delete(sc, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID of new profile to use.'))
-@utils.arg('-i', '--min-size', metavar='<MIN-SIZE>', default=None,
-           help=_('New min size of the cluster. Default to None.'))
-@utils.arg('-a', '--max-size', metavar='<MAX-SIZE>', default=None,
-           help=_('New max size of the cluster. Default to 0, means '
-                  'unlimtated.'))
-@utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>',
-           default=None,
-           help=_('New Desired capacity of the cluster. Default to None.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in minutes) value for the cluster.'))
 @utils.arg('-r', '--parent', metavar='<PARENT>',
@@ -656,9 +648,6 @@ def do_cluster_update(sc, args):
         'id': cluster.id,
         'name': args.name,
         'profile_id': args.profile,
-        'min_size': args.min_size,
-        'max_size': args.max_size,
-        'desired_capacity': args.desired_capacity,
         'parent': args.parent,
         'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout,
@@ -758,6 +747,103 @@ def do_cluster_node_del(sc, args):
             'nodes': node_ids,
         }
     }
+    resp = sc.action(models.Cluster, params)
+    print('Request accepted by action %s' % resp['action'])
+
+
+@utils.arg('-c', '--capacity', metavar='<CAPACITY>', type=int,
+           help=_('The desired number of nodes of the cluster.'))
+@utils.arg('-a', '--adjustment', metavar='<ADJUSTMENT>', type=int,
+           help=_('A positive integer meaning the number of nodes to add, '
+                  'or a negative integer indicating the number of nodes to '
+                  'remove.'))
+@utils.arg('-p', '--percentage', metavar='<PERCENTAGE>', type=float,
+           help=_('A value that is interpreted as the percentage of size '
+                  'adjustment. This value can be positive or negative.'))
+@utils.arg('-t', '--min-step', metavar='<MIN_STEP>', type=int,
+           help=_('An integer specifying the number of nodes for adjustment '
+                  'when <PERCENTAGE> is specified.'))
+@utils.arg('-s', '--strict',  action='store_true', default=False,
+           help=_('A boolean specifying whether the resize should be '
+                  'performed on a best-effort basis when the new capacity '
+                  'may go beyond size constraints.'))
+@utils.arg('-n', '--min-size', metavar='MIN', type=int,
+           help=_('New lower bound of cluster size.'))
+@utils.arg('-m', '--max-size', metavar='MAX', type=int,
+           help=_('New upper bound of cluster size. A value of -1 indicates '
+                  'no upper limit on cluster size.'))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_resize(sc, args):
+    '''Resize a cluster.'''
+    # validate parameters
+    # NOTE: this will be much simpler if cliutils supports exclusive groups
+
+    action_args = {}
+
+    capacity = args.capacity
+    adjustment = args.adjustment
+    percentage = args.percentage
+    min_size = args.min_size
+    max_size = args.max_size
+    min_step = args.min_step
+
+    if sum(v is not None for v in (capacity, adjustment, percentage)) > 1:
+        raise exc.CommandError(_("Only one of 'capacity', 'adjustment' and "
+                                 "'percentage' can be specified."))
+
+    if capacity is not None:
+        if capacity < 0:
+            raise exc.CommandError(_('Cluster capacity must be larger than '
+                                     ' or equal to zero.'))
+        action_args['adjustment_type'] = 'EXACT_CAPACITY'
+        action_args['number'] = capacity
+
+    if adjustment is not None:
+        if adjustment == 0:
+            raise exc.CommandError(_('Adjustment cannot be zero.'))
+        action_args['adjustment_type'] = 'CHANGE_IN_CAPACITY'
+        action_args['number'] = adjustment
+
+    if percentage is not None:
+        if (percentage == 0 or percentage == 0.0):
+            raise exc.CommandError(_('Percentage cannot be zero.'))
+        action_args['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
+        action_args['number'] = percentage
+
+    if min_step is not None:
+        if percentage is None:
+            raise exc.CommandError(_('Min step is only used with percentage.'))
+
+    if min_size is not None:
+        if min_size < 0:
+            raise exc.CommandError(_('Min size cannot be less than zero.'))
+        if max_size is not None and max_size >= 0 and min_size > max_size:
+            raise exc.CommandError(_('Min size cannot be larger than '
+                                     'max size.'))
+        if capacity is not None and min_size > capacity:
+            raise exc.CommandError(_('Min size cannot be larger than the '
+                                     'specified capacity'))
+
+    if max_size is not None:
+        if capacity is not None and max_size > 0 and max_size < capacity:
+            raise exc.CommandError(_('Max size cannot be less than the '
+                                     'specified capacity.'))
+        # do a normalization
+        if max_size < 0:
+            max_size = -1
+
+    action_args['min_size'] = min_size
+    action_args['max_size'] = max_size
+    action_args['min_step'] = min_step
+    action_args['strict'] = args.strict
+
+    params = {
+        'id': args.id,
+        'action': 'resize',
+        'action_args': action_args,
+    }
+
     resp = sc.action(models.Cluster, params)
     print('Request accepted by action %s' % resp['action'])
 
