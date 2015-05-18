@@ -18,11 +18,11 @@ from __future__ import print_function
 
 import argparse
 import logging
-import six
 import sys
 
 from oslo_utils import encodeutils
 from oslo_utils import importutils
+import six
 
 import senlinclient
 from senlinclient import cliargs
