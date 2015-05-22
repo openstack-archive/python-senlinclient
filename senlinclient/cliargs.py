@@ -143,30 +143,29 @@ def add_global_identity_args(parser):
     parser.add_argument(
         '--os-api-name', dest='user_preferences',
         metavar='<service>=<name>',
-        action=sdk.UserPreferenceAction,
-        default=sdk.UserPreferenceAction.env('OS_API_NAME'),
+        action=sdk.ProfileAction,
+        default=sdk.ProfileAction.env('OS_API_NAME'),
         help=_('Desired API names, defaults to env[OS_API_NAME]'))
 
     parser.add_argument(
         '--os-api-region', dest='user_preferences',
         metavar='<service>=<region>',
-        action=sdk.UserPreferenceAction,
-        default=sdk.UserPreferenceAction.env('OS_API_REGION',
-                                             'OS_REGION_NAME'),
+        action=sdk.ProfileAction,
+        default=sdk.ProfileAction.env('OS_API_REGION', 'OS_REGION_NAME'),
         help=_('Desired API region, defaults to env[OS_API_REGION]'))
 
     parser.add_argument(
         '--os-api-version', dest='user_preferences',
         metavar='<service>=<version>',
-        action=sdk.UserPreferenceAction,
-        default=sdk.UserPreferenceAction.env('OS_API_VERSION'),
+        action=sdk.ProfileAction,
+        default=sdk.ProfileAction.env('OS_API_VERSION'),
         help=_('Desired API versions, defaults to env[OS_API_VERSION]'))
 
     parser.add_argument(
         '--os-api-visibility', dest='user_preferences',
         metavar='<service>=<visibility>',
-        action=sdk.UserPreferenceAction,
-        default=sdk.UserPreferenceAction.env('OS_API_VISIBILITY'),
+        action=sdk.ProfileAction,
+        default=sdk.ProfileAction.env('OS_API_VISIBILITY'),
         help=_('Desired API visibility, defaults to env[OS_API_VISIBILITY]'))
 
 
