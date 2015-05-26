@@ -11,7 +11,6 @@
 # under the License.
 
 from openstack import utils
-
 from senlinclient.common import sdk as resource
 from senlinclient.openstack.clustering import clustering_service
 
@@ -295,46 +294,6 @@ class Cluster(resource.Resource):
         body = {
             'del_nodes': {
                 'nodes': nodes,
-            }
-        }
-        return self.action(session, body)
-
-    def attach_policy(self, session, policy_id, priority, level, enabled,
-                      cooldown):
-        body = {
-            'attach_policy': {
-                'policy_id': policy_id,
-                'priority': priority,
-                'level': level,
-                'enabled': enabled,
-                'cooldown': cooldown,
-            }
-        }
-        return self.action(session, body)
-
-    def detach_policy(self, session, policy_id):
-        body = {
-            'detach_policy': {
-                'policy_id': policy_id,
-            }
-        }
-        return self.action(session, body)
-
-    def enable_policy(self, session, policy_id, priority, level, cooldown):
-        body = {
-            'attach_policy': {
-                'policy_id': policy_id,
-                'priority': priority,
-                'level': level,
-                'cooldown': cooldown,
-            }
-        }
-        return self.action(session, body)
-
-    def disable_policy(self, session, policy_id):
-        body = {
-            'disable_policy': {
-                'policy_id': policy_id,
             }
         }
         return self.action(session, body)
