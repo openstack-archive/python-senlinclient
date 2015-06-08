@@ -326,28 +326,49 @@ def do_webhook_show(sc, args):
     _show_webhook(sc, webhook_id=args.id)
 
 
-@utils.arg('-t', '--obj-type', metavar='<OBJECT_TYPE>', required=True,
-           help=_('Object type name used for this webhook.'))
-@utils.arg('-i', '--obj-id', metavar='<OBJECT_ID>', required=True,
-           help=_('Object id used for this webhook.'))
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+           help=_('Targeted cluster for this webhook.'))
+@utils.arg('-n', '--node', metavar='<NODE>',
+           help=_('Targeted node for this webhook.'))
+@utils.arg('-p', '--policy', metavar='<POLICY>',
+           help=_('Targeted policy for this webhook.'))
 @utils.arg('-a', '--action', metavar='<ACTION>', required=True,
-           help=_('Name of action used for this webhook.'))
-@utils.arg('-c', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Name of action to be triggered for this webhook.'))
+@utils.arg('-C', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            required=True,
-           help=_('The credential used when triggering the webhook.'),
+           help=_('The credential to be used when the webhook is triggered.'),
            action='append')
-@utils.arg('-p', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('A dictionary of parameters that will be passed to object '
-                  'action when webhook is triggered.'),
+@utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('A dictionary of parameters that will be passed to target '
+                  'action when the webhook is triggered.'),
            action='append')
 @utils.arg('name', metavar='<NAME>',
            help=_('Name of the webhook to create.'))
 def do_webhook_create(sc, args):
     '''Create a webhook.'''
+
+    c = sum(x is not None for x in [args.cluster, args.node, args.policy])
+    if c > 1:
+        msg = _("Only one of 'cluster', 'node' or 'policy' can be specified.")
+        raise exc.CommandError(msg)
+    elif c == 0:
+        msg = _("One of 'cluster', 'node' or 'policy' must be specified.")
+        raise exc.CommandError(msg)
+
+    if args.cluster:
+        obj_type = 'cluster'
+        obj_id = args.cluster
+    elif args.node:
+        obj_type = 'node'
+        obj_id = args.node
+    else:
+        obj_type = 'policy'
+        obj_id = args.policy
+
     params = {
         'name': args.name,
-        'obj_id': args.obj_id,
-        'obj_type': args.obj_type,
+        'obj_id': obj_id,
+        'obj_type': obj_type,
         'action': args.action,
         'credential': utils.format_parameters(args.credential),
         'params': utils.format_parameters(args.params)
