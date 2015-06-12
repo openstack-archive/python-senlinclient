@@ -595,8 +595,8 @@ def _show_cluster(sc, cluster_id):
            help=_('Profile Id used for this cluster.'))
 @utils.arg('-n', '--min-size', metavar='<MIN-SIZE>', default=0,
            help=_('Min size of the cluster. Default to 0.'))
-@utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=0,
-           help=_('Max size of the cluster. Default to 0, means unlimtated.'))
+@utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=-1,
+           help=_('Max size of the cluster. Default to -1, means unlimtated.'))
 @utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>', default=0,
            help=_('Desired capacity of the cluster. Default to 0.'))
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
