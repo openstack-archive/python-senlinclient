@@ -149,7 +149,11 @@ def get_spec_content(filename):
 def process_stack_spec(spec):
     # Heat stack is a headache, because it demands for client side file
     # content processing
-    tmplfile = spec.get('template', None)
+    try:
+        tmplfile = spec.get('template', None)
+    except AttributeError as ex:
+        raise exc.FileFormatError(_('The specified file is not a valid '
+                                    'YAML file: %s') % six.text_type(ex))
     if not tmplfile:
         raise exc.FileFormatError(_('No template found in the given '
                                     'spec file'))
