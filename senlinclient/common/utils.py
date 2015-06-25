@@ -166,7 +166,7 @@ def process_stack_spec(spec):
 
     new_spec = {
         # TODO(Qiming): add context support
-        'disable_rollback': spec.get('disable_rollback', False),
+        'disable_rollback': spec.get('disable_rollback', True),
         'context':  spec.get('context', {}),
         'parameters': spec.get('parameters', {}),
         'timeout': spec.get('timeout', 60),
