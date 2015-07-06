@@ -42,20 +42,6 @@ def do_profile_type_list(sc, args):
 
 
 @utils.arg('profile_type', metavar='<PROFILE_TYPE>',
-           help=_('Profile type to get the details for.'))
-def do_profile_type_show(sc, args):
-    '''Show the profile type.'''
-    try:
-        params = {'profile_type': args.profile_type}
-        profile_type = sc.get(models.ProfileTypeSchema, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(
-            _('Profile Type not found: %s') % args.profile_type)
-    else:
-        print(jsonutils.dumps(profile_type, indent=2))
-
-
-@utils.arg('profile_type', metavar='<PROFILE_TYPE>',
            help=_('Profile type to generate a template for.'))
 @utils.arg('-F', '--format', metavar='<FORMAT>',
            help=_("The template output format, one of: %s.")
