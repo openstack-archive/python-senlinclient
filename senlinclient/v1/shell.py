@@ -93,7 +93,7 @@ def do_profile_list(sc, args=None):
     def _short_id(obj):
         return obj.id[:8]
 
-    fields = ['id', 'name', 'type', 'permission', 'created_time']
+    fields = ['id', 'name', 'type', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
         'limit': args.limit,
