@@ -121,7 +121,7 @@ def _show_profile(sc, profile_id):
            help=_('The spec file used to create the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -158,7 +158,7 @@ def do_profile_show(sc, args):
            help=_('The new spec file for the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -589,7 +589,7 @@ def _show_cluster(sc, cluster_id):
            help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in minutes.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -639,7 +639,7 @@ def do_cluster_delete(sc, args):
            help=_('New timeout (in minutes) value for the cluster.'))
 @utils.arg('-r', '--parent', metavar='<PARENT>',
            help=_('ID of parent cluster for the cluster.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -1153,7 +1153,7 @@ def _show_node(sc, node_id, show_details=False):
            help=_('Cluster Id for this node.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -1208,7 +1208,7 @@ def do_node_delete(sc, args):
            help=_('ID of new profile to use.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-d', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the node. '
                   'Metadata can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
