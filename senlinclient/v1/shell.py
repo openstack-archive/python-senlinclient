@@ -543,16 +543,31 @@ def do_cluster_list(sc, args=None):
     def _short_id(obj):
         return obj.id[:8]
 
-    fields = ['id', 'name', 'status', 'created_time']
+    fields = ['id', 'name', 'status', 'created_time', 'updated_time']
+    sort_keys = ['name', 'status', 'created_time', 'updated_time']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
         'filters': utils.format_parameters(args.filters),
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
         'show_deleted': args.show_deleted,
         'show_nested': args.show_nested
     }
     if args.show_nested:
         fields.append('parent')
+
+    # we only validate the sort keys
+    # - if all keys are valid, we won't enforce sorting in the resulting list
+    # - if any keys are invalid, we abort the command execution;
+    # - if no sort key is specified, we use created_time column for sorting
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+        sortby_index = None
+    else:
+        sortby_index = 3
 
     clusters = sc.list(models.Cluster, **queries)
     formatters = {}
@@ -560,7 +575,8 @@ def do_cluster_list(sc, args=None):
         formatters = {
             'id': _short_id,
         }
-    utils.print_list(clusters, fields, formatters=formatters, sortby_index=3)
+    utils.print_list(clusters, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 def _show_cluster(sc, cluster_id):
