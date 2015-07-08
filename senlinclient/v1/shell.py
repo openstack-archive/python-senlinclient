@@ -925,17 +925,28 @@ def do_cluster_policy_list(sc, args):
     query = {'id': args.id}
     cluster = sc.get(models.Cluster, query)
 
+    fields = ['policy_id', 'policy', 'type', 'priority', 'level',
+              'cooldown', 'enabled']
+    sort_keys = ['priority', 'level', 'cooldown', 'enabled']
+
     queries = {
         'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
     }
+
+    sortby_index = None
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+    else:
+        sortby_index = 3
+
     policies = sc.list(models.ClusterPolicy,
                        path_args={'cluster_id': cluster.id},
                        **queries)
-    fields = ['policy_id', 'policy', 'type', 'priority', 'level',
-              'cooldown', 'enabled']
-    utils.print_list(policies, fields, sortby_index=3)
+    utils.print_list(policies, fields, sortby_index=sortby_index)
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
@@ -1110,6 +1121,8 @@ def do_node_list(sc, args):
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_time', 'updated_time']
+    sort_keys = ['index', 'name', 'created_time', 'updated_time',
+                 'deleted_time', 'status']
 
     queries = {
         'show_deleted': args.show_deleted,
@@ -1125,6 +1138,14 @@ def do_node_list(sc, args):
     if args.show_deleted:
         fields.append('deleted_time')
 
+    sortby_index = None
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+    else:
+        sortby_index = 6
+
     nodes = sc.list(models.Node, **queries)
 
     if not args.full_id:
@@ -1136,7 +1157,8 @@ def do_node_list(sc, args):
     else:
         formatters = {}
 
-    utils.print_list(nodes, fields, formatters=formatters, sortby_index=6)
+    utils.print_list(nodes, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 def _show_node(sc, node_id, show_details=False):
@@ -1307,6 +1329,10 @@ def do_node_leave(sc, args):
                   'Default to False.'))
 def do_event_list(sc, args):
     '''List events.'''
+    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
+              'status_reason']
+    sort_keys = ['timestamp', 'obj_type', 'obj_name', 'user', 'action']
+
     queries = {
         'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
@@ -1317,14 +1343,16 @@ def do_event_list(sc, args):
         'show_deleted': args.show_deleted,
     }
 
-    try:
-        events = sc.list(models.Event, **queries)
-    except exc.HTTPNotFound as ex:
-        raise exc.CommandError(str(ex))
+    sortby_index = None
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+    else:
+        sortby_index = 0
 
-    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
-              'status_reason']
-    utils.print_list(events, fields, sortby_index=0)
+    events = sc.list(models.Event, **queries)
+    utils.print_list(events, fields, sortby_index=sortby_index)
 
 
 @utils.arg('event', metavar='<EVENT>',
@@ -1368,6 +1396,10 @@ def do_action_list(sc, args):
     def _short_target(obj):
         return obj.target[:8]
 
+    fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
+              'depended_by']
+    sort_keys = ['name', 'target', 'action', 'start_time', 'status']
+
     queries = {
         'show_deleted': args.show_deleted,
         'filters': utils.format_parameters(args.filters),
@@ -1377,10 +1409,15 @@ def do_action_list(sc, args):
         'marker': args.marker,
     }
 
-    actions = sc.list(models.Action, **queries)
+    sortby_index = None
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+    else:
+        sortby_index = 0
 
-    fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
-              'depended_by']
+    actions = sc.list(models.Action, **queries)
 
     if not args.full_id:
         formatters = {
@@ -1390,7 +1427,8 @@ def do_action_list(sc, args):
     else:
         formatters = {}
 
-    utils.print_list(actions, fields, formatters=formatters, sortby_index=0)
+    utils.print_list(actions, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 @utils.arg('id', metavar='<ACTION>',
