@@ -164,14 +164,15 @@ class SenlinShell(object):
                     'user ID for authentication')
             print(_('WARNING: %s') % msg)
 
-        if (args.username and not args.user_id):
-            if not (args.user_domain_id or args.user_domain_name):
-                msg = _('Either user domain ID (--user-domain-id / '
-                        'env[OS_USER_DOMAIN_ID]) or user domain name '
-                        '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
-                        'must be specified, because user name may not be '
-                        'unique.')
-                raise exc.CommandError(msg)
+        if 'v3' in args.auth_url:
+            if (args.username and not args.user_id):
+                if not (args.user_domain_id or args.user_domain_name):
+                    msg = _('Either user domain ID (--user-domain-id / '
+                            'env[OS_USER_DOMAIN_ID]) or user domain name '
+                            '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
+                            'must be specified, because user name may not be '
+                            'unique.')
+                    raise exc.CommandError(msg)
 
         # password is needed if username or user_id is present
         if (args.username or args.user_id) and not (args.password):
@@ -201,15 +202,16 @@ class SenlinShell(object):
             print(_('WARNING: %s') % msg)
 
         # project name may not be unique
-        if (not (args.project_id or args.tenant_id) and
-                (args.project_name or args.tenant_name) and
-                not (args.project_domain_id or args.project_domain_name)):
-            msg = _('Either project domain ID (--project-domain-id / '
-                    'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
-                    '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
-                    'must be specified, because project/tenant name may not '
-                    'be unique.')
-            raise exc.CommandError(msg)
+        if 'v3' in args.auth_url:
+            if (not (args.project_id or args.tenant_id) and
+                    (args.project_name or args.tenant_name) and
+                    not (args.project_domain_id or args.project_domain_name)):
+                msg = _('Either project domain ID (--project-domain-id / '
+                        'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
+                        '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
+                        'must be specified, because project/tenant name may '
+                        'not be unique.')
+                raise exc.CommandError(msg)
 
     def _setup_senlin_client(self, api_ver, args):
         '''Create senlin client using given args.'''
