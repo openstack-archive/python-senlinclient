@@ -1058,9 +1058,9 @@ def do_cluster_policy_disable(sc, args):
 # NODES
 
 
-@utils.arg('-c', '--cluster', default=None,
-           help=_('ID or name of cluster for nodes to list.'))
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+           help=_('ID or name of cluster from which nodes are to be listed.'))
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned nodes. '
@@ -1069,7 +1069,7 @@ def do_cluster_policy_disable(sc, args):
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
            help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of nodes returned.'))
