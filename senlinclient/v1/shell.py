@@ -66,7 +66,7 @@ def do_profile_type_schema(sc, args):
 # PROFILES
 
 
-@utils.arg('-d', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted profiles if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of profiles returned.'))
@@ -264,7 +264,7 @@ def do_policy_type_schema(sc, args):
 # WEBHOOKS
 
 
-@utils.arg('-d', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include deleted webhooks if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of webhooks returned.'))
@@ -388,7 +388,7 @@ def do_webhook_delete(sc, args):
 # POLICIES
 
 
-@utils.arg('-d', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted policies if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of policies returned.'))
@@ -518,7 +518,7 @@ def do_policy_delete(sc, args):
 # CLUSTERS
 
 
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted clusters if any.'))
 @utils.arg('-n', '--show-nested', default=False, action="store_true",
            help=_('Include nested clusters if any.'))
@@ -529,7 +529,7 @@ def do_policy_delete(sc, args):
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
            help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of clusters returned.'))
@@ -671,7 +671,7 @@ def do_cluster_show(sc, args):
     _show_cluster(sc, args.id)
 
 
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned nodes. '
@@ -1280,7 +1280,7 @@ def do_node_leave(sc, args):
            help=_('Only return events that appear after the given event ID.'))
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
            help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-g', '--global-tenant', default=False, action="store_true",
            help=_('Whether events from all projects(tenants) should be '
@@ -1334,13 +1334,13 @@ def do_event_show(sc, args):
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
            help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return nodes that appear after the given node ID.'))
-@utils.arg('-s', '--show-deleted', default=False, action="store_true",
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
