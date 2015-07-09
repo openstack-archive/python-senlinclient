@@ -1398,7 +1398,7 @@ def do_action_list(sc, args):
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
-    sort_keys = ['name', 'target', 'action', 'start_time', 'status']
+    sort_keys = ['name', 'target', 'action', 'created_time', 'status']
 
     queries = {
         'show_deleted': args.show_deleted,
