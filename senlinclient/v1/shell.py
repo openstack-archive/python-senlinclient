@@ -916,7 +916,7 @@ def do_cluster_scale_in(sc, args):
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
            help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-d', '--sort-dir', metavar='<DIR>',
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to query on.'))
