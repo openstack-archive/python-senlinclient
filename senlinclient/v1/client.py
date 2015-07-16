@@ -13,7 +13,6 @@
 import inspect
 import json
 from openstack.identity import identity_service
-from openstack.network.v2 import thin as thins
 from openstack import transport as trans
 
 from senlinclient.common import exc as client_exc
@@ -33,12 +32,6 @@ class Client(object):
         argument = opts.argument
         xport = trans.Transport(verify=opts.verify)
         return xport.get(argument).text
-
-    def thin(self):
-        # Authenticate should be done before this.
-        request = thins.Thin()
-        for obj in request.list_networks(self.session):
-            print(obj['id'])
 
     def session(self, cls_name):
         if cls_name is None:
