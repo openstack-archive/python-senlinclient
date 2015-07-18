@@ -84,28 +84,6 @@ class Resource(base.Resource):
     These classes are here because the OpenStack SDK base version is making
     some assumptions about operations that cannot be satisfied in Senlin.
     '''
-    @classmethod
-    def list_short(cls, session, path_args=None, **params):
-        '''Return a generator that will page through results of GET requests.
-
-        This method bypasses the DB session support and retrieves list that
-        is directly exposed by server.
-        '''
-        if not cls.allow_list:
-            raise exceptions.MethodNotSupported('list')
-
-        if path_args:
-            url = cls.base_path % path_args
-        else:
-            url = cls.base_path
-
-        resp = session.get(url, service=cls.service, params=params).body
-        if cls.resources_key:
-            resp = resp[cls.resources_key]
-
-        for data in resp:
-            value = cls.existing(**data)
-            yield value
 
     def create(self, session, extra_attrs=False):
         """Create a remote resource from this instance.

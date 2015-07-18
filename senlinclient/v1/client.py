@@ -47,13 +47,7 @@ class Client(object):
 
     def list(self, cls, **options):
         try:
-            return cls.list(self.session, **options)
-        except Exception as ex:
-            client_exc.parse_exception(ex)
-
-    def list_short(self, cls, options=None):
-        try:
-            return cls.list_short(self.session, path_args=None, **options)
+            return cls.list(self.session, params=options)
         except Exception as ex:
             client_exc.parse_exception(ex)
 

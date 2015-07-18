@@ -37,7 +37,7 @@ def do_build_info(sc, args):
 
 def do_profile_type_list(sc, args):
     '''List the available profile types.'''
-    types = sc.list_short(models.ProfileType, {})
+    types = sc.list(models.ProfileType, paginated=False)
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -221,7 +221,7 @@ def do_profile_delete(sc, args):
 
 def do_policy_type_list(sc, args):
     '''List the available policy types.'''
-    types = sc.list_short(models.PolicyType, {})
+    types = sc.list(models.PolicyType, paginated=False)
     utils.print_list(types, ['name'], sortby_index=0)
 
 
