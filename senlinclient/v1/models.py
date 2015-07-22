@@ -92,6 +92,7 @@ class Profile(resource.Resource):
     allow_update = True
     allow_delete = True
     allow_list = True
+    patch_update = True
 
     # properties
     id = resource.prop('id')
@@ -165,6 +166,7 @@ class Policy(resource.Resource):
     allow_create = True
     allow_delete = True
     allow_update = True
+    patch_update = True
 
     # Properties
     id = resource.prop('id')
@@ -251,6 +253,7 @@ class Cluster(resource.Resource):
     allow_update = True
     allow_delete = True
     allow_list = True
+    patch_update = True
 
     # Properties
     id = resource.prop('id')
@@ -477,6 +480,7 @@ class Node(resource.Resource):
     allow_update = True
     allow_delete = True
     allow_list = True
+    patch_update = True
 
     # Properties
     id = resource.prop('id')
