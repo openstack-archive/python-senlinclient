@@ -189,7 +189,7 @@ def do_profile_update(sc, args):
 
     params['id'] = profile.id
     sc.update(models.Profile, params)
-    _show_profile(sc, args.id)
+    _show_profile(sc, profile.id)
 
 
 @utils.arg('-f', '--force', default=False, action="store_true",
