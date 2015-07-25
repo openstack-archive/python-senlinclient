@@ -45,9 +45,9 @@ class Client(object):
         print(self.auth.authorize(xport))
         return xport
 
-    def list(self, cls, **options):
+    def list(self, cls, path_args=None, **options):
         try:
-            return cls.list(self.session, params=options)
+            return cls.list(self.session, path_args=path_args, params=options)
         except Exception as ex:
             client_exc.parse_exception(ex)
 
