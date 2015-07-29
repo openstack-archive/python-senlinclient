@@ -815,6 +815,9 @@ def do_cluster_resize(sc, args):
         raise exc.CommandError(_("Only one of 'capacity', 'adjustment' and "
                                  "'percentage' can be specified."))
 
+    action_args['adjustment_type'] = None
+    action_args['number'] = None
+
     if capacity is not None:
         if capacity < 0:
             raise exc.CommandError(_('Cluster capacity must be larger than '
