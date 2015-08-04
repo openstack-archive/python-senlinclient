@@ -231,12 +231,16 @@ def parse_exception(exc):
     :param details: details of the exception.
     '''
     if isinstance(exc, sdkexc.HttpException):
-        record = {
-            'error': {
-                'code': exc.status_code,
-                'message': exc.details,
+        try:
+            record = jsonutils.loads(exc.details)
+        except Exception:
+            # If the exc.details is not in JSON format
+            record = {
+                'error': {
+                    'code': exc.status_code,
+                    'message': exc.details,
+                }
             }
-        }
     elif isinstance(exc, reqexc.RequestException):
         # Exceptions that are not captured by SDK
         code = exc.message[1].errno
