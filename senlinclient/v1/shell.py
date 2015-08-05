@@ -548,12 +548,14 @@ def do_cluster_list(sc, args=None):
     queries = {
         'limit': args.limit,
         'marker': args.marker,
-        'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'show_deleted': args.show_deleted,
         'show_nested': args.show_nested
     }
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
+
     if args.show_nested:
         fields.append('parent')
 
@@ -710,16 +712,17 @@ def do_cluster_node_list(sc, args):
     def _short_physical_id(obj):
         return obj.physical_id[:8]
 
-    query = {
+    queries = {
         'cluster_id': args.id,
         'show_deleted': args.show_deleted,
-        'filters': utils.format_parameters(args.filters),
         'limit': args.limit,
         'marker': args.marker,
     }
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     try:
-        nodes = sc.list(models.Node, **query)
+        nodes = sc.list(models.Node, **queries)
     except exc.HTTPNotFound:
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
@@ -933,10 +936,12 @@ def do_cluster_policy_list(sc, args):
     sort_keys = ['priority', 'level', 'cooldown', 'enabled']
 
     queries = {
-        'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
     }
+
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     sortby_index = None
     if args.sort_keys:
@@ -1130,13 +1135,15 @@ def do_node_list(sc, args):
     queries = {
         'show_deleted': args.show_deleted,
         'cluster_id': args.cluster,
-        'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'limit': args.limit,
         'marker': args.marker,
         'global_tenant': args.global_tenant,
     }
+
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     if args.show_deleted:
         fields.append('deleted_time')
@@ -1337,7 +1344,6 @@ def do_event_list(sc, args):
     sort_keys = ['timestamp', 'obj_type', 'obj_name', 'user', 'action']
 
     queries = {
-        'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'limit': args.limit,
@@ -1345,6 +1351,9 @@ def do_event_list(sc, args):
         'global_tenant': args.global_tenant,
         'show_deleted': args.show_deleted,
     }
+
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     sortby_index = None
     if args.sort_keys:
@@ -1405,12 +1414,14 @@ def do_action_list(sc, args):
 
     queries = {
         'show_deleted': args.show_deleted,
-        'filters': utils.format_parameters(args.filters),
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'limit': args.limit,
         'marker': args.marker,
     }
+
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     sortby_index = None
     if args.sort_keys:
