@@ -10,17 +10,17 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from openstack.cluster import cluster_service
 from openstack import utils
 from senlinclient.common import sdk as resource
-from senlinclient.openstack.clustering import clustering_service
 
 
 class Version(resource.Resource):
     resource_key = 'version'
     resources_key = 'versions'
     base_path = '/'
-    service = clustering_service.ClusteringService(
-        version=clustering_service.ClusteringService.UNVERSIONED
+    service = cluster_service.ClusterService(
+        version=cluster_service.ClusterService.UNVERSIONED
     )
 
     # capabilities
@@ -33,7 +33,7 @@ class Version(resource.Resource):
 
 class BuildInfo(resource.Resource):
     base_path = '/build_info'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_retrieve = True
@@ -47,7 +47,7 @@ class ProfileType(resource.Resource):
     resource_key = None
     resources_key = 'profile_types'
     base_path = '/profile_types'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -59,7 +59,7 @@ class ProfileType(resource.Resource):
 
 class ProfileTypeSchema(resource.Resource):
     base_path = '/profile_types/%(profile_type)s'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_retrieve = True
@@ -71,7 +71,7 @@ class ProfileTypeSchema(resource.Resource):
 class ProfileTypeTemplate(resource.Resource):
     resource_key = 'template'
     base_path = '/profile_types/%(profile_type)s/template'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_retrieve = True
@@ -84,7 +84,7 @@ class Profile(resource.Resource):
     resource_key = 'profile'
     resources_key = 'profiles'
     base_path = '/profiles'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # capabilities
     allow_create = True
@@ -121,7 +121,7 @@ class Profile(resource.Resource):
 class PolicyType(resource.Resource):
     resources_key = 'policy_types'
     base_path = '/policy_types'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -133,7 +133,7 @@ class PolicyType(resource.Resource):
 
 class PolicyTypeSchema(resource.Resource):
     base_path = '/policy_types/%(policy_type)s'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_retrieve = True
@@ -145,7 +145,7 @@ class PolicyTypeSchema(resource.Resource):
 class PolicyTypeTemplate(resource.Resource):
     resource_key = 'template'
     base_path = '/policy_types/%(policy_type)s/template'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_retrieve = True
@@ -158,7 +158,7 @@ class Policy(resource.Resource):
     resource_key = 'policy'
     resources_key = 'policies'
     base_path = '/policies'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -199,7 +199,7 @@ class Webhook(resource.Resource):
     resource_key = 'webhook'
     resources_key = 'webhooks'
     base_path = '/webhooks'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -245,7 +245,7 @@ class Cluster(resource.Resource):
     resource_key = 'cluster'
     resources_key = 'clusters'
     base_path = '/clusters'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # capabilities
     allow_create = True
@@ -420,7 +420,7 @@ class ClusterPolicy(resource.Resource):
     resource_key = 'cluster_policy'
     resources_key = 'cluster_policies'
     base_path = '/clusters/%(cluster_id)s/policies'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -455,7 +455,7 @@ class ClusterPolicy(resource.Resource):
 class ClusterNode(resource.Resource):
     resources_key = 'nodes'
     base_path = '/clusters/%(cluster_id)s/nodes'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -472,7 +472,7 @@ class Node(resource.Resource):
     resource_key = 'node'
     resources_key = 'nodes'
     base_path = '/nodes'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # capabilities
     allow_create = True
@@ -547,7 +547,7 @@ class Node(resource.Resource):
 class Action(resource.Resource):
     resources_key = 'actions'
     base_path = '/actions'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
@@ -596,7 +596,7 @@ class Action(resource.Resource):
 class Event(resource.Resource):
     resources_key = 'events'
     base_path = '/events'
-    service = clustering_service.ClusteringService()
+    service = cluster_service.ClusterService()
 
     # Capabilities
     allow_list = True
