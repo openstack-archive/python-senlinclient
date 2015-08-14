@@ -27,10 +27,10 @@ prop = base.prop
 
 
 class ProfileAction(argparse.Action):
-    '''A custom action to parse profiles as key=value pairs
+    """A custom action to parse user proferences as key=value pairs
 
-    Stores results in profiles object.
-    '''
+    Stores results in users proferences object.
+    """
     prof = profile.Profile()
 
     @classmethod
@@ -45,32 +45,28 @@ class ProfileAction(argparse.Action):
 
     @classmethod
     def set_option(cls, var, values):
+        if var == '--os-extensions':
+            cls.prof.load_extension(values)
+            return
         if var == 'OS_REGION_NAME':
             var = 'region'
         var = var.replace('--os-api-', '')
         var = var.replace('OS_API_', '')
         var = var.lower()
         for kvp in values.split(','):
-            if var == 'region':
-                if '=' in kvp:
-                    service, value = kvp.split('=')
-                else:
-                    service = cls.prof.ALL
-                    value = kvp
+            if '=' in kvp:
+                service, value = kvp.split('=')
             else:
-                if '=' in kvp:
-                    service, value = kvp.split('=')
-                else:
-                    service = cls.prof.ALL
-                    value = kvp
+                service = cls.prof.ALL
+                value = kvp
             if var == 'name':
                 cls.prof.set_name(service, value)
             elif var == 'region':
                 cls.prof.set_region(service, value)
             elif var == 'version':
                 cls.prof.set_version(service, value)
-            elif var == 'visibility':
-                cls.prof.set_visibility(service, value)
+            elif var == 'interface':
+                cls.prof.set_interface(service, value)
 
     def __call__(self, parser, namespace, values, option_string=None):
         if getattr(namespace, self.dest, None) is None:

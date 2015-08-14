@@ -50,7 +50,7 @@ class TestSdk(testtools.TestCase):
         mock_prof.set_version.assert_called_once_with('test', 'val1')
 
     @mock.patch('senlinclient.common.sdk.ProfileAction.prof')
-    def test_set_option_set_visibility(self, mock_prof):
+    def test_set_option_set_interface(self, mock_prof):
         mock_prof.ALL = 'mock_prof.ALL'
-        sdk.ProfileAction.set_option('visibility', 'test=val1')
-        mock_prof.set_visibility.assert_called_once_with('test', 'val1')
+        sdk.ProfileAction.set_option('interface', 'test=val1')
+        mock_prof.set_interface.assert_called_once_with('test', 'val1')
