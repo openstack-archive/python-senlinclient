@@ -44,7 +44,7 @@ class TestCliArgs(testtools.TestCase):
             '--os-api-name',
             '--os-api-region',
             '--os-api-version',
-            '--os-api-visibility'
+            '--os-api-interface'
         ]
 
         options = [arg[0][0] for arg in parser.add_argument.call_args_list]

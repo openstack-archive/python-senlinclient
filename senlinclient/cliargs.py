@@ -162,11 +162,11 @@ def add_global_identity_args(parser):
         help=_('Desired API versions, defaults to env[OS_API_VERSION]'))
 
     parser.add_argument(
-        '--os-api-visibility', dest='user_preferences',
-        metavar='<service>=<visibility>',
+        '--os-api-interface', dest='user_preferences',
+        metavar='<service>=<interface>',
         action=sdk.ProfileAction,
-        default=sdk.ProfileAction.env('OS_API_VISIBILITY'),
-        help=_('Desired API visibility, defaults to env[OS_API_VISIBILITY]'))
+        default=sdk.ProfileAction.env('OS_INTERFACE'),
+        help=_('Desired API interface, defaults to env[OS_INTERFACE]'))
 
 
 #    parser.add_argument(
