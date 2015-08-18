@@ -102,7 +102,8 @@ class Client(object):
     def action(self, cls, options):
         def filter_args(method, params):
             expected_args = inspect.getargspec(method).args
-            accepted_args = ([a for a in expected_args if a != 'self'])
+            accepted_args = ([a for a in expected_args and params
+                             if a != 'self'])
             filtered_args = dict((d, params[d]) for d in accepted_args)
             return filtered_args
 
