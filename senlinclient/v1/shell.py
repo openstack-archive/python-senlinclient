@@ -321,7 +321,6 @@ def do_webhook_show(sc, args):
 @utils.arg('-a', '--action', metavar='<ACTION>', required=True,
            help=_('Name of action to be triggered for this webhook.'))
 @utils.arg('-C', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           required=True,
            help=_('The credential to be used when the webhook is triggered.'),
            action='append')
 @utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
