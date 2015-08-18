@@ -218,7 +218,7 @@ class Webhook(resource.Resource):
     action = resource.prop('action')
     created_time = resource.prop('created_time')
     deleted_time = resource.prop('deleted_time')
-    credential = resource.prop('credential', type=dict)
+    credential = resource.prop('credential')
     params = resource.prop('params', type=dict)
     url = resource.prop('url')
 
