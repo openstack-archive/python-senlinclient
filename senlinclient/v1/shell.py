@@ -178,8 +178,9 @@ def do_profile_update(sc, args):
         'name': args.name,
         'spec': spec,
         'permission': args.permission,
-        'metadata': utils.format_parameters(args.metadata),
     }
+    if args.metadata:
+        params['metadata'] = utils.format_parameters(args.metadata)
 
     # Find the profile first, we need its id
     try:
