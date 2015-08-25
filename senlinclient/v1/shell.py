@@ -278,7 +278,8 @@ def do_webhook_list(sc, args=None):
     def _short_id(obj):
         return obj.id[:8]
 
-    fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time']
+    fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time',
+              'deleted_time']
     queries = {
         'show_deleted': args.show_deleted,
         'limit': args.limit,
