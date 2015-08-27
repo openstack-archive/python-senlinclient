@@ -544,6 +544,32 @@ class Node(resource.Resource):
         }
 
 
+class Trigger(resource.Resource):
+    resource_key = 'trigger'
+    resources_key = 'triggers'
+    base_path = '/triggers'
+    service = cluster_service.ClusterService()
+
+    # capabilities
+    allow_create = True
+    allow_retrieve = True
+    # allow_update = True
+    allow_delete = True
+    allow_list = True
+    # patch_update = True
+
+    # properties
+    id = resource.prop('id')
+    name = resource.prop('name')
+    type = resource.prop('type')
+    spec = resource.prop('spec', type=dict)
+    state = resource.prop('state')
+    enabled = resource.prop('enabled')
+    severity = resource.prop('severity')
+    created_time = resource.prop('created_time')
+    deleted_time = resource.prop('deleted_time')
+
+
 class Action(resource.Resource):
     resources_key = 'actions'
     base_path = '/actions'
