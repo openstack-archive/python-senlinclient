@@ -545,6 +545,7 @@ class Node(resource.Resource):
 
 
 class Action(resource.Resource):
+    resource_key = 'action'
     resources_key = 'actions'
     base_path = '/actions'
     service = cluster_service.ClusterService()
