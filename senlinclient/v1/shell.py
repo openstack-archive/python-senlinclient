@@ -433,8 +433,6 @@ def _show_policy(sc, policy_id=None, policy=None):
     utils.print_dict(policy.to_dict(), formatters=formatters)
 
 
-@utils.arg('-t', '--policy-type', metavar='<TYPE_NAME>', required=True,
-           help=_('Policy type used for this policy.'))
 @utils.arg('-s', '--spec-file', metavar='<SPEC_FILE>', required=True,
            help=_('The spec file used to create the policy.'))
 @utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
@@ -450,7 +448,6 @@ def do_policy_create(sc, args):
     spec = utils.get_spec_content(args.spec_file)
     params = {
         'name': args.name,
-        'type': args.policy_type,
         'spec': spec,
         'cooldown': args.cooldown,
         'level': args.enforcement_level,
