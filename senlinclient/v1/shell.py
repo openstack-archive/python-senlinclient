@@ -1338,8 +1338,16 @@ def do_node_leave(sc, args):
 @utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Whether deleted events should be listed as well. '
                   'Default to False.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 def do_event_list(sc, args):
     '''List events.'''
+    def _short_id(obj):
+        return obj.id[:8]
+
+    def _short_obj_id(obj):
+        return obj.obj_id[:8]
+
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
               'status_reason']
     sort_keys = ['timestamp', 'obj_type', 'obj_name', 'user', 'action']
@@ -1364,8 +1372,14 @@ def do_event_list(sc, args):
     else:
         sortby_index = 0
 
+    formatters = {}
+    if not args.full_id:
+        formatters['id'] = _short_id
+        formatters['obj_id'] = _short_obj_id
+
     events = sc.list(models.Event, **queries)
-    utils.print_list(events, fields, sortby_index=sortby_index)
+    utils.print_list(events, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 @utils.arg('event', metavar='<EVENT>',
