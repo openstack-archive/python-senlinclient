@@ -76,11 +76,11 @@ class SenlinShell(object):
                                    action='help',
                                    help=argparse.SUPPRESS)
 
-            self.subcommands[command] = subparser
             for (args, kwargs) in arguments:
                 subparser.add_argument(*args, **kwargs)
-
             subparser.set_defaults(func=callback)
+
+            self.subcommands[command] = subparser
 
     def do_bash_completion(self, args):
         '''Prints all of the commands and options to stdout.
@@ -90,12 +90,13 @@ class SenlinShell(object):
         commands = set()
         options = set()
         for sc_str, sc in self.subcommands.items():
+            if sc_str == 'bash_completion' or sc_str == 'bash-completion':
+                continue
+
             commands.add(sc_str)
             for option in list(sc._optionals._option_string_actions):
                 options.add(option)
 
-        commands.remove('bash-completion')
-        commands.remove('bash_completion')
         print(' '.join(commands | options))
 
     def add_profiler_args(self, parser):
@@ -115,8 +116,8 @@ class SenlinShell(object):
                                           add_help=False,
                                           formatter_class=HelpFormatter)
 
-        self.subcommands['bash_completion'] = subparser
         subparser.set_defaults(func=self.do_bash_completion)
+        self.subcommands['bash_completion'] = subparser
 
     def get_subcommand_parser(self, base_parser, version):
         parser = base_parser
