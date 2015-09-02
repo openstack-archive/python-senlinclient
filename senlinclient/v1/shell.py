@@ -106,17 +106,13 @@ def _show_profile(sc, profile_id):
         'metadata': utils.json_formatter,
     }
 
-    if profile.type == 'os.heat.stack':
-        formatters['spec'] = utils.nested_dict_formatter(
-            ['disable_rollback', 'environment', 'files', 'parameters',
-             'template', 'timeout'],
-            ['property', 'value'])
+    formatters['spec'] = utils.nested_dict_formatter(
+        ['type', 'version', 'properties'],
+        ['property', 'value'])
 
     utils.print_dict(profile.to_dict(), formatters=formatters)
 
 
-@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>', required=True,
-           help=_('Profile type used for this profile.'))
 @utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
            help=_('The spec file used to create the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
@@ -131,11 +127,22 @@ def _show_profile(sc, profile_id):
 def do_profile_create(sc, args):
     '''Create a profile.'''
     spec = utils.get_spec_content(args.spec_file)
-    if args.profile_type == 'os.heat.stack':
-        spec = utils.process_stack_spec(spec)
+    type_name = spec.get('type', None)
+    type_version = spec.get('version', None)
+    properties = spec.get('properties', None)
+    if type_name is None:
+        raise exc.CommandError(_("Missing 'type' key in spec file."))
+    if type_version is None:
+        raise exc.CommandError(_("Missing 'version' key in spec file."))
+    if properties is None:
+        raise exc.CommandError(_("Missing 'properties' key in spec file."))
+
+    if type_name == 'os.heat.stack':
+        stack_properties = utils.process_stack_spec(properties)
+        spec['properties'] = stack_properties
+
     params = {
         'name': args.name,
-        'type': args.profile_type,
         'spec': spec,
         'permission': args.permission,
         'metadata': utils.format_parameters(args.metadata),
@@ -163,8 +170,6 @@ def do_profile_show(sc, args):
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
            action='append')
-@utils.arg('-t', '--profile-type', metavar='<TYPE NAME>', required=True,
-           help=_('Profile type used for this profile.'))
 @utils.arg('id', metavar='<PROFILE_ID>',
            help=_('Name or ID of the profile to update.'))
 def do_profile_update(sc, args):
@@ -172,8 +177,9 @@ def do_profile_update(sc, args):
     spec = None
     if args.spec_file:
         spec = utils.get_spec_content(args.spec_file)
-        if args.profile_type == 'os.heat.stack':
-            spec = utils.process_stack_spec(spec)
+        type_name = spec['type']
+        if type_name == 'os.heat.stack':
+            spec['properties'] = utils.process_stack_spec(spec['properties'])
     params = {
         'name': args.name,
         'spec': spec,
