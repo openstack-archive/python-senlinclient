@@ -1,6 +1,72 @@
 CHANGES
 =======
 
+v0.2
+----
+
+* Revise support to profile-create/show
+* Add short Id support to event list
+* Remove 'type' parameter for policy creation
+* Add resource_key for Action resource
+* Initial support to triggers
+* Updated from global requirements
+* Add deleted_time to webhook_list
+* Avoid deleting metadata incorrectly when doing profile_update
+* Fix crendential type problem in webhook operations in client side
+* Credential option should not be 'required' when creating webhook
+* Fix TypeError when doing cluster-scale-in
+* Sync ProfileAction implementation with latest SDK code
+* Updated from global requirements
+* Add unit test cases for sdk module
+* Unit test for client module
+* Unit test for cliargs module
+* Updated from global requirements
+* Remove private copy of clustering_service
+* Fix filters param passing
+* Preparation for senlinclient test cases
+* Revise parse_exception in the client side
+* Updated from global requirements
+* Use correct default domain name in senlinrc
+* Fix cluster-resize operation param checking
+* Updated from global requirements
+* Fix resource listing error
+* Fix profile name update error
+* Use PATCH method to update resources
+* Updated from global requirements
+* Parse exception from SDK
+* Fix list operation based on sdk interface
+* Updated from global requirements
+* Remove thin methods which is not used
+* Updated from global requirements
+* Updated from global requirements
+* Fix arg name for sort-dir
+* Replace 'start_time' with 'created_time' for sorting
+* Fix list sorting in command line
+* Fix some cluster-list option bugs
+* Make "--metadata" option "-M" instead of "-d"
+* Make --show-deleted and --sort-dir option names consistent
+* Fix minor error in node-list command
+* Remove profile-type-show command
+* Remove 'permission' from cli output
+* Fix senlinrc to support keystone v2 and v3 on the client side
+* Support keystone v2 and v3
+* Updated from global requirements
+* Disable rollback by default
+* Updated from global requirements
+* Bump oslo.utils version to 1.6.0
+* Handle AttributeError when creating a profile
+* Change max_size's default value to -1 when creating a cluster
+* Revise webhook-create support in client
+* Sync with global requirements
+* Revise comment format in doc to pass pep8 check
+* Delete some dead code from client model
+* Replace sdk user_reference module with profile
+* Try please flake8 for imports grouping
+* Resize operation support from client
+* Fixed an error in webhook_show
+* Updated pot file
+* Rename 'tags' to 'metadata'
+* Add docs generated to version control
 * Sync package version requirements
 * Add min_size and max_size properties to Cluster
 * Replace cluster size with new property desired_capacity
