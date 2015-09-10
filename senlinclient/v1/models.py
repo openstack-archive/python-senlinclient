@@ -621,6 +621,7 @@ class Action(resource.Resource):
 
 
 class Event(resource.Resource):
+    resource_key = 'event'
     resources_key = 'events'
     base_path = '/events'
     service = cluster_service.ClusterService()
