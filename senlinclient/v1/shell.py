@@ -1279,7 +1279,7 @@ def do_node_update(sc, args):
         'id': node.id,
         'name': args.name,
         'role': args.role,
-        'profile': args.profile,
+        'profile_id': args.profile,
         'metadata': utils.format_parameters(args.metadata),
     }
 
