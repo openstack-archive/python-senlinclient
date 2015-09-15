@@ -16,9 +16,13 @@ import sys
 
 import mock
 import six
+from six.moves import builtins
 import testtools
 
+from senlinclient import client as senlin_client
 from senlinclient.common import exc
+from senlinclient.common.i18n import _
+from senlinclient.common import sdk
 from senlinclient.common import utils
 from senlinclient import shell
 from senlinclient.tests.unit import fakes
@@ -32,6 +36,30 @@ class HelpFormatterTest(testtools.TestCase):
         self.assertIsNone(res)
         h = fmtr._current_section.heading
         self.assertEqual("HEADING('text1', 30)", h)
+
+
+class TestArgs(testtools.TestCase):
+
+    def __init__(self):
+        self.auth_url = 'http://fakeurl/v3'
+        self.auth_plugin = 'test_plugin'
+        self.username = 'test_user_name'
+        self.user_id = 'test_user_id'
+        self.token = 'test_token'
+        self.project_id = 'test_project_id'
+        self.project_name = 'test_project_name'
+        self.tenant_id = 'test_tenant_id'
+        self.tenant_name = 'test_tenant_name'
+        self.password = 'test_password'
+        self.user_domain_id = 'test_user_domain_id'
+        self.user_domain_name = 'test_user_domain_name'
+        self.project_domain_id = 'test_project_domain_id'
+        self.project_domain_name = 'test_project_domain_name'
+        self.domain_name = 'test_domain_name'
+        self.domain_id = 'test_domain_id'
+        self.verify = 'test_verify'
+        self.user_preferences = 'test_preferences'
+        self.trust_id = 'test_trust'
 
 
 class ShellTest(testtools.TestCase):
@@ -206,3 +234,139 @@ class ShellTest(testtools.TestCase):
 
         x_find.assert_has_calls(find_calls)
         x_add.assert_called_once_with(x_subparsers)
+
+    @mock.patch.object(argparse.ArgumentParser, 'print_help')
+    def test_do_help(self, mock_print):
+        sh = shell.SenlinShell()
+        args = mock.Mock()
+        args.command = mock.Mock()
+        sh.subcommands = {args.command: argparse.ArgumentParser}
+        sh.do_help(args)
+        self.assertTrue(mock_print.called)
+
+        sh.subcommands = {}
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_help, args)
+        msg = _("'%s' is not a valid subcommand") % args.command
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(builtins, 'print')
+    def test_check_identity_arguments(self, mock_print):
+        sh = shell.SenlinShell()
+        # auth_url is not specified.
+        args = TestArgs()
+        args.auth_url = None
+        ex = self.assertRaises(exc.CommandError,
+                               sh._check_identity_arguments, args)
+        msg = _('You must provide an auth url via --os-auth-url (or '
+                ' env[OS_AUTH_URL])')
+        self.assertEqual(msg, six.text_type(ex))
+        # username, user_id and token are not specified.
+        args = TestArgs()
+        args.username = None
+        args.user_id = None
+        args.token = None
+        msg = _('You must provide a user name, a user_id or a '
+                'token for authentication')
+        ex = self.assertRaises(exc.CommandError,
+                               sh._check_identity_arguments, args)
+        self.assertEqual(msg, six.text_type(ex))
+        # Both username and user_id are specified.
+        args = TestArgs()
+        args.project_id = None
+        args.tenant_id = None
+        sh._check_identity_arguments(args)
+        msg = _('WARNING: Both user name and user ID are specified, Senin '
+                'will use user ID for authentication')
+        mock_print.assert_called_with(msg)
+
+        # 'v3' in auth_url but neither user_domain_id nor user_domain_name
+        # is specified.
+        args = TestArgs()
+        args.user_id = None
+        args.user_domain_id = None
+        args.user_domain_name = None
+        msg = _('Either user domain ID (--user-domain-id / '
+                'env[OS_USER_DOMAIN_ID]) or user domain name '
+                '(--user-domain-name / env[OS_USER_DOMAIN_NAME]) '
+                'must be specified, because user name may not be '
+                'unique.')
+        ex = self.assertRaises(exc.CommandError,
+                               sh._check_identity_arguments, args)
+        self.assertEqual(msg, six.text_type(ex))
+        # user_id, project_id, project_name, tenant_id and tenant_name are all
+        # not specified.
+        args = TestArgs()
+        args.project_id = None
+        args.project_name = None
+        args.tenant_id = None
+        args.tenant_name = None
+        args.user_id = None
+        msg = _('Either project/tenant ID or project/tenant name '
+                'must be specified, or else Senlin cannot know '
+                'which project to use.')
+        ex = self.assertRaises(exc.CommandError,
+                               sh._check_identity_arguments, args)
+        self.assertEqual(msg, six.text_type(ex))
+        args.user_id = 'test_user_id'
+        sh._check_identity_arguments(args)
+        msg = _('Neither project ID nor project name is specified. '
+                'Senlin will use user\'s default project which may '
+                'result in authentication error.')
+        mock_print.assert_called_with(_('WARNING: %s') % msg)
+
+        # Both project_name and project_id are specified
+        args = TestArgs()
+        args.user_id = None
+        sh._check_identity_arguments(args)
+        msg = _('Both project/tenant name and project/tenant ID are '
+                'specified, Senin will use project ID for authentication')
+        mock_print.assert_called_with(_('WARNING: %s') % msg)
+        # Project name may not be unique
+        args = TestArgs()
+        args.user_id = None
+        args.project_id = None
+        args.tenant_id = None
+        args.project_domain_id = None
+        args.project_domain_name = None
+        msg = _('Either project domain ID (--project-domain-id / '
+                'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
+                '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
+                'must be specified, because project/tenant name may '
+                'not be unique.')
+        ex = self.assertRaises(exc.CommandError,
+                               sh._check_identity_arguments, args)
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(sdk, 'create_connection')
+    def test_setup_senlinclient(self, mock_conn):
+        USER_AGENT = 'python-senlinclient'
+        args = TestArgs()
+        kwargs = {
+            'auth_plugin': args.auth_plugin,
+            'auth_url': args.auth_url,
+            'project_name': args.project_name or args.tenant_name,
+            'project_id': args.project_id or args.tenant_id,
+            'domain_name': args.domain_name,
+            'domain_id': args.domain_id,
+            'project_domain_name': args.project_domain_name,
+            'project_domain_id': args.project_domain_id,
+            'user_domain_name': args.user_domain_name,
+            'user_domain_id': args.user_domain_id,
+            'username': args.username,
+            'user_id': args.user_id,
+            'password': args.password,
+            'verify': args.verify,
+            'token': args.token,
+            'trust_id': args.trust_id,
+        }
+        sh = shell.SenlinShell()
+        conn = mock.Mock()
+        mock_conn.return_value = conn
+        conn.session = mock.Mock()
+        sh._setup_senlin_client('1', args)
+        mock_conn.assert_called_once_with(args.user_preferences, USER_AGENT,
+                                          **kwargs)
+        client = mock.Mock()
+        senlin_client.Client = mock.MagicMock(return_value=client)
+        self.assertEqual(client, sh._setup_senlin_client('1', args))

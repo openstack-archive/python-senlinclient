@@ -170,7 +170,7 @@ class SenlinShell(object):
                 if not (args.user_domain_id or args.user_domain_name):
                     msg = _('Either user domain ID (--user-domain-id / '
                             'env[OS_USER_DOMAIN_ID]) or user domain name '
-                            '(--user-domain-name / env[OS_USER_DOMAIN_NAME '
+                            '(--user-domain-name / env[OS_USER_DOMAIN_NAME]) '
                             'must be specified, because user name may not be '
                             'unique.')
                     raise exc.CommandError(msg)
@@ -193,7 +193,7 @@ class SenlinShell(object):
                 msg = _('Neither project ID nor project name is specified. '
                         'Senlin will use user\'s default project which may '
                         'result in authentication error.')
-                print(_('WARINING: %s') % msg)
+                print(_('WARNING: %s') % msg)
 
         # both project name and ID are specified, ID takes precedence
         if ((args.project_id or args.tenant_id) and
