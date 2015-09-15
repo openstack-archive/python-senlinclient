@@ -1607,7 +1607,7 @@ def do_action_show(sc, args):
         query = {'id': args.id}
         action = sc.get(models.Action, query)
     except exc.HTTPNotFound:
-        msg = _('Action %(id)s is not found') % args.id
+        msg = _('Action %(id)s is not found') % {'id': args.id}
         raise exc.CommandError(msg)
 
     formatters = {
