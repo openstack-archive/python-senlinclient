@@ -714,7 +714,7 @@ def do_cluster_node_list(sc, args):
         return obj.id[:8]
 
     def _short_physical_id(obj):
-        return obj.physical_id[:8]
+        return obj.physical_id[:8] if obj.physical_id else ''
 
     queries = {
         'cluster_id': args.id,
@@ -1485,7 +1485,7 @@ def do_event_list(sc, args):
         return obj.id[:8]
 
     def _short_obj_id(obj):
-        return obj.obj_id[:8]
+        return obj.obj_id[:8] if obj.obj_id else ''
 
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
               'status_reason']
@@ -1560,7 +1560,7 @@ def do_action_list(sc, args):
         return obj.id[:8]
 
     def _short_target(obj):
-        return obj.target[:8]
+        return obj.target[:8] if obj.target else ''
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
