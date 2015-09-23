@@ -16,10 +16,18 @@ from openstack.identity import identity_service
 from openstack import transport as trans
 
 from senlinclient.common import exc as client_exc
+from senlinclient.common import sdk
 
 
 class Client(object):
-    def __init__(self, session):
+
+    def __init__(self, preferences, user_agent, **kwargs):
+        if 'session' in kwargs:
+            session = kwargs['session']
+        else:
+            conn = sdk.create_connection(preferences, user_agent, **kwargs)
+            session = conn.session
+
         self.session = session
         self.auth = session.authenticator
 
