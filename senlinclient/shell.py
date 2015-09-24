@@ -29,7 +29,6 @@ from senlinclient import cliargs
 from senlinclient import client as senlin_client
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
-from senlinclient.common import sdk
 from senlinclient.common import utils
 
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
@@ -234,10 +233,8 @@ class SenlinShell(object):
             'token': args.token,
             'trust_id': args.trust_id,
         }
-        conn = sdk.create_connection(args.user_preferences,
-                                     USER_AGENT, **kwargs)
-
-        return senlin_client.Client('1', conn.session)
+        return senlin_client.Client('1', args.user_preferences,
+                                    USER_AGENT, **kwargs)
 
     def main(self, argv):
         # Parse args once to find version

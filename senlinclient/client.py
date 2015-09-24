@@ -13,7 +13,7 @@
 from senlinclient.common import utils
 
 
-def Client(api_ver, session, **kwargs):
+def Client(api_ver, *args, **kwargs):
     '''Import versioned client module.
 
     :param api_ver: API version required.
@@ -21,4 +21,4 @@ def Client(api_ver, session, **kwargs):
     '''
     module = utils.import_versioned_module(api_ver, 'client')
     cls = getattr(module, 'Client')
-    return cls(session)
+    return cls(*args, **kwargs)
