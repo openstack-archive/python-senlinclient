@@ -981,10 +981,10 @@ def do_cluster_policy_show(sc, args):
            help=_('An integer specifying the relative priority among '
                   'all policies attached to a cluster. The lower the '
                   'value, the higher the priority. Default is 50.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=50,
+@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
            help=_('An integer beteen 0 and 100 representing the enforcement '
                   'level. Default to enforcement level of policy.'))
-@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
+@utils.arg('-c', '--cooldown', metavar='<SECONDS>',
            help=_('An integer indicating the cooldown seconds once the '
                   'policy is effected. Default to cooldown of policy.'))
 @utils.arg('-e', '--enabled', default=True, action="store_true",
