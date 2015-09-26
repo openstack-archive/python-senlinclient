@@ -1562,6 +1562,24 @@ def do_action_list(sc, args):
     def _short_target(obj):
         return obj.target[:8] if obj.target else ''
 
+    def _fmt_depends_on(obj):
+        if not obj.depends_on:
+            return ''
+        idlist = obj.depends_on
+        if not args.full_id:
+            idlist = [item[:8] for item in obj.depends_on]
+
+        return '\n'.join(idlist)
+
+    def _fmt_depended_by(obj):
+        if not obj.depended_by:
+            return ''
+        idlist = obj.depended_by
+        if not args.full_id:
+            idlist = [item[:8] for item in obj.depended_by]
+
+        return '\n'.join(idlist)
+
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
     sort_keys = ['name', 'target', 'action', 'created_time', 'status']
@@ -1587,13 +1605,13 @@ def do_action_list(sc, args):
 
     actions = sc.list(models.Action, **queries)
 
+    formatters = {
+        'depends_on': _fmt_depends_on,
+        'depended_by': _fmt_depended_by
+    }
     if not args.full_id:
-        formatters = {
-            'id': _short_id,
-            'target': _short_target,
-        }
-    else:
-        formatters = {}
+        formatters['id'] = _short_id
+        formatters['target'] = _short_target
 
     utils.print_list(actions, fields, formatters=formatters,
                      sortby_index=sortby_index)
