@@ -21,7 +21,7 @@ from senlinclient.common import sdk
 
 class Client(object):
 
-    def __init__(self, preferences, user_agent, **kwargs):
+    def __init__(self, preferences=None, user_agent=None, **kwargs):
         if 'session' in kwargs:
             session = kwargs['session']
         else:

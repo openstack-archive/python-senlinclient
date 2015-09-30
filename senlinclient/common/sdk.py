@@ -123,7 +123,7 @@ class Resource(base.Resource):
         return self
 
 
-def create_connection(preferences, user_agent, **kwargs):
+def create_connection(preferences=None, user_agent=None, **kwargs):
         try:
             conn = connection.Connection(profile=preferences,
                                          user_agent=user_agent,

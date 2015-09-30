@@ -233,8 +233,9 @@ class SenlinShell(object):
             'token': args.token,
             'trust_id': args.trust_id,
         }
-        return senlin_client.Client('1', args.user_preferences,
-                                    USER_AGENT, **kwargs)
+
+        return senlin_client.Client('1', args.user_preferences, USER_AGENT,
+                                    **kwargs)
 
     def main(self, argv):
         # Parse args once to find version
