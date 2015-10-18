@@ -882,7 +882,7 @@ def do_cluster_resize(sc, args):
 
 
 @utils.arg('-c', '--count', metavar='<COUNT>',
-           help=_('Number of nodes to be added.'))
+           help=_('Number of nodes to be added to the specified cluster.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(sc, args):
@@ -900,7 +900,7 @@ def do_cluster_scale_out(sc, args):
 
 
 @utils.arg('-c', '--count', metavar='<COUNT>',
-           help=_('Number of nodes to be added.'))
+           help=_('Number of nodes to be deleted from the specified cluster.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(sc, args):
