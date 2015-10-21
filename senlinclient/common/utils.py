@@ -14,7 +14,6 @@
 # under the License.
 
 from heatclient.common import template_utils
-
 from oslo_serialization import jsonutils
 from oslo_utils import importutils
 import prettytable
@@ -54,13 +53,12 @@ def format_nested_dict(d, fields, column_names):
     for n in column_names:
         pt.align[n] = 'l'
 
-    for field in d.keys():
+    keys = sorted(d.keys())
+    for field in keys:
         value = d[field]
-        if value is six.string_types:
-            pt.add_row([field, value])
-        else:
-            pt.add_row([field, jsonutils.dumps(value, indent=2,
-                                               ensure_ascii=False)])
+        if not isinstance(value, six.string_types):
+            value = jsonutils.dumps(value, indent=2, ensure_ascii=False)
+        pt.add_row([field, value.strip('"')])
 
     return pt.get_string()
 
