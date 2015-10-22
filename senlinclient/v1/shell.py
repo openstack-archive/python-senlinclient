@@ -324,8 +324,6 @@ def do_webhook_show(sc, args):
            help=_('Targeted cluster for this webhook.'))
 @utils.arg('-n', '--node', metavar='<NODE>',
            help=_('Targeted node for this webhook.'))
-@utils.arg('-p', '--policy', metavar='<POLICY>',
-           help=_('Targeted policy for this webhook.'))
 @utils.arg('-a', '--action', metavar='<ACTION>', required=True,
            help=_('Name of action to be triggered for this webhook.'))
 @utils.arg('-C', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -340,12 +338,8 @@ def do_webhook_show(sc, args):
 def do_webhook_create(sc, args):
     '''Create a webhook.'''
 
-    c = sum(x is not None for x in [args.cluster, args.node, args.policy])
-    if c > 1:
-        msg = _("Only one of 'cluster', 'node' or 'policy' can be specified.")
-        raise exc.CommandError(msg)
-    elif c == 0:
-        msg = _("One of 'cluster', 'node' or 'policy' must be specified.")
+    if args.cluster and args.node:
+        msg = _("Only one of 'cluster' or 'node' can be specified, not both.")
         raise exc.CommandError(msg)
 
     if args.cluster:
@@ -355,8 +349,8 @@ def do_webhook_create(sc, args):
         obj_type = 'node'
         obj_id = args.node
     else:
-        obj_type = 'policy'
-        obj_id = args.policy
+        msg = _("One of 'cluster' or 'node' must be specified.")
+        raise exc.CommandError(msg)
 
     params = {
         'name': args.name,
