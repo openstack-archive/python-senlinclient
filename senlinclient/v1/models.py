@@ -32,7 +32,7 @@ class Version(resource.Resource):
 
 
 class BuildInfo(resource.Resource):
-    base_path = '/build_info'
+    base_path = '/build-info'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -46,7 +46,7 @@ class BuildInfo(resource.Resource):
 class ProfileType(resource.Resource):
     resource_key = None
     resources_key = 'profile_types'
-    base_path = '/profile_types'
+    base_path = '/profile-types'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -58,7 +58,7 @@ class ProfileType(resource.Resource):
 
 
 class ProfileTypeSchema(resource.Resource):
-    base_path = '/profile_types/%(profile_type)s'
+    base_path = '/profile-types/%(profile_type)s'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -70,7 +70,7 @@ class ProfileTypeSchema(resource.Resource):
 
 class ProfileTypeTemplate(resource.Resource):
     resource_key = 'template'
-    base_path = '/profile_types/%(profile_type)s/template'
+    base_path = '/profile-types/%(profile_type)s/template'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -120,7 +120,7 @@ class Profile(resource.Resource):
 
 class PolicyType(resource.Resource):
     resources_key = 'policy_types'
-    base_path = '/policy_types'
+    base_path = '/policy-types'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -132,7 +132,7 @@ class PolicyType(resource.Resource):
 
 
 class PolicyTypeSchema(resource.Resource):
-    base_path = '/policy_types/%(policy_type)s'
+    base_path = '/policy-types/%(policy_type)s'
     service = cluster_service.ClusterService()
 
     # Capabilities
@@ -144,7 +144,7 @@ class PolicyTypeSchema(resource.Resource):
 
 class PolicyTypeTemplate(resource.Resource):
     resource_key = 'template'
-    base_path = '/policy_types/%(policy_type)s/template'
+    base_path = '/policy-types/%(policy_type)s/template'
     service = cluster_service.ClusterService()
 
     # Capabilities
