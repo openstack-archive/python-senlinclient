@@ -22,9 +22,14 @@ from senlinclient.v1 import models
 logger = logging.getLogger(__name__)
 
 
-def do_build_info(sc, args):
-    '''Retrieve build information.'''
-    result = sc.get(models.BuildInfo)
+def do_build_info(sc, args=None):
+    """Retrieve build information.
+
+    :param sc: Instance of senlinclient.
+    :param args: Additional command line arguments, if any.
+    """
+    result = sc.get_build_info()
+
     formatters = {
         'api': utils.json_formatter,
         'engine': utils.json_formatter,
@@ -35,9 +40,13 @@ def do_build_info(sc, args):
 # PROFILE TYPES
 
 
-def do_profile_type_list(sc, args):
-    '''List the available profile types.'''
-    types = sc.list(models.ProfileType, paginated=False)
+def do_profile_type_list(sc, args=None):
+    """List the available profile types.
+
+    :param sc: Instance of senlinclient.
+    :param args: Additional command line arguments, if any.
+    """
+    types = sc.profile_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -49,8 +58,7 @@ def do_profile_type_list(sc, args):
 def do_profile_type_schema(sc, args):
     '''Get the spec of a profile type.'''
     try:
-        params = {'profile_type': args.profile_type}
-        schema = sc.get(models.ProfileTypeSchema, params)
+        schema = sc.get_profile_type_schema(args.profile_type)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Profile Type %s not found.') % args.profile_type)
@@ -86,7 +94,7 @@ def do_profile_list(sc, args=None):
         'marker': args.marker,
     }
 
-    profiles = sc.list(models.Profile, **queries)
+    profiles = sc.profiles(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -97,8 +105,7 @@ def do_profile_list(sc, args=None):
 
 def _show_profile(sc, profile_id):
     try:
-        params = {'id': profile_id}
-        profile = sc.get(models.Profile, params)
+        profile = sc.get_profile(profile_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Profile not found: %s') % profile_id)
 
@@ -148,7 +155,7 @@ def do_profile_create(sc, args):
         'metadata': utils.format_parameters(args.metadata),
     }
 
-    profile = sc.create(models.Profile, params)
+    profile = sc.create_profile(**params)
     _show_profile(sc, profile.id)
 
 
@@ -190,35 +197,29 @@ def do_profile_update(sc, args):
 
     # Find the profile first, we need its id
     try:
-        profile = sc.get(models.Profile, {'id': args.id})
+        profile = sc.get_profile(args.id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Profile not found: %s') % args.id)
 
     params['id'] = profile.id
-    sc.update(models.Profile, params)
+    sc.update_profile(params)
     _show_profile(sc, profile.id)
 
 
-@utils.arg('-f', '--force', default=False, action="store_true",
-           help=_('Delete the profile completely from database.'))
 @utils.arg('id', metavar='<PROFILE>', nargs='+',
            help=_('Name or ID of profile(s) to delete.'))
 def do_profile_delete(sc, args):
     '''Delete profile(s).'''
     failure_count = 0
 
-    for cid in args.id:
+    for pid in args.id:
         try:
-            query = {
-                'id': cid,
-                'force': args.force
-            }
-            sc.delete(models.Profile, query)
-        except exc.HTTPNotFound as ex:
+            sc.delete_profile(pid)
+        except Exception as ex:
             failure_count += 1
             print(ex)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified profile(s).')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified profile(s).')
         raise exc.CommandError(msg)
     print('Profile deleted: %s' % args.id)
 
@@ -228,7 +229,7 @@ def do_profile_delete(sc, args):
 
 def do_policy_type_list(sc, args):
     '''List the available policy types.'''
-    types = sc.list(models.PolicyType, paginated=False)
+    types = sc.policy_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -254,14 +255,12 @@ def do_policy_type_show(sc, args):
 def do_policy_type_schema(sc, args):
     '''Get the spec of a policy type.'''
     try:
-        params = {'policy_type': args.policy_type}
-        schema = sc.get(models.PolicyTypeSchema, params)
+        schema = sc.get_policy_type_schema(args.policy_type)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Policy type %s not found.') % args.policy_type)
 
     schema = dict(schema)
-
     if args.format:
         print(utils.format_output(schema, format=args.format))
     else:
@@ -292,7 +291,7 @@ def do_webhook_list(sc, args=None):
         'marker': args.marker,
     }
 
-    webhooks = sc.list(models.Webhook, **queries)
+    webhooks = sc.webhooks(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -304,8 +303,7 @@ def do_webhook_list(sc, args=None):
 def _show_webhook(sc, webhook_id=None, webhook=None):
     if webhook is None:
         try:
-            params = {'id': webhook_id}
-            webhook = sc.get(models.Webhook, params)
+            webhook = sc.get_webhook(webhook_id)
         except exc.HTTPNotFound:
             raise exc.CommandError(_('Webhook not found: %s') % webhook_id)
 
@@ -361,7 +359,7 @@ def do_webhook_create(sc, args):
         'params': utils.format_parameters(args.params)
     }
 
-    webhook = sc.create(models.Webhook, params, True)
+    webhook = sc.create_webhook(**params)
     _show_webhook(sc, webhook=webhook)
 
 
@@ -371,17 +369,14 @@ def do_webhook_delete(sc, args):
     '''Delete webhook(s).'''
     failure_count = 0
 
-    for cid in args.id:
+    for wid in args.id:
         try:
-            query = {
-                'id': cid,
-            }
-            sc.delete(models.Webhook, query)
+            sc.delete_webhook(wid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified webhook(s).')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified webhook(s).')
         raise exc.CommandError(msg)
     print('Webhook deleted: %s' % args.id)
 
@@ -409,7 +404,7 @@ def do_policy_list(sc, args=None):
         'marker': args.marker,
     }
 
-    policies = sc.list(models.Policy, **queries)
+    policies = sc.policies(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -421,8 +416,7 @@ def do_policy_list(sc, args=None):
 def _show_policy(sc, policy_id=None, policy=None):
     if policy is None:
         try:
-            params = {'id': policy_id}
-            policy = sc.get(models.Policy, params)
+            policy = sc.get_policy(policy_id)
         except exc.HTTPNotFound:
             raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
@@ -446,14 +440,14 @@ def _show_policy(sc, policy_id=None, policy=None):
 def do_policy_create(sc, args):
     '''Create a policy.'''
     spec = utils.get_spec_content(args.spec_file)
-    params = {
+    attrs = {
         'name': args.name,
         'spec': spec,
         'cooldown': args.cooldown,
         'level': args.enforcement_level,
     }
 
-    policy = sc.create(models.Policy, params)
+    policy = sc.create_policy(**attrs)
     _show_policy(sc, policy=policy)
 
 
@@ -482,33 +476,27 @@ def do_policy_update(sc, args):
         'level': args.enforcement_level,
     }
 
-    policy = sc.get(models.Policy, {'id': args.id})
+    policy = sc.get_policy(args.id)
     if policy is not None:
         params['id'] = policy.id
-        sc.update(models.Policy, params)
+        sc.update_policy(policy.id, params)
         _show_policy(sc, policy_id=policy.id)
 
 
-@utils.arg('-f', '--force', default=False, action="store_true",
-           help=_('Delete the policy completely from database.'))
 @utils.arg('id', metavar='<POLICY>', nargs='+',
            help=_('Name or ID of policy(s) to delete.'))
 def do_policy_delete(sc, args):
     '''Delete policy(s).'''
     failure_count = 0
 
-    for cid in args.id:
+    for pid in args.id:
         try:
-            query = {
-                'id': cid,
-                'force': args.force
-            }
-            sc.delete(models.Policy, query)
+            sc.delete_policy(pid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified policy(s).')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified policy(s).')
         raise exc.CommandError(msg)
     print('Policy deleted: %s' % args.id)
 
@@ -569,7 +557,7 @@ def do_cluster_list(sc, args=None):
     else:
         sortby_index = 3
 
-    clusters = sc.list(models.Cluster, **queries)
+    clusters = sc.clusters(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -581,8 +569,7 @@ def do_cluster_list(sc, args=None):
 
 def _show_cluster(sc, cluster_id):
     try:
-        query = {'id': cluster_id}
-        cluster = sc.get(models.Cluster, query)
+        cluster = sc.get_cluster(cluster_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Cluster %s is not found') % cluster_id)
 
@@ -614,7 +601,7 @@ def _show_cluster(sc, cluster_id):
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
     '''Create the cluster.'''
-    params = {
+    attrs = {
         'name': args.name,
         'profile_id': args.profile,
         'min_size': args.min_size,
@@ -625,7 +612,7 @@ def do_cluster_create(sc, args):
         'timeout': args.timeout
     }
 
-    cluster = sc.create(models.Cluster, params)
+    cluster = sc.create_cluster(**attrs)
     _show_cluster(sc, cluster.id)
 
 
@@ -637,13 +624,12 @@ def do_cluster_delete(sc, args):
 
     for cid in args.id:
         try:
-            query = {'id': cid}
-            sc.delete(models.Cluster, query)
+            sc.delete_cluster(cid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified clusters.')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified clusters.')
         raise exc.CommandError(msg)
 
     print('Request accepted')
@@ -666,9 +652,8 @@ def do_cluster_delete(sc, args):
            help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(sc, args):
     '''Update the cluster.'''
-    cluster = sc.get(models.Cluster, {'id': args.id})
-    params = {
-        'id': cluster.id,
+    cluster = sc.get_cluster(args.id)
+    attrs = {
         'name': args.name,
         'profile_id': args.profile,
         'parent': args.parent,
@@ -676,7 +661,7 @@ def do_cluster_update(sc, args):
         'timeout': args.timeout,
     }
 
-    sc.update(models.Cluster, params)
+    sc.update_cluster(cluster.id, **attrs)
     _show_cluster(sc, cluster.id)
 
 
@@ -720,7 +705,7 @@ def do_cluster_node_list(sc, args):
         queries.update(utils.format_parameters(args.filters))
 
     try:
-        nodes = sc.list(models.Node, **queries)
+        nodes = sc.nodes(**queries)
     except exc.HTTPNotFound:
         msg = _('No node matching criteria is found')
         raise exc.CommandError(msg)
@@ -745,15 +730,8 @@ def do_cluster_node_list(sc, args):
 def do_cluster_node_add(sc, args):
     '''Add specified nodes to cluster.'''
     node_ids = args.nodes.split(',')
-    params = {
-        'id': args.id,
-        'action': 'add_nodes',
-        'action_args': {
-            'nodes': node_ids,
-        }
-    }
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_add_nodes(args.id, node_ids)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
@@ -764,15 +742,8 @@ def do_cluster_node_add(sc, args):
 def do_cluster_node_del(sc, args):
     '''Delete specified nodes from cluster.'''
     node_ids = args.nodes.split(',')
-    params = {
-        'id': args.id,
-        'action': 'del_nodes',
-        'action_args': {
-            'nodes': node_ids,
-        }
-    }
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_del_nodes(args.id, node_ids)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-c', '--capacity', metavar='<CAPACITY>', type=int,
@@ -865,14 +836,8 @@ def do_cluster_resize(sc, args):
     action_args['min_step'] = min_step
     action_args['strict'] = args.strict
 
-    params = {
-        'id': args.id,
-        'action': 'resize',
-        'action_args': action_args,
-    }
-
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_resize(args.id, **action_args)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-c', '--count', metavar='<COUNT>',
@@ -881,15 +846,7 @@ def do_cluster_resize(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(sc, args):
     '''Scale out a cluster by the specified number of nodes.'''
-    params = {
-        'id': args.id,
-        'action': 'scale_out',
-        'action_args': {
-            'count': args.count
-        }
-    }
-
-    resp = sc.action(models.Cluster, params)
+    resp = sc.cluster_scale_out(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -899,17 +856,7 @@ def do_cluster_scale_out(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(sc, args):
     '''Scale in a cluster by the specified number of nodes.'''
-    if args.count is not None:
-        action_args = {'count': args.count}
-    else:
-        action_args = {}
-
-    params = {
-        'id': args.id,
-        'action': 'scale_in',
-        'action_args': action_args,
-    }
-    resp = sc.action(models.Cluster, params)
+    resp = sc.cluster_scale_in(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -926,13 +873,11 @@ def do_cluster_scale_in(sc, args):
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(sc, args):
     '''List policies from cluster.'''
-    query = {'id': args.id}
-    cluster = sc.get(models.Cluster, query)
-
     fields = ['policy_id', 'policy', 'type', 'priority', 'level',
               'cooldown', 'enabled']
     sort_keys = ['priority', 'level', 'cooldown', 'enabled']
 
+    cluster = sc.get_cluster(args.id)
     queries = {
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
@@ -949,9 +894,7 @@ def do_cluster_policy_list(sc, args):
     else:
         sortby_index = 3
 
-    policies = sc.list(models.ClusterPolicy,
-                       path_args={'cluster_id': cluster.id},
-                       **queries)
+    policies = sc.cluster_policies(cluster.id, **queries)
     utils.print_list(policies, fields, sortby_index=sortby_index)
 
 
@@ -965,7 +908,7 @@ def do_cluster_policy_show(sc, args):
         'cluster_id': args.id,
         'policy_id': args.policy
     }
-    binding = sc.get(models.ClusterPolicy, queries)
+    binding = sc.get_cluster_policy(queries)
     utils.print_dict(binding.to_dict())
 
 
@@ -988,20 +931,16 @@ def do_cluster_policy_show(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_attach(sc, args):
     '''Attach policy to cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'policy_attach',
-        'action_args': {
-            'policy_id': args.policy,
-            'priority': args.priority,
-            'level': args.enforcement_level,
-            'cooldown': args.cooldown,
-            'enabled': args.enabled,
-        }
+    kwargs = {
+        'policy_id': args.policy,
+        'priority': args.priority,
+        'level': args.enforcement_level,
+        'cooldown': args.cooldown,
+        'enabled': args.enabled,
     }
 
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_attach_policy(args.id, **kwargs)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
@@ -1010,15 +949,7 @@ def do_cluster_policy_attach(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(sc, args):
     '''Detach policy from cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'policy_detach',
-        'action_args': {
-            'policy_id': args.policy,
-        }
-    }
-
-    resp = sc.action(models.Cluster, params)
+    resp = sc.cluster_detach_policy(args.id, args.policy)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -1038,20 +969,16 @@ def do_cluster_policy_detach(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(sc, args):
     '''Update a policy on cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'policy_update',
-        'action_args': {
-            'policy_id': args.policy,
-            'priority': args.priority,
-            'level': args.enforcement_level,
-            'cooldown': args.cooldown,
-            'enabled': args.enabled,
-        }
+    kwargs = {
+        'policy_id': args.policy,
+        'priority': args.priority,
+        'level': args.enforcement_level,
+        'cooldown': args.cooldown,
+        'enabled': args.enabled,
     }
 
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_update_policy(args.id, **kwargs)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
@@ -1060,15 +987,8 @@ def do_cluster_policy_update(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_enable(sc, args):
     '''Enable a policy on cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'policy_enable',
-        'action_args': {
-            'policy_id': args.policy,
-        }
-    }
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_enable_policy(args.id, args.policy)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
@@ -1077,15 +997,8 @@ def do_cluster_policy_enable(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_disable(sc, args):
     '''Disable a policy on a cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'policy_disable',
-        'action_args': {
-            'policy_id': args.policy,
-        }
-    }
-    resp = sc.action(models.Cluster, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.cluster_disable_policy(args.id, args.policy)
+    print('Request accepted by action: %s' % resp['action'])
 
 
 # NODES
@@ -1154,7 +1067,7 @@ def do_node_list(sc, args):
     else:
         sortby_index = 6
 
-    nodes = sc.list(models.Node, **queries)
+    nodes = sc.nodes(**queries)
 
     if not args.full_id:
         formatters = {
@@ -1172,11 +1085,7 @@ def do_node_list(sc, args):
 def _show_node(sc, node_id, show_details=False):
     '''Show detailed info about the specified node.'''
     try:
-        query = {
-            'id': node_id,
-            'show_details': show_details,
-        }
-        node = sc.get_with_args(models.Node, query)
+        node = sc.get_node(node_id, show_details)
     except exc.HTTPNotFound:
         msg = _('Node %s is not found') % node_id
         raise exc.CommandError(msg)
@@ -1208,7 +1117,7 @@ def _show_node(sc, node_id, show_details=False):
            help=_('Name of the node to create.'))
 def do_node_create(sc, args):
     '''Create the node.'''
-    params = {
+    attrs = {
         'name': args.name,
         'cluster_id': args.cluster,
         'profile_id': args.profile,
@@ -1216,7 +1125,7 @@ def do_node_create(sc, args):
         'metadata': utils.format_parameters(args.metadata),
     }
 
-    node = sc.create(models.Node, params)
+    node = sc.create_node(**attrs)
     _show_node(sc, node.id)
 
 
@@ -1237,13 +1146,12 @@ def do_node_delete(sc, args):
 
     for nid in args.id:
         try:
-            query = {'id': nid}
-            sc.delete(models.Node, query)
+            sc.delete_node(nid)
         except exc.HTTPNotFound:
             failure_count += 1
             print('Node id "%s" not found' % nid)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified nodes.')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified nodes.')
         raise exc.CommandError(msg)
     print('Request accepted')
 
@@ -1265,19 +1173,18 @@ def do_node_update(sc, args):
     '''Update the node.'''
     # Find the node first, we need its UUID
     try:
-        node = sc.get(models.Node, {'id': args.id})
+        node = sc.get_node(args.id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Node not found: %s') % args.id)
 
-    params = {
-        'id': node.id,
+    attrs = {
         'name': args.name,
         'role': args.role,
         'profile_id': args.profile,
         'metadata': utils.format_parameters(args.metadata),
     }
 
-    sc.update(models.Node, params)
+    sc.update_node(args.id, **attrs)
     _show_node(sc, node.id)
 
 
@@ -1287,15 +1194,8 @@ def do_node_update(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_join(sc, args):
     '''Make node join the specified cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'join',
-        'action_args': {
-            'cluster_id': args.cluster,
-        }
-    }
-    resp = sc.action(models.Node, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.node_join(args.id, args.cluster)
+    print('Request accepted by action: %s' % resp['action'])
     _show_node(sc, args.id)
 
 
@@ -1303,12 +1203,8 @@ def do_node_join(sc, args):
            help=_('Name or ID of node to operate on.'))
 def do_node_leave(sc, args):
     '''Make node leave its current cluster.'''
-    params = {
-        'id': args.id,
-        'action': 'leave',
-    }
-    resp = sc.action(models.Node, params)
-    print('Request accepted by action %s' % resp['action'])
+    resp = sc.node_leave(args.id)
+    print('Request accepted by action: %s' % resp['action'])
     _show_node(sc, args.id)
 
 
@@ -1367,7 +1263,7 @@ def do_trigger_list(sc, args=None):
     else:
         sortby_index = 1
 
-    triggers = sc.list(models.Trigger, **queries)
+    triggers = sc.triggers(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -1379,8 +1275,7 @@ def do_trigger_list(sc, args=None):
 
 def _show_trigger(sc, trigger_id):
     try:
-        params = {'id': trigger_id}
-        trigger = sc.get(models.Trigger, params)
+        trigger = sc.get_trigger(trigger_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Trigger not found: %s') % trigger_id)
 
@@ -1416,7 +1311,7 @@ def do_trigger_create(sc, args):
         'description': args.desc,
     }
 
-    trigger = sc.create(models.Trigger, params)
+    trigger = sc.create_trigger(**params)
     _show_trigger(sc, trigger.id)
 
 
@@ -1433,17 +1328,14 @@ def do_trigger_delete(sc, args):
     '''Delete trigger(s).'''
     failure_count = 0
 
-    for cid in args.id:
+    for tid in args.id:
         try:
-            query = {
-                'id': cid,
-            }
-            sc.delete(models.Trigger, query)
+            sc.delete_trigger(tid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
-    if failure_count == len(args.id):
-        msg = _('Failed to delete any of the specified trigger(s).')
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified trigger(s).')
         raise exc.CommandError(msg)
     print('Triggers deleted: %s' % args.id)
 
@@ -1510,18 +1402,17 @@ def do_event_list(sc, args):
         formatters['id'] = _short_id
         formatters['obj_id'] = _short_obj_id
 
-    events = sc.list(models.Event, **queries)
+    events = sc.events(**queries)
     utils.print_list(events, fields, formatters=formatters,
                      sortby_index=sortby_index)
 
 
-@utils.arg('event', metavar='<EVENT>',
+@utils.arg('id', metavar='<EVENT>',
            help=_('ID of event to display details for.'))
 def do_event_show(sc, args):
     '''Describe the event.'''
     try:
-        query = {'id': args.event}
-        event = sc.get(models.Event, query)
+        event = sc.get_event(args.id)
     except exc.HTTPNotFound as ex:
         raise exc.CommandError(str(ex))
 
@@ -1597,7 +1488,7 @@ def do_action_list(sc, args):
     else:
         sortby_index = 0
 
-    actions = sc.list(models.Action, **queries)
+    actions = sc.actions(**queries)
 
     formatters = {
         'depends_on': _fmt_depends_on,
@@ -1616,8 +1507,7 @@ def do_action_list(sc, args):
 def do_action_show(sc, args):
     '''Show detailed info about the specified action.'''
     try:
-        query = {'id': args.id}
-        action = sc.get(models.Action, query)
+        action = sc.get_action(args.id)
     except exc.HTTPNotFound:
         msg = _('Action %(id)s is not found') % {'id': args.id}
         raise exc.CommandError(msg)
