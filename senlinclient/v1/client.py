@@ -11,9 +11,7 @@
 # under the License.
 
 import inspect
-import json
 from openstack.identity import identity_service
-from openstack import transport as trans
 
 from senlinclient.common import exc as client_exc
 from senlinclient.common import sdk
@@ -285,27 +283,12 @@ class Client(object):
     # adopted into OpenStack SDK.
     ######################################################################
 
-    def get_options(self, options):
-        return json.loads(options)
-
-    def transport(self, opts):
-        '''Create a transport given some options.'''
-
-        argument = opts.argument
-        xport = trans.Transport(verify=opts.verify)
-        return xport.get(argument).text
-
     def session(self, cls_name):
         if cls_name is None:
             raise Exception("A cls name argument must be specified")
 
         filtration = identity_service.IdentityService()
         return self.session.get(cls_name, service=filtration).text
-
-    def authenticate(self, options):
-        xport = trans.Transport(verify=options.verify)
-        print(self.auth.authorize(xport))
-        return xport
 
     def list(self, cls, path_args=None, **options):
         try:
@@ -354,12 +337,6 @@ class Client(object):
             obj.delete(self.session)
         except Exception as ex:
             client_exc.parse_exception(ex)
-
-    def head(self, cls, options):
-        kwargs = self.get_options(options)
-        obj = cls.new(**kwargs)
-        obj.head(self.session)
-        return obj
 
     def action(self, cls, options):
         def filter_args(method, params):
