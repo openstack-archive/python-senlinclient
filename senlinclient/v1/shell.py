@@ -74,6 +74,10 @@ def do_profile_type_schema(sc, args):
 # PROFILES
 
 
+def _short_id(obj):
+    return obj.id[:8]
+
+
 @utils.arg('-D', '--show-deleted', default=False, action="store_true",
            help=_('Include soft-deleted profiles if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
@@ -84,9 +88,6 @@ def do_profile_type_schema(sc, args):
            help=_('Print full IDs in list.'))
 def do_profile_list(sc, args=None):
     '''List profiles that meet the criteria.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     fields = ['id', 'name', 'type', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
