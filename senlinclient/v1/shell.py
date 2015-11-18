@@ -168,8 +168,6 @@ def do_profile_show(sc, args):
 
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('The new name for the profile.'))
-@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>',
-           help=_('The new spec file for the profile.'))
 @utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
            help=_('A string format permission for this profile.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -181,15 +179,8 @@ def do_profile_show(sc, args):
            help=_('Name or ID of the profile to update.'))
 def do_profile_update(sc, args):
     '''Update a profile.'''
-    spec = None
-    if args.spec_file:
-        spec = utils.get_spec_content(args.spec_file)
-        type_name = spec['type']
-        if type_name == 'os.heat.stack':
-            spec['properties'] = utils.process_stack_spec(spec['properties'])
     params = {
         'name': args.name,
-        'spec': spec,
         'permission': args.permission,
     }
     if args.metadata:
