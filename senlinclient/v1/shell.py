@@ -433,7 +433,7 @@ def _show_policy(sc, policy_id=None, policy=None):
            help=_('An integer indicating the cooldown seconds once the '
                   'policy is effected. Default to 0.'))
 @utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
-           help=_('An integer beteen 0 and 100 representing the enforcement '
+           help=_('An integer between 0 and 100 representing the enforcement '
                   'level. Default to 0.'))
 @utils.arg('name', metavar='<NAME>',
            help=_('Name of the policy to create.'))
@@ -462,7 +462,7 @@ def do_policy_show(sc, args):
            help=_('An integer indicating the cooldown seconds once the '
                   'policy is effected. Default to 0.'))
 @utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
-           help=_('An integer beteen 0 and 100 representing the enforcement '
+           help=_('An integer between 0 and 100 representing the enforcement '
                   'level. Default to 0.'))
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name of the policy to be updated.'))
@@ -919,7 +919,7 @@ def do_cluster_policy_show(sc, args):
                   'all policies attached to a cluster. The lower the '
                   'value, the higher the priority. Default is 50.'))
 @utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
-           help=_('An integer beteen 0 and 100 representing the enforcement '
+           help=_('An integer between 0 and 100 representing the enforcement '
                   'level. Default to enforcement level of policy.'))
 @utils.arg('-c', '--cooldown', metavar='<SECONDS>',
            help=_('An integer indicating the cooldown seconds once the '
