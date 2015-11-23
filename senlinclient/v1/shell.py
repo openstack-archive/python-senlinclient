@@ -514,6 +514,10 @@ def do_policy_delete(sc, args):
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return clusters that appear after the given cluster '
                   'ID.'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Indicate that the cluster list should include clusters from'
+                  ' all projects. This option is subject to access policy '
+                  'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_cluster_list(sc, args=None):
@@ -529,7 +533,8 @@ def do_cluster_list(sc, args=None):
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'show_deleted': args.show_deleted,
-        'show_nested': args.show_nested
+        'show_nested': args.show_nested,
+        'global_project': args.global_project,
     }
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
