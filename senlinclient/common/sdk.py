@@ -123,10 +123,9 @@ class Resource(base.Resource):
         return self
 
 
-def create_connection(preferences=None, user_agent=None, **kwargs):
+def create_connection(prof=None, user_agent=None, **kwargs):
         try:
-            conn = connection.Connection(profile=preferences,
-                                         user_agent=user_agent,
+            conn = connection.Connection(profile=prof, user_agent=user_agent,
                                          **kwargs)
         except exceptions.HttpException as ex:
             exc.parse_exception(ex.details)

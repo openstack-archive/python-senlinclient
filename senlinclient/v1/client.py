@@ -28,7 +28,6 @@ class Client(object):
             session = conn.session
 
         self.session = session
-        self.auth = session.authenticator
 
     ######################################################################
     # The following operations are interfaces exposed to other software
