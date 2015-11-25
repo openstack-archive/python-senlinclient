@@ -107,8 +107,8 @@ class Resource(base.Resource):
         if args:
             args.pop('id')
             url = '%s?%s' % (url, url_parse.urlencode(args))
-        resp = session.get(url, service=cls.service)
-        body = resp.body
+        resp = session.get(url, endpoint_filter=cls.service)
+        body = resp.json()
         if cls.resource_key:
             body = body[cls.resource_key]
 
