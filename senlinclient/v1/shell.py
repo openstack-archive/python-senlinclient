@@ -71,11 +71,11 @@ def do_profile_type_schema(sc, args):
         print(utils.format_output(schema))
 
 
-# PROFILES
-
-
 def _short_id(obj):
     return obj.id[:8]
+
+
+# PROFILES
 
 
 @utils.arg('-D', '--show-deleted', default=False, action="store_true",
@@ -272,9 +272,6 @@ def do_policy_type_schema(sc, args):
            help=_('Print full IDs in list.'))
 def do_webhook_list(sc, args=None):
     '''List webhooks that meet the criteria.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time',
               'deleted_time']
     queries = {
@@ -386,9 +383,6 @@ def do_webhook_delete(sc, args):
            help=_('Print full IDs in list.'))
 def do_policy_list(sc, args=None):
     '''List policies that meet the criteria.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
@@ -522,9 +516,6 @@ def do_policy_delete(sc, args):
            help=_('Print full IDs in list.'))
 def do_cluster_list(sc, args=None):
     '''List the user's clusters.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     fields = ['id', 'name', 'status', 'created_time', 'updated_time']
     sort_keys = ['name', 'status', 'created_time', 'updated_time']
     queries = {
@@ -686,9 +677,6 @@ def do_cluster_show(sc, args):
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
     '''List nodes from cluster.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     def _short_physical_id(obj):
         return obj.physical_id[:8] if obj.physical_id else ''
 
@@ -1026,9 +1014,6 @@ def do_cluster_policy_disable(sc, args):
            help=_('Print full IDs in list.'))
 def do_node_list(sc, args):
     '''Show list of nodes.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     def _short_cluster_id(obj):
         return obj.cluster_id[:8] if obj.cluster_id else ''
 
@@ -1231,9 +1216,6 @@ def do_node_leave(sc, args):
            help=_('Print full IDs in list.'))
 def do_trigger_list(sc, args=None):
     '''List triggers that meet the criteria.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     fields = ['id', 'name', 'type', 'state', 'enabled', 'severity',
               'created_time']
     sort_keys = ['name', 'type', 'state', 'severity', 'created_time',
@@ -1364,9 +1346,6 @@ def do_trigger_delete(sc, args):
            help=_('Print full IDs in list.'))
 def do_event_list(sc, args):
     '''List events.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     def _short_obj_id(obj):
         return obj.obj_id[:8] if obj.obj_id else ''
 
@@ -1438,9 +1417,6 @@ def do_event_show(sc, args):
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
     '''List actions.'''
-    def _short_id(obj):
-        return obj.id[:8]
-
     def _short_target(obj):
         return obj.target[:8] if obj.target else ''
 
