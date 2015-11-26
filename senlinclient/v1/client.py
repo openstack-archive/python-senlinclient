@@ -252,19 +252,6 @@ class Client(object):
         }
         return self.action(models.Node, params)
 
-    def triggers(self, **queries):
-        return self.list(models.Trigger, **queries)
-
-    def create_trigger(self, **attrs):
-        return self.create(models.Trigger, attrs)
-
-    def get_trigger(self, value):
-        return self.get(models.Trigger, dict(id=value))
-
-    def delete_trigger(self, value, ignore_missing=True):
-        return self.delete(models.Trigger,
-                           dict(id=value, ignore_missing=ignore_missing))
-
     def events(self, **queries):
         return self.list(models.Event, **queries)
 
