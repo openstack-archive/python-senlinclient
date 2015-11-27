@@ -21,13 +21,9 @@ from senlinclient.v1 import models
 class Client(object):
 
     def __init__(self, preferences=None, user_agent=None, **kwargs):
-        if 'session' in kwargs:
-            session = kwargs['session']
-        else:
-            conn = sdk.create_connection(preferences, user_agent, **kwargs)
-            session = conn.session
-
-        self.session = session
+        self.conn = sdk.create_connection(preferences, user_agent, **kwargs)
+        # TODO(Qiming): delete this
+        self.session = self.conn.session
 
     ######################################################################
     # The following operations are interfaces exposed to other software
@@ -37,7 +33,8 @@ class Client(object):
     ######################################################################
 
     def get_build_info(self, **kwargs):
-        return self.get(models.BuildInfo)
+        return self.conn.cluster.get_build_info(**kwargs)
+        # return self.get(models.BuildInfo)
 
     def profile_types(self, **kwargs):
         return self.list(models.ProfileType, paginated=False)
@@ -86,21 +83,20 @@ class Client(object):
                            dict(id=value, ignore_missing=ignore_missing))
 
     def clusters(self, **queries):
-        return self.list(models.Cluster, **queries)
+        return self.conn.cluster.clusters(**queries)
 
     def create_cluster(self, **attrs):
-        return self.create(models.Cluster, attrs)
+        return self.conn.cluster.create_cluster(**attrs)
 
     def get_cluster(self, value):
-        return self.get(models.Cluster, dict(id=value))
+        return self.conn.cluster.get_cluster(value)
 
     def update_cluster(self, value, **attrs):
-        attrs['id'] = value
-        return self.update(models.Cluster, attrs)
+        return self.conn.cluster.update_cluster(value, **attrs)
 
     def delete_cluster(self, value, ignore_missing=True):
-        return self.delete(models.Cluster,
-                           dict(id=value, ignore_missing=ignore_missing))
+        return self.conn.cluster.delete_cluster(value,
+                                                ignore_missing=ignore_missing)
 
     def cluster_add_nodes(self, value, nodes):
         params = {
