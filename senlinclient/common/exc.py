@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from keystoneauth1.exceptions import base as kaexc
 from openstack import exceptions as sdkexc
 
 from oslo_serialization import jsonutils
@@ -243,16 +244,23 @@ def parse_exception(exc):
             }
     elif isinstance(exc, reqexc.RequestException):
         # Exceptions that are not captured by SDK
-        code = exc.message[1].errno
         record = {
             'error': {
-                'code': code,
+                'code': exc.message[1].errno,
                 'message': exc.message[0],
             }
         }
 
     elif isinstance(exc, six.string_types):
         record = jsonutils.loads(exc)
+    # some exception from keystoneauth1 is not shaped by SDK
+    elif isinstance(exc, kaexc.ClientException):
+        record = {
+            'error': {
+                'code': exc.http_status,
+                'message': exc.message
+            }
+        }
     else:
         print(_('Unknown exception: %s') % exc)
         return
