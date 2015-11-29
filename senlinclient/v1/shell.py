@@ -854,6 +854,8 @@ def do_cluster_scale_in(sc, args):
            help=_('Name of keys used for sorting the returned events.'))
 @utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(sc, args):
@@ -880,7 +882,14 @@ def do_cluster_policy_list(sc, args):
         sortby_index = 3
 
     policies = sc.cluster_policies(cluster.id, **queries)
-    utils.print_list(policies, fields, sortby_index=sortby_index)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'policy_id': _short_id,
+        }
+
+    utils.print_list(policies, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
