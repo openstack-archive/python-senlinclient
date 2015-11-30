@@ -495,12 +495,12 @@ def do_policy_delete(sc, args):
 @utils.arg('-n', '--show-nested', default=False, action="store_true",
            help=_('Include nested clusters if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Filter parameters to apply on returned triggers. '
+           help=_('Filter parameters to apply on returned clusters. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned events.'))
+           help=_('Name of keys used for sorting the returned clusters.'))
 @utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
@@ -851,7 +851,7 @@ def do_cluster_scale_in(sc, args):
                   'parameters separated by a semicolon.'),
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned events.'))
+           help=_('Name of keys used for sorting the returned policies.'))
 @utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
@@ -1284,7 +1284,7 @@ def do_event_show(sc, args):
                   'parameters separated by a semicolon.'),
            action='append')
 @utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned events.'))
+           help=_('Name of keys used for sorting the returned actions.'))
 @utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
