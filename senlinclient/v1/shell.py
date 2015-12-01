@@ -1100,7 +1100,7 @@ def _show_node(sc, node_id, show_details=False):
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Metadata values to be attached to the cluster. '
+           help=_('Metadata values to be attached to the node. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
            action='append')
