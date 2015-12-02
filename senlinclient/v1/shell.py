@@ -193,8 +193,7 @@ def do_profile_update(sc, args):
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Profile not found: %s') % args.id)
 
-    params['id'] = profile.id
-    sc.update_profile(params)
+    sc.update_profile(profile.id, **params)
     _show_profile(sc, profile.id)
 
 
