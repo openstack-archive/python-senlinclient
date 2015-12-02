@@ -56,6 +56,7 @@ class Client(object):
         return self.get(models.Profile, dict(id=value))
 
     def update_profile(self, value, **attrs):
+        attrs['id'] = value
         return self.update(models.Profile, attrs)
 
     def delete_profile(self, value, ignore_missing=True):

@@ -249,9 +249,8 @@ class ShellTest(testtools.TestCase):
             'name': 'stack_spec',
             'permission': 'ok',
             'metadata': {'user': 'demo'},
-            'id': profile_id,
         }
-        client.update_profile.assert_called_once_with(params)
+        client.update_profile.assert_called_once_with(profile_id, **params)
         mock_show.assert_called_once_with(client, profile_id)
 
         # specified profile can't be found
