@@ -719,7 +719,7 @@ def do_cluster_node_add(sc, args):
 
 
 @utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
-           help=_('ID of nodes to be deleted; multiple nodes can be separated'
+           help=_('ID of nodes to be deleted; multiple nodes can be separated '
                   'with ",".'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
