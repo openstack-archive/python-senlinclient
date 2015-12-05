@@ -452,22 +452,6 @@ class ClusterPolicy(resource.Resource):
         return info
 
 
-class ClusterNode(resource.Resource):
-    resources_key = 'nodes'
-    base_path = '/clusters/%(cluster_id)s/nodes'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_list = True
-    allow_create = True
-    allow_delete = True
-
-    # Properties
-    id = resource.prop('id')
-    cluster_id = resource.prop('cluster_id')
-    policy_id = resource.prop('node_id')
-
-
 class Node(resource.Resource):
     resource_key = 'node'
     resources_key = 'nodes'
