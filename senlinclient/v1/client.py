@@ -42,9 +42,8 @@ class Client(object):
     def profile_types(self, **kwargs):
         return self.list(models.ProfileType, paginated=False)
 
-    def get_profile_type_schema(self, value):
-        params = {'profile_type': value}
-        return self.get(models.ProfileTypeSchema, params)
+    def get_profile_type(self, value):
+        return self.get(models.ProfileType, dict(name=value))
 
     def profiles(self, **queries):
         return self.list(models.Profile, **queries)
@@ -66,9 +65,8 @@ class Client(object):
     def policy_types(self, **kwargs):
         return self.list(models.PolicyType, paginated=False)
 
-    def get_policy_type_schema(self, value):
-        params = {'policy_type': value}
-        return self.get(models.PolicyTypeSchema, params)
+    def get_policy_type(self, value):
+        return self.get(models.PolicyType, dict(name=value))
 
     def webhooks(self, **queries):
         return self.list(models.Webhook, **queries)

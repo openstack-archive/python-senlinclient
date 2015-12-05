@@ -44,7 +44,8 @@ class BuildInfo(resource.Resource):
 
 
 class ProfileType(resource.Resource):
-    resource_key = None
+    id_attribute = 'name'
+    resource_key = 'profile_type'
     resources_key = 'profile_types'
     base_path = '/profile-types'
     service = cluster_service.ClusterService()
@@ -55,29 +56,7 @@ class ProfileType(resource.Resource):
 
     # Properties
     name = resource.prop('name')
-
-
-class ProfileTypeSchema(resource.Resource):
-    base_path = '/profile-types/%(profile_type)s'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_retrieve = True
-
-    # Properties
-    schema = resource.prop('schema', type=dict)
-
-
-class ProfileTypeTemplate(resource.Resource):
-    resource_key = 'template'
-    base_path = '/profile-types/%(profile_type)s/template'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_retrieve = True
-
-    # Properties
-    template = resource.prop('template', type=dict)
+    schema = resource.prop('schema')
 
 
 class Profile(resource.Resource):
@@ -119,6 +98,8 @@ class Profile(resource.Resource):
 
 
 class PolicyType(resource.Resource):
+    id_attribute = 'name'
+    resource_key = 'policy_type'
     resources_key = 'policy_types'
     base_path = '/policy-types'
     service = cluster_service.ClusterService()
@@ -129,29 +110,7 @@ class PolicyType(resource.Resource):
 
     # Properties
     name = resource.prop('name')
-
-
-class PolicyTypeSchema(resource.Resource):
-    base_path = '/policy-types/%(policy_type)s'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_retrieve = True
-
-    # Properties
-    schema = resource.prop('schema', type=dict)
-
-
-class PolicyTypeTemplate(resource.Resource):
-    resource_key = 'template'
-    base_path = '/policy-types/%(policy_type)s/template'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_retrieve = True
-
-    # Properties
-    template = resource.prop('template', type=dict)
+    schema = resource.prop('schema')
 
 
 class Policy(resource.Resource):
