@@ -50,6 +50,7 @@ def do_profile_type_list(sc, args=None):
 @utils.arg('type_name', metavar='<TYPE_NAME>',
            help=_('Profile type to retrieve.'))
 @utils.arg('-F', '--format', metavar='<FORMAT>',
+           choices=utils.supported_formats.keys(),
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
 def do_profile_type_show(sc, args):
@@ -224,6 +225,7 @@ def do_policy_type_list(sc, args):
 @utils.arg('type_name', metavar='<TYPE_NAME>',
            help=_('Policy type to retrieve.'))
 @utils.arg('-F', '--format', metavar='<FORMAT>',
+           choices=utils.supported_formats.keys(),
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
 def do_policy_type_show(sc, args):
