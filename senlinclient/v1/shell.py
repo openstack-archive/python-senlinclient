@@ -12,12 +12,9 @@
 
 import logging
 
-from oslo_serialization import jsonutils
-
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
-from senlinclient.v1 import models
 
 logger = logging.getLogger(__name__)
 
@@ -50,25 +47,25 @@ def do_profile_type_list(sc, args=None):
     utils.print_list(types, ['name'], sortby_index=0)
 
 
-@utils.arg('profile_type', metavar='<PROFILE_TYPE>',
-           help=_('Profile type to generate a template for.'))
+@utils.arg('type_name', metavar='<TYPE_NAME>',
+           help=_('Profile type to retrieve.'))
 @utils.arg('-F', '--format', metavar='<FORMAT>',
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
-def do_profile_type_schema(sc, args):
-    '''Get the spec of a profile type.'''
+def do_profile_type_show(sc, args):
+    '''Get the details about a profile type.'''
     try:
-        schema = sc.get_profile_type_schema(args.profile_type)
+        res = sc.get_profile_type(args.type_name)
     except exc.HTTPNotFound:
         raise exc.CommandError(
-            _('Profile Type %s not found.') % args.profile_type)
+            _('Profile Type %s not found.') % args.type_name)
 
-    schema = dict(schema)
+    pt = res.to_dict()
 
     if args.format:
-        print(utils.format_output(schema, format=args.format))
+        print(utils.format_output(pt, format=args.format))
     else:
-        print(utils.format_output(schema))
+        print(utils.format_output(pt))
 
 
 def _short_id(obj):
@@ -224,38 +221,24 @@ def do_policy_type_list(sc, args):
     utils.print_list(types, ['name'], sortby_index=0)
 
 
-@utils.arg('policy_type', metavar='<POLICY_TYPE>',
-           help=_('Policy type to get the details for.'))
-def do_policy_type_show(sc, args):
-    '''Show the policy type.'''
-    try:
-        params = {'policy_type': args.policy_type}
-        policy_type = sc.get(models.PolicyTypeSchema, params)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(
-            _('Policy Type not found: %s') % args.policy_type)
-    else:
-        print(jsonutils.dumps(policy_type, indent=2))
-
-
-@utils.arg('policy_type', metavar='<POLICY_TYPE>',
-           help=_('Policy type to generate a template for.'))
+@utils.arg('type_name', metavar='<TYPE_NAME>',
+           help=_('Policy type to retrieve.'))
 @utils.arg('-F', '--format', metavar='<FORMAT>',
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
-def do_policy_type_schema(sc, args):
-    '''Get the spec of a policy type.'''
+def do_policy_type_show(sc, args):
+    '''Get the details about a policy type.'''
     try:
-        schema = sc.get_policy_type_schema(args.policy_type)
+        res = sc.get_policy_type(args.type_name)
     except exc.HTTPNotFound:
         raise exc.CommandError(
-            _('Policy type %s not found.') % args.policy_type)
+            _('Policy type %s not found.') % args.type_name)
 
-    schema = dict(schema)
+    pt = res.to_dict()
     if args.format:
-        print(utils.format_output(schema, format=args.format))
+        print(utils.format_output(pt, format=args.format))
     else:
-        print(utils.format_output(schema))
+        print(utils.format_output(pt))
 
 
 # WEBHOOKS

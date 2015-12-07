@@ -71,31 +71,35 @@ class ShellTest(testtools.TestCase):
         self.assertTrue(client.profile_types.called)
 
     @mock.patch.object(utils, 'format_output')
-    def test_do_profile_type_schema(self, mock_format):
+    def test_do_profile_type_get(self, mock_format):
         client = mock.Mock()
-        schema = {'foo': 'bar'}
-        client.get_profile_type_schema = mock.MagicMock(return_value=schema)
-        args = {
-            'format': 'list',
-            'profile_type': 'os.nova.server'
+        fake_pt = mock.Mock()
+        fake_pt.to_dict.return_value = {'foo': 'bar'}
+        client.get_profile_type = mock.Mock(return_value=fake_pt)
+        args_dict = {
+            'format': 'json',
+            'type_name': 'os.nova.server'
         }
-        args = self._make_args(args)
-        sh.do_profile_type_schema(client, args)
-        mock_format.assert_called_with(schema, format=args.format)
-        client.get_profile_type_schema.assert_called_with(
+        args = self._make_args(args_dict)
+        sh.do_profile_type_show(client, args)
+        mock_format.assert_called_with({'foo': 'bar'}, format=args.format)
+        client.get_profile_type.assert_called_with(
             'os.nova.server')
         args.format = None
-        sh.do_profile_type_schema(client, args)
-        mock_format.assert_called_with(schema)
+        sh.do_profile_type_show(client, args)
+        mock_format.assert_called_with({'foo': 'bar'})
 
     def test_do_profile_type_schema_type_not_found(self):
         client = mock.Mock()
-        args = {'profile_type': 'wrong_type'}
+        args = {
+            'type_name': 'wrong_type',
+            'format': 'json'
+        }
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.get_profile_type_schema = mock.MagicMock(side_effect=ex)
+        client.get_profile_type = mock.Mock(side_effect=ex)
         ex = self.assertRaises(exc.CommandError,
-                               sh.do_profile_type_schema,
+                               sh.do_profile_type_show,
                                client, args)
         self.assertEqual(_('Profile Type wrong_type not found.'),
                          six.text_type(ex))
