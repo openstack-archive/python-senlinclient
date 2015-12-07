@@ -383,12 +383,11 @@ def do_policy_list(sc, args=None):
     utils.print_list(policies, fields, formatters=formatters, sortby_index=1)
 
 
-def _show_policy(sc, policy_id=None, policy=None):
-    if policy is None:
-        try:
-            policy = sc.get_policy(policy_id)
-        except exc.HTTPNotFound:
-            raise exc.CommandError(_('Policy not found: %s') % policy_id)
+def _show_policy(sc, policy_id):
+    try:
+        policy = sc.get_policy(policy_id)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
     formatters = {
         'metadata': utils.json_formatter,
@@ -418,7 +417,7 @@ def do_policy_create(sc, args):
     }
 
     policy = sc.create_policy(**attrs)
-    _show_policy(sc, policy=policy)
+    _show_policy(sc, policy.id)
 
 
 @utils.arg('id', metavar='<POLICY>',
