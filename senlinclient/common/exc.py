@@ -10,7 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from keystoneauth1.exceptions import base as kaexc
+from keystoneauth1.exceptions import base as kae_base
+from keystoneauth1.exceptions import http as kae_http
 from openstack import exceptions as sdkexc
 
 from oslo_serialization import jsonutils
@@ -254,10 +255,19 @@ def parse_exception(exc):
     elif isinstance(exc, six.string_types):
         record = jsonutils.loads(exc)
     # some exception from keystoneauth1 is not shaped by SDK
-    elif isinstance(exc, kaexc.ClientException):
+    elif isinstance(exc, kae_http.HttpError):
         record = {
             'error': {
                 'code': exc.http_status,
+                'message': exc.message
+            }
+        }
+    elif isinstance(exc, kae_base.ClientException):
+        record = {
+            'error': {
+                # other exceptions from keystoneauth1 is an internal
+                # error to senlin, so set status code to 500
+                'code': 500,
                 'message': exc.message
             }
         }
