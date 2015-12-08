@@ -559,7 +559,8 @@ def _show_cluster(sc, cluster_id):
 @utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=-1,
            help=_('Max size of the cluster. Default to -1, means unlimited.'))
 @utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>', default=0,
-           help=_('Desired capacity of the cluster. Default to 0.'))
+           help=_('Desired capacity of the cluster. Default to min_size if '
+                  'min_size is specified else 0.'))
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
            help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
@@ -573,6 +574,8 @@ def _show_cluster(sc, cluster_id):
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
     '''Create the cluster.'''
+    if args.min_size and not args.desired_capacity:
+        args.desired_capacity = args.min_size
     attrs = {
         'name': args.name,
         'profile_id': args.profile,
