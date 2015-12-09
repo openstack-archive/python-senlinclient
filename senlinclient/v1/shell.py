@@ -564,7 +564,7 @@ def _show_cluster(sc, cluster_id):
 @utils.arg('-o', '--parent', metavar='<PARENT_ID>',
            help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
-           help=_('Cluster creation timeout in minutes.'))
+           help=_('Cluster creation timeout in seconds.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
@@ -613,7 +613,7 @@ def do_cluster_delete(sc, args):
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID of new profile to use.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
-           help=_('New timeout (in minutes) value for the cluster.'))
+           help=_('New timeout (in seconds) value for the cluster.'))
 @utils.arg('-r', '--parent', metavar='<PARENT>',
            help=_('ID of parent cluster for the cluster.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
