@@ -948,7 +948,7 @@ def do_cluster_policy_detach(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(sc, args):
-    """Update a policy on cluster."""
+    """Update a policy's properties on a cluster."""
     kwargs = {
         'policy_id': args.policy,
         'priority': args.priority,
@@ -966,7 +966,7 @@ def do_cluster_policy_update(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_enable(sc, args):
-    """Enable a policy on cluster."""
+    """Enable a policy on a cluster."""
     resp = sc.cluster_enable_policy(args.id, args.policy)
     print('Request accepted by action: %s' % resp['action'])
 
