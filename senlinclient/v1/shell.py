@@ -54,7 +54,7 @@ def do_profile_type_list(sc, args=None):
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
 def do_profile_type_show(sc, args):
-    '''Get the details about a profile type.'''
+    """Get the details about a profile type."""
     try:
         res = sc.get_profile_type(args.type_name)
     except exc.HTTPNotFound:
@@ -85,7 +85,7 @@ def _short_id(obj):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_profile_list(sc, args=None):
-    '''List profiles that meet the criteria.'''
+    """List profiles that meet the criteria."""
     fields = ['id', 'name', 'type', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
@@ -131,7 +131,7 @@ def _show_profile(sc, profile_id):
 @utils.arg('name', metavar='<PROFILE_NAME>',
            help=_('Name of the profile to create.'))
 def do_profile_create(sc, args):
-    '''Create a profile.'''
+    """Create a profile."""
     spec = utils.get_spec_content(args.spec_file)
     type_name = spec.get('type', None)
     type_version = spec.get('version', None)
@@ -161,7 +161,7 @@ def do_profile_create(sc, args):
 @utils.arg('id', metavar='<PROFILE>',
            help=_('Name or ID of profile to show.'))
 def do_profile_show(sc, args):
-    '''Show the profile details.'''
+    """Show the profile details."""
     _show_profile(sc, args.id)
 
 
@@ -177,7 +177,7 @@ def do_profile_show(sc, args):
 @utils.arg('id', metavar='<PROFILE_ID>',
            help=_('Name or ID of the profile to update.'))
 def do_profile_update(sc, args):
-    '''Update a profile.'''
+    """Update a profile."""
     params = {
         'name': args.name,
         'permission': args.permission,
@@ -198,7 +198,7 @@ def do_profile_update(sc, args):
 @utils.arg('id', metavar='<PROFILE>', nargs='+',
            help=_('Name or ID of profile(s) to delete.'))
 def do_profile_delete(sc, args):
-    '''Delete profile(s).'''
+    """Delete profile(s)."""
     failure_count = 0
 
     for pid in args.id:
@@ -217,7 +217,7 @@ def do_profile_delete(sc, args):
 
 
 def do_policy_type_list(sc, args):
-    '''List the available policy types.'''
+    """List the available policy types."""
     types = sc.policy_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
@@ -229,7 +229,7 @@ def do_policy_type_list(sc, args):
            help=_("The template output format, one of: %s.")
                  % ', '.join(utils.supported_formats.keys()))
 def do_policy_type_show(sc, args):
-    '''Get the details about a policy type.'''
+    """Get the details about a policy type."""
     try:
         res = sc.get_policy_type(args.type_name)
     except exc.HTTPNotFound:
@@ -255,7 +255,7 @@ def do_policy_type_show(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_webhook_list(sc, args=None):
-    '''List webhooks that meet the criteria.'''
+    """List webhooks that meet the criteria."""
     fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time',
               'deleted_time']
     queries = {
@@ -287,7 +287,7 @@ def _show_webhook(sc, webhook_id=None, webhook=None):
 @utils.arg('id', metavar='<WEBHOOK>',
            help=_('Name or ID of the webhook to show.'))
 def do_webhook_show(sc, args):
-    '''Show the webhook details.'''
+    """Show the webhook details."""
     _show_webhook(sc, webhook_id=args.id)
 
 
@@ -307,7 +307,7 @@ def do_webhook_show(sc, args):
 @utils.arg('name', metavar='<NAME>',
            help=_('Name of the webhook to create.'))
 def do_webhook_create(sc, args):
-    '''Create a webhook.'''
+    """Create a webhook."""
 
     if args.cluster and args.node:
         msg = _("Only one of 'cluster' or 'node' can be specified, not both.")
@@ -339,7 +339,7 @@ def do_webhook_create(sc, args):
 @utils.arg('id', metavar='<WEBHOOK>', nargs='+',
            help=_('Name or ID of webhook(s) to delete.'))
 def do_webhook_delete(sc, args):
-    '''Delete webhook(s).'''
+    """Delete webhook(s)."""
     failure_count = 0
 
     for wid in args.id:
@@ -366,7 +366,7 @@ def do_webhook_delete(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_policy_list(sc, args=None):
-    '''List policies that meet the criteria.'''
+    """List policies that meet the criteria."""
     fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
     queries = {
         'show_deleted': args.show_deleted,
@@ -408,7 +408,7 @@ def _show_policy(sc, policy_id=None, policy=None):
 @utils.arg('name', metavar='<NAME>',
            help=_('Name of the policy to create.'))
 def do_policy_create(sc, args):
-    '''Create a policy.'''
+    """Create a policy."""
     spec = utils.get_spec_content(args.spec_file)
     attrs = {
         'name': args.name,
@@ -424,7 +424,7 @@ def do_policy_create(sc, args):
 @utils.arg('id', metavar='<POLICY>',
            help=_('Name of the policy to be updated.'))
 def do_policy_show(sc, args):
-    '''Show the policy details.'''
+    """Show the policy details."""
     _show_policy(sc, policy_id=args.id)
 
 
@@ -439,7 +439,7 @@ def do_policy_show(sc, args):
 @utils.arg('id', metavar='<POLICY>',
            help=_('Name of the policy to be updated.'))
 def do_policy_update(sc, args):
-    '''Update a policy.'''
+    """Update a policy."""
     params = {
         'name': args.name,
         'cooldown': args.cooldown,
@@ -456,7 +456,7 @@ def do_policy_update(sc, args):
 @utils.arg('id', metavar='<POLICY>', nargs='+',
            help=_('Name or ID of policy(s) to delete.'))
 def do_policy_delete(sc, args):
-    '''Delete policy(s).'''
+    """Delete policy(s)."""
     failure_count = 0
 
     for pid in args.id:
@@ -499,7 +499,7 @@ def do_policy_delete(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_cluster_list(sc, args=None):
-    '''List the user's clusters.'''
+    """List the user's clusters."""
     fields = ['id', 'name', 'status', 'created_time', 'updated_time']
     sort_keys = ['name', 'status', 'created_time', 'updated_time']
     queries = {
@@ -573,7 +573,7 @@ def _show_cluster(sc, cluster_id):
 @utils.arg('name', metavar='<CLUSTER_NAME>',
            help=_('Name of the cluster to create.'))
 def do_cluster_create(sc, args):
-    '''Create the cluster.'''
+    """Create the cluster."""
     if args.min_size and not args.desired_capacity:
         args.desired_capacity = args.min_size
     attrs = {
@@ -594,7 +594,7 @@ def do_cluster_create(sc, args):
 @utils.arg('id', metavar='<CLUSTER>', nargs='+',
            help=_('Name or ID of cluster(s) to delete.'))
 def do_cluster_delete(sc, args):
-    '''Delete the cluster(s).'''
+    """Delete the cluster(s)."""
     failure_count = 0
 
     for cid in args.id:
@@ -626,7 +626,7 @@ def do_cluster_delete(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(sc, args):
-    '''Update the cluster.'''
+    """Update the cluster."""
     cluster = sc.get_cluster(args.id)
     attrs = {
         'name': args.name,
@@ -643,7 +643,7 @@ def do_cluster_update(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to show.'))
 def do_cluster_show(sc, args):
-    '''Show details of the cluster.'''
+    """Show details of the cluster."""
     _show_cluster(sc, args.id)
 
 
@@ -663,7 +663,7 @@ def do_cluster_show(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
-    '''List nodes from cluster.'''
+    """List nodes from cluster."""
     def _short_physical_id(obj):
         return obj.physical_id[:8] if obj.physical_id else ''
 
@@ -700,7 +700,7 @@ def do_cluster_node_list(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_add(sc, args):
-    '''Add specified nodes to cluster.'''
+    """Add specified nodes to cluster."""
     node_ids = args.nodes.split(',')
     resp = sc.cluster_add_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
@@ -712,7 +712,7 @@ def do_cluster_node_add(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_del(sc, args):
-    '''Delete specified nodes from cluster.'''
+    """Delete specified nodes from cluster."""
     node_ids = args.nodes.split(',')
     resp = sc.cluster_del_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
@@ -742,7 +742,7 @@ def do_cluster_node_del(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_resize(sc, args):
-    '''Resize a cluster.'''
+    """Resize a cluster."""
     # validate parameters
     # NOTE: this will be much simpler if cliutils supports exclusive groups
 
@@ -817,7 +817,7 @@ def do_cluster_resize(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(sc, args):
-    '''Scale out a cluster by the specified number of nodes.'''
+    """Scale out a cluster by the specified number of nodes."""
     resp = sc.cluster_scale_out(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
@@ -827,7 +827,7 @@ def do_cluster_scale_out(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(sc, args):
-    '''Scale in a cluster by the specified number of nodes.'''
+    """Scale in a cluster by the specified number of nodes."""
     resp = sc.cluster_scale_in(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
@@ -846,7 +846,7 @@ def do_cluster_scale_in(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(sc, args):
-    '''List policies from cluster.'''
+    """List policies from cluster."""
     fields = ['policy_id', 'policy', 'type', 'priority', 'level',
               'cooldown', 'enabled']
     sort_keys = ['priority', 'level', 'cooldown', 'enabled']
@@ -884,7 +884,7 @@ def do_cluster_policy_list(sc, args):
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('ID or name of the cluster to query on.'))
 def do_cluster_policy_show(sc, args):
-    '''Show a specific policy that is bound to the specified cluster.'''
+    """Show a specific policy that is bound to the specified cluster."""
     queries = {
         'cluster_id': args.id,
         'policy_id': args.policy
@@ -911,7 +911,7 @@ def do_cluster_policy_show(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_attach(sc, args):
-    '''Attach policy to cluster.'''
+    """Attach policy to cluster."""
     kwargs = {
         'policy_id': args.policy,
         'priority': args.priority,
@@ -929,7 +929,7 @@ def do_cluster_policy_attach(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(sc, args):
-    '''Detach policy from cluster.'''
+    """Detach policy from cluster."""
     resp = sc.cluster_detach_policy(args.id, args.policy)
     print('Request accepted by action %s' % resp['action'])
 
@@ -949,7 +949,7 @@ def do_cluster_policy_detach(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(sc, args):
-    '''Update a policy on cluster.'''
+    """Update a policy on cluster."""
     kwargs = {
         'policy_id': args.policy,
         'priority': args.priority,
@@ -967,7 +967,7 @@ def do_cluster_policy_update(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_enable(sc, args):
-    '''Enable a policy on cluster.'''
+    """Enable a policy on cluster."""
     resp = sc.cluster_enable_policy(args.id, args.policy)
     print('Request accepted by action: %s' % resp['action'])
 
@@ -977,7 +977,7 @@ def do_cluster_policy_enable(sc, args):
 @utils.arg('id', metavar='<NAME or ID>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_disable(sc, args):
-    '''Disable a policy on a cluster.'''
+    """Disable a policy on a cluster."""
     resp = sc.cluster_disable_policy(args.id, args.policy)
     print('Request accepted by action: %s' % resp['action'])
 
@@ -1009,7 +1009,7 @@ def do_cluster_policy_disable(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_node_list(sc, args):
-    '''Show list of nodes.'''
+    """Show list of nodes."""
     def _short_cluster_id(obj):
         return obj.cluster_id[:8] if obj.cluster_id else ''
 
@@ -1061,7 +1061,7 @@ def do_node_list(sc, args):
 
 
 def _show_node(sc, node_id, show_details=False):
-    '''Show detailed info about the specified node.'''
+    """Show detailed info about the specified node."""
     try:
         node = sc.get_node(node_id, show_details)
     except exc.HTTPNotFound:
@@ -1094,7 +1094,7 @@ def _show_node(sc, node_id, show_details=False):
 @utils.arg('name', metavar='<NODE_NAME>',
            help=_('Name of the node to create.'))
 def do_node_create(sc, args):
-    '''Create the node.'''
+    """Create the node."""
     attrs = {
         'name': args.name,
         'cluster_id': args.cluster,
@@ -1112,14 +1112,14 @@ def do_node_create(sc, args):
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of the node to show the details for.'))
 def do_node_show(sc, args):
-    '''Show detailed info about the specified node.'''
+    """Show detailed info about the specified node."""
     _show_node(sc, args.id, args.details)
 
 
 @utils.arg('id', metavar='<NODE>', nargs='+',
            help=_('Name or ID of node(s) to delete.'))
 def do_node_delete(sc, args):
-    '''Delete the node(s).'''
+    """Delete the node(s)."""
     failure_count = 0
 
     for nid in args.id:
@@ -1148,7 +1148,7 @@ def do_node_delete(sc, args):
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to update.'))
 def do_node_update(sc, args):
-    '''Update the node.'''
+    """Update the node."""
     # Find the node first, we need its UUID
     try:
         node = sc.get_node(args.id)
@@ -1171,7 +1171,7 @@ def do_node_update(sc, args):
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to operate on.'))
 def do_node_join(sc, args):
-    '''Make node join the specified cluster.'''
+    """Make node join the specified cluster."""
     resp = sc.node_join(args.id, args.cluster)
     print('Request accepted by action: %s' % resp['action'])
     _show_node(sc, args.id)
@@ -1180,7 +1180,7 @@ def do_node_join(sc, args):
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to operate on.'))
 def do_node_leave(sc, args):
-    '''Make node leave its current cluster.'''
+    """Make node leave its current cluster."""
     resp = sc.node_leave(args.id)
     print('Request accepted by action: %s' % resp['action'])
     _show_node(sc, args.id)
@@ -1212,7 +1212,7 @@ def do_node_leave(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_event_list(sc, args):
-    '''List events.'''
+    """List events."""
     def _short_obj_id(obj):
         return obj.obj_id[:8] if obj.obj_id else ''
 
@@ -1253,7 +1253,7 @@ def do_event_list(sc, args):
 @utils.arg('id', metavar='<EVENT>',
            help=_('ID of event to display details for.'))
 def do_event_show(sc, args):
-    '''Describe the event.'''
+    """Describe the event."""
     try:
         event = sc.get_event(args.id)
     except exc.HTTPNotFound as ex:
@@ -1283,7 +1283,7 @@ def do_event_show(sc, args):
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
-    '''List actions.'''
+    """List actions."""
     def _short_target(obj):
         return obj.target[:8] if obj.target else ''
 
@@ -1345,7 +1345,7 @@ def do_action_list(sc, args):
 @utils.arg('id', metavar='<ACTION>',
            help=_('Name or ID of the action to show the details for.'))
 def do_action_show(sc, args):
-    '''Show detailed info about the specified action.'''
+    """Show detailed info about the specified action."""
     try:
         action = sc.get_action(args.id)
     except exc.HTTPNotFound:
