@@ -14,12 +14,12 @@ from senlinclient.common import utils
 
 
 def do_command_foo(sc, args):
-    '''Pydoc for command foo.'''
+    """Pydoc for command foo."""
     return
 
 
 @utils.arg('-F', '--flag', metavar='<FLAG>', help='Flag desc.')
 @utils.arg('arg1', metavar='<ARG1>', help='Arg1 desc')
 def do_command_bar(sc, args):
-    '''This is the command doc.'''
+    """This is the command doc."""
     return

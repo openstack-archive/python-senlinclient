@@ -75,11 +75,11 @@ class ProfileAction(argparse.Action):
 
 
 class Resource(base.Resource):
-    '''Senlin version of resource.
+    """Senlin version of resource.
 
     These classes are here because the OpenStack SDK base version is making
     some assumptions about operations that cannot be satisfied in Senlin.
-    '''
+    """
 
     def create(self, session, extra_attrs=False):
         """Create a remote resource from this instance.

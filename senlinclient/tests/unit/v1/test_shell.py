@@ -41,7 +41,7 @@ class ShellTest(testtools.TestCase):
         }
 
     def _make_args(self, args):
-        '''Convert a dict to an object.'''
+        """Convert a dict to an object."""
         class Args(object):
             def __init__(self, entries):
                 self.__dict__.update(entries)

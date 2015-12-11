@@ -106,7 +106,7 @@ def print_dict(d, formatters=None):
 
 
 def format_parameters(params, parse_semicolon=True):
-    '''Reformat parameters into dict of format expected by the API.'''
+    """Reformat parameters into dict of format expected by the API."""
     if not params:
         return {}
 

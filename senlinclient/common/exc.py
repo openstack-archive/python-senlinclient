@@ -24,7 +24,7 @@ verbose = False
 
 
 class BaseException(Exception):
-    '''An error occurred.'''
+    """An error occurred."""
     def __init__(self, message=None):
         self.message = message
 
@@ -33,11 +33,11 @@ class BaseException(Exception):
 
 
 class CommandError(BaseException):
-    '''Invalid usage of CLI.'''
+    """Invalid usage of CLI."""
 
 
 class FileFormatError(BaseException):
-    '''Illegal file format detected.'''
+    """Illegal file format detected."""
 
 
 class HTTPException(BaseException):
@@ -228,10 +228,10 @@ _EXCEPTION_MAP = {
 
 
 def parse_exception(exc):
-    '''Parse exception code and yield useful information.
+    """Parse exception code and yield useful information.
 
     :param details: details of the exception.
-    '''
+    """
     if isinstance(exc, sdkexc.HttpException):
         try:
             record = jsonutils.loads(exc.details)
