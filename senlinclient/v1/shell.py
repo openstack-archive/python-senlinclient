@@ -1251,6 +1251,22 @@ def do_event_show(sc, args):
 # ACTIONS
 
 
+def _fmt_depends_on(obj):
+    if not obj.depends_on:
+        return ''
+    idlist = obj.depends_on
+
+    return '\n'.join(idlist)
+
+
+def _fmt_depended_by(obj):
+    if not obj.depended_by:
+        return ''
+    idlist = obj.depended_by
+
+    return '\n'.join(idlist)
+
+
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned actions. '
                   'This can be specified multiple times, or once with '
@@ -1270,24 +1286,6 @@ def do_event_show(sc, args):
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
     """List actions."""
-
-    def _fmt_depends_on(obj):
-        if not obj.depends_on:
-            return ''
-        idlist = obj.depends_on
-        if not args.full_id:
-            idlist = [item[:8] for item in obj.depends_on]
-
-        return '\n'.join(idlist)
-
-    def _fmt_depended_by(obj):
-        if not obj.depended_by:
-            return ''
-        idlist = obj.depended_by
-        if not args.full_id:
-            idlist = [item[:8] for item in obj.depended_by]
-
-        return '\n'.join(idlist)
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
@@ -1321,6 +1319,10 @@ def do_action_list(sc, args):
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
         formatters['target'] = lambda x: x.target[:8] if x.target else ''
+        dp_on = lambda x: [item[:8] for item in x.depends_on]
+        formatters['depend_on'] = '\n'.join(dp_on)
+        dp_by = lambda x: [item[:8] for item in x.depended_by]
+        formatters['depended_by'] = '\n'.join(dp_by)
 
     utils.print_list(actions, fields, formatters=formatters,
                      sortby_index=sortby_index)
