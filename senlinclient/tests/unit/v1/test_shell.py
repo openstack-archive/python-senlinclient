@@ -775,3 +775,52 @@ class ShellTest(testtools.TestCase):
         sh.do_cluster_node_del(client, args)
         client.cluster_del_nodes.assert_called_once_with('cluster_id',
                                                          node_ids)
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_node_list(self, mock_print):
+        client = mock.Mock()
+        fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
+                  'profile_name', 'created_time', 'updated_time',
+                  'deleted_time']
+        args = {
+            'show_deleted': True,
+            'cluster': 'cluster1',
+            'sort_keys': 'name',
+            'sort_dir': 'asc',
+            'limit': 20,
+            'marker': 'marker_id',
+            'global_project': True,
+            'filters': ['status=active'],
+            'full_id': True,
+        }
+        queries = {
+            'show_deleted': True,
+            'cluster_id': 'cluster1',
+            'sort_keys': 'name',
+            'sort_dir': 'asc',
+            'limit': 20,
+            'marker': 'marker_id',
+            'global_project': True,
+            'status': 'active',
+        }
+        args = self._make_args(args)
+        nodes = mock.Mock()
+        client.nodes.return_value = nodes
+        short_id = mock.Mock()
+        sh._short_id = short_id
+        short_cluster_id = mock.Mock()
+        sh._short_cluster_id = short_cluster_id
+        short_physical_id = mock.Mock()
+        sh._short_physical_id = short_physical_id
+        formatters = {}
+        sh.do_node_list(client, args)
+        mock_print.assert_called_once_with(nodes, fields,
+                                           formatters=formatters,
+                                           sortby_index=None)
+        client.nodes.assert_called_once_with(**queries)
+        # wrong sort key
+        args.sort_keys = 'name;wrong_key'
+        ex = exc.CommandError
+        ex = self.assertRaises(ex, sh.do_node_list, client, args)
+        msg = _('Invalid sorting key: wrong_key')
+        self.assertEqual(msg, six.text_type(ex))

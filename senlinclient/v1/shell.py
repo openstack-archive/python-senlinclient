@@ -1033,7 +1033,7 @@ def do_node_list(sc, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    if args.show_deleted is not None:
+    if args.show_deleted:
         fields.append('deleted_time')
 
     sortby_index = None
