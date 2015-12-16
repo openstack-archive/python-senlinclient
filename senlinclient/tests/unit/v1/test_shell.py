@@ -107,8 +107,6 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_profile_list(self, mock_print):
         client = mock.Mock()
-        short_id = mock.Mock()
-        sh._short_id = short_id
         profiles = mock.Mock()
         client.profiles.return_value = profiles
         fields = ['id', 'name', 'type', 'created_time']
@@ -116,24 +114,13 @@ class ShellTest(testtools.TestCase):
             'show_deleted': False,
             'limit': 20,
             'marker': 'mark_id',
-            'full_id': True
         }
-        queries = {
-            'show_deleted': False,
-            'limit': 20,
-            'marker': 'mark_id',
-        }
+        queries = copy.deepcopy(args)
         formatters = {}
         args = self._make_args(args)
+        args.full_id = True
         sh.do_profile_list(client, args)
         client.profiles.assert_called_once_with(**queries)
-        mock_print.assert_called_with(profiles, fields, formatters=formatters,
-                                      sortby_index=1)
-
-        # short_id is requested
-        args.full_id = False
-        sh.do_profile_list(client, args)
-        formatters = {'id': short_id}
         mock_print.assert_called_with(profiles, fields, formatters=formatters,
                                       sortby_index=1)
 
@@ -357,15 +344,6 @@ class ShellTest(testtools.TestCase):
         mock_print.assert_called_with(webhooks, fields,
                                       formatters=formatters,
                                       sortby_index=1)
-        # short_id is requested
-        args.full_id = False
-        short_id = mock.Mock()
-        sh._short_id = short_id
-        formatters = {'id': short_id}
-        sh.do_webhook_list(client, args)
-        mock_print.assert_called_with(webhooks, fields,
-                                      formatters=formatters,
-                                      sortby_index=1)
 
     @mock.patch.object(utils, 'print_dict')
     def test_show_webhook(self, mock_print):
@@ -457,7 +435,7 @@ class ShellTest(testtools.TestCase):
             'show_deleted': True,
             'limit': 20,
             'marker': 'fake_id',
-            'full_id': False
+            'full_id': True
         }
         args = self._make_args(args)
         queries = {
@@ -468,9 +446,7 @@ class ShellTest(testtools.TestCase):
         }
         policies = mock.Mock()
         client.policies.return_value = policies
-        short_id = mock.Mock()
-        sh._short_id = short_id
-        formatters = {'id': short_id}
+        formatters = {}
         sh.do_policy_list(client, args)
         client.policies.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(
@@ -603,10 +579,8 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         clusters = mock.Mock()
         client.clusters.return_value = clusters
-        args.full_id = False
-        short_id = mock.Mock()
-        sh._short_id = short_id
-        formatters = {'id': short_id}
+        args.full_id = True
+        formatters = {}
         sh.do_cluster_list(client, args)
         client.clusters.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(clusters, fields,
