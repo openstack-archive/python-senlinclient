@@ -1083,7 +1083,7 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
         service = mock.Mock()
-        fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
+        fields = ['id', 'name', 'index', 'status', 'cluster_id', 'physical_id',
                   'profile_name', 'created_at', 'updated_at']
         args = {
             'cluster': 'cluster1',
@@ -1318,7 +1318,7 @@ class ShellTest(testtools.TestCase):
     def test_do_action_list(self, mock_print):
         service = mock.Mock()
         fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
-                  'depended_by']
+                  'depended_by', 'created_at']
         args = {
             'sort_keys': 'status',
             'sort_dir': 'asc',

@@ -873,7 +873,7 @@ def do_cluster_policy_disable(service, args):
 def do_node_list(service, args):
     """Show list of nodes."""
 
-    fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
+    fields = ['id', 'name', 'index', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_at', 'updated_at']
     sort_keys = ['index', 'name', 'created_at', 'updated_at', 'status']
 
@@ -1255,7 +1255,7 @@ def do_action_list(service, args):
     """List actions."""
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
-              'depended_by']
+              'depended_by', 'created_at']
     sort_keys = ['name', 'target', 'action', 'created_at', 'status']
 
     queries = {
