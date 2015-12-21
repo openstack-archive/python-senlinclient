@@ -1215,9 +1215,9 @@ def do_event_list(sc, args):
     def _short_obj_id(obj):
         return obj.obj_id[:8] if obj.obj_id else ''
 
-    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'action', 'status',
-              'status_reason']
-    sort_keys = ['timestamp', 'obj_type', 'obj_name', 'user', 'action']
+    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
+              'status', 'status_reason', 'level']
+    sort_keys = ['timestamp', 'obj_type', 'obj_name', 'level', 'action']
 
     queries = {
         'sort_keys': args.sort_keys,
