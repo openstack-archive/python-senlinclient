@@ -326,105 +326,132 @@ class ShellTest(testtools.TestCase):
         self.assertEqual(msg, six.text_type(ex))
 
     @mock.patch.object(utils, 'print_list')
-    def test_do_webhook_list(self, mock_print):
+    def test_do_receiver_list(self, mock_print):
         client = mock.Mock()
-        args = {
-            'show_deleted': True,
+        params = {
             'limit': 10,
             'marker': 'fake_id',
-            'full_id': True
+            'sort_keys': 'name',
+            'sort_dir': 'asc',
+            'filters': ['filter_key=filter_value'],
+            'show_deleted': True,
+            'global_project': False,
+            'full_id': False,
         }
-        fields = ['id', 'name', 'obj_id', 'obj_type', 'action',
+        fields = ['id', 'name', 'type', 'cluster_id', 'action',
                   'created_time', 'deleted_time']
-        args = self._make_args(args)
-        webhooks = mock.Mock()
-        client.webhooks.return_value = webhooks
-        formatters = {}
-        sh.do_webhook_list(client, args)
-        mock_print.assert_called_with(webhooks, fields,
+        args = self._make_args(params)
+        queries = copy.deepcopy(params)
+        del queries['filters']
+        queries['filter_key'] = 'filter_value'
+        r1 = mock.Mock()
+        r1.id = '01234567-abcd-efgh'
+        r1.cluster_id = 'abcdefgh-abcd-efgh'
+        receivers = [r1]
+        client.receivers.return_value = receivers
+        formatters = {
+            'id': mock.ANY,
+            'cluster_id': mock.ANY
+        }
+        sh.do_receiver_list(client, args)
+        mock_print.assert_called_with(receivers, fields,
                                       formatters=formatters,
-                                      sortby_index=1)
+                                      sortby_index=None)
+        # full_id is requested
+        args.full_id = True
+        sh.do_receiver_list(client, args)
+        mock_print.assert_called_with(receivers, fields,
+                                      formatters={},
+                                      sortby_index=None)
+
+        # default sorting
+        args.sort_keys = None
+        sh.do_receiver_list(client, args)
+        mock_print.assert_called_with(receivers, fields,
+                                      formatters={},
+                                      sortby_index=0)
 
     @mock.patch.object(utils, 'print_dict')
-    def test_show_webhook(self, mock_print):
+    def test_show_receiver(self, mock_print):
         client = mock.Mock()
-        webhook = mock.Mock()
-        webhook_id = 'webhook_id'
-        webhook.id = webhook_id
-        client.get_webhook.return_value = webhook
-        webhook_dict = mock.Mock()
-        webhook.to_dict.return_value = webhook_dict
-        sh._show_webhook(client, webhook_id, None)
-        formatters = {}
-        client.get_webhook.assert_called_once_with(webhook_id)
-        mock_print.assert_called_once_with(webhook_dict, formatters=formatters)
+        receiver = mock.Mock()
+        receiver_id = '01234567-abcd-abcd-abcdef'
+        receiver.id = receiver_id
+        client.get_receiver.return_value = receiver
+        receiver_dict = mock.Mock()
+        receiver.to_dict.return_value = receiver_dict
+        sh._show_receiver(client, receiver_id)
+        formatters = {
+            'actor': utils.json_formatter,
+            'params': utils.json_formatter,
+            'channel': utils.json_formatter,
+        }
+        client.get_receiver.assert_called_once_with(receiver_id)
+        mock_print.assert_called_once_with(receiver_dict,
+                                           formatters=formatters)
 
-    def test_show_webhook_not_found(self):
+    def test_show_receiver_not_found(self):
         client = mock.Mock()
-        webhook = mock.Mock()
-        webhook_id = 'wrong_id'
-        webhook.id = webhook_id
+        receiver = mock.Mock()
+        receiver_id = 'wrong_id'
+        receiver.id = receiver_id
         ex = exc.HTTPNotFound
-        client.get_webhook.side_effect = ex
+        client.get_receiver.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
-                               sh._show_webhook, client, webhook_id)
-        self.assertEqual(_('Webhook not found: wrong_id'), six.text_type(ex))
+                               sh._show_receiver, client, receiver_id)
+        self.assertEqual(_('Receiver not found: wrong_id'), six.text_type(ex))
 
-    @mock.patch.object(sh, '_show_webhook')
-    def test_do_webhook_show(self, mock_show):
+    @mock.patch.object(sh, '_show_receiver')
+    def test_do_receiver_show(self, mock_show):
         client = mock.Mock()
-        args = {'id': 'webhook_id'}
+        args = {'id': 'receiver_id'}
         args = self._make_args(args)
-        sh.do_webhook_show(client, args)
+        sh.do_receiver_show(client, args)
         mock_show.assert_called_once_with(client,
-                                          webhook_id='webhook_id')
+                                          receiver_id='receiver_id')
 
-    @mock.patch.object(sh, '_show_webhook')
-    def test_do_webhook_create(self, mock_show):
+    @mock.patch.object(sh, '_show_receiver')
+    def test_do_receiver_create(self, mock_show):
         client = mock.Mock()
         args = {
-            'name': 'webhook1',
+            'name': 'receiver1',
+            'type': 'webhook',
             'cluster': 'cluster1',
-            'node': None,
             'action': 'CLUSTER_SCALE_IN',
-            'credential': ['user=demo', 'password=demo'],
             'params': {}
         }
         args = self._make_args(args)
         params = {
-            'name': 'webhook1',
-            'obj_id': 'cluster1',
-            'obj_type': 'cluster',
+            'name': 'receiver1',
+            'type': 'webhook',
+            'cluster_id': 'cluster1',
             'action': 'CLUSTER_SCALE_IN',
-            'credential': {
-                'user': 'demo',
-                'password': 'demo'
-            },
             'params': {}
         }
-        webhook = mock.Mock()
-        client.create_webhook.return_value = webhook
-        sh.do_webhook_create(client, args)
-        client.create_webhook.assert_called_once_with(**params)
-        mock_show.assert_called_once_with(client, webhook=webhook)
+        receiver = mock.Mock()
+        receiver.id = 'FAKE_ID'
+        client.create_receiver.return_value = receiver
+        sh.do_receiver_create(client, args)
+        client.create_receiver.assert_called_once_with(**params)
+        mock_show.assert_called_once_with(client, 'FAKE_ID')
 
-    def test_do_webhook_delete(self):
+    def test_do_receiver_delete(self):
         client = mock.Mock()
-        args = {'id': ['webhook_id']}
+        args = {'id': ['receiver_id']}
         args = self._make_args(args)
-        client.delete_webhook = mock.Mock()
-        sh.do_webhook_delete(client, args)
-        client.delete_webhook.assert_called_once_with('webhook_id')
+        client.delete_receiver = mock.Mock()
+        sh.do_receiver_delete(client, args)
+        client.delete_receiver.assert_called_once_with('receiver_id')
 
-    def test_do_webhook_delete_not_found(self):
+    def test_do_receiver_delete_not_found(self):
         client = mock.Mock()
-        args = {'id': ['webhook_id']}
+        args = {'id': ['receiver_id']}
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.delete_webhook.side_effect = ex
+        client.delete_receiver.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
-                               sh.do_webhook_delete, client, args)
-        msg = _('Failed to delete some of the specified webhook(s).')
+                               sh.do_receiver_delete, client, args)
+        msg = _('Failed to delete some of the specified receiver(s).')
         self.assertEqual(msg, six.text_type(ex))
 
     @mock.patch.object(utils, 'print_list')

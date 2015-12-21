@@ -154,52 +154,6 @@ class Policy(resource.Resource):
         return pb_dict
 
 
-class Webhook(resource.Resource):
-    resource_key = 'webhook'
-    resources_key = 'webhooks'
-    base_path = '/webhooks'
-    service = cluster_service.ClusterService()
-
-    # Capabilities
-    allow_list = True
-    allow_retrieve = True
-    allow_create = True
-    allow_delete = True
-
-    # Properties
-    id = resource.prop('id')
-    user = resource.prop('user')
-    domain = resource.prop('domain')
-    project = resource.prop('project')
-    name = resource.prop('name')
-    obj_type = resource.prop('obj_type')
-    obj_id = resource.prop('obj_id')
-    action = resource.prop('action')
-    created_time = resource.prop('created_time')
-    deleted_time = resource.prop('deleted_time')
-    credential = resource.prop('credential')
-    params = resource.prop('params', type=dict)
-    url = resource.prop('url')
-
-    def to_dict(self):
-        webhook_dict = {
-            'id': self.id,
-            'user': self.user,
-            'domain': self.domain,
-            'project': self.project,
-            'name': self.name,
-            'obj_type': self.obj_type,
-            'obj_id': self.obj_id,
-            'action': self.action,
-            'credential': self.credential,
-            'params': self.params,
-            'created_time': self.created_time,
-            'deleted_time': self.deleted_time,
-            'url': self.url,
-        }
-        return webhook_dict
-
-
 class Cluster(resource.Resource):
     resource_key = 'cluster'
     resources_key = 'clusters'
@@ -535,6 +489,34 @@ class Action(resource.Resource):
             'depended_by': self.depended_by,
         }
         return action_dict
+
+
+class Receiver(resource.Resource):
+    resource_key = 'receiver'
+    resources_key = 'receivers'
+    base_path = '/receivers'
+    service = cluster_service.ClusterService()
+
+    # Capabilities
+    allow_list = True
+    allow_retrieve = True
+    allow_create = True
+    allow_delete = True
+
+    # Properties
+    id = resource.prop('id')
+    user = resource.prop('user')
+    project = resource.prop('project')
+    domain = resource.prop('domain')
+    name = resource.prop('name')
+    type = resource.prop('type')
+    cluster_id = resource.prop('cluster_id')
+    action = resource.prop('action')
+    created_time = resource.prop('created_time')
+    deleted_time = resource.prop('deleted_time')
+    actor = resource.prop('actor', type=dict)
+    params = resource.prop('params', type=dict)
+    channel = resource.prop('channel', type=dict)
 
 
 class Event(resource.Resource):

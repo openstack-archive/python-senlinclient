@@ -68,19 +68,6 @@ class Client(object):
     def get_policy_type(self, value):
         return self.get(models.PolicyType, dict(name=value))
 
-    def webhooks(self, **queries):
-        return self.list(models.Webhook, **queries)
-
-    def create_webhook(self, **attrs):
-        return self.create(models.Webhook, attrs, extra_attrs=True)
-
-    def get_webhook(self, value):
-        return self.get(models.Webhook, dict(id=value))
-
-    def delete_webhook(self, value, ignore_missing=True):
-        return self.delete(models.Webhook,
-                           dict(id=value, ignore_missing=ignore_missing))
-
     def policies(self, **queries):
         return self.list(models.Policy, **queries)
 
@@ -250,6 +237,19 @@ class Client(object):
             'action': 'leave',
         }
         return self.action(models.Node, params)
+
+    def receivers(self, **queries):
+        return self.list(models.Receiver, **queries)
+
+    def create_receiver(self, **attrs):
+        return self.create(models.Receiver, attrs)
+
+    def get_receiver(self, value):
+        return self.get(models.Receiver, dict(id=value))
+
+    def delete_receiver(self, value, ignore_missing=True):
+        return self.delete(models.Receiver,
+                           dict(id=value, ignore_missing=ignore_missing))
 
     def events(self, **queries):
         return self.list(models.Event, **queries)

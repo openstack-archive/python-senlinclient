@@ -239,115 +239,133 @@ def do_policy_type_show(sc, args):
         print(utils.format_output(pt))
 
 
-# WEBHOOKS
+# RECEIVERS
 
 
 @utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include deleted webhooks if any.'))
+           help=_('Include deleted receivers if any.'))
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned receivers. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of webhooks returned.'))
+           help=_('Limit the number of receivers returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return webhooks that appear after the given ID.'))
+           help=_('Only return receivers that appear after the given ID.'))
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned receivers.'))
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Indicate that the list should include receivers from'
+                  ' all projects. This option is subject to access policy '
+                  'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
-def do_webhook_list(sc, args=None):
-    """List webhooks that meet the criteria."""
-    fields = ['id', 'name', 'obj_id', 'obj_type', 'action', 'created_time',
-              'deleted_time']
+def do_receiver_list(sc, args=None):
+    """List receivers that meet the criteria."""
+    fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
+    sort_keys = ['name', 'type', 'cluster_id', 'created_time']
     queries = {
-        'show_deleted': args.show_deleted,
         'limit': args.limit,
         'marker': args.marker,
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
+        'show_deleted': args.show_deleted,
+        'global_project': args.global_project,
     }
 
-    webhooks = sc.webhooks(**queries)
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
+
+    if args.show_deleted:
+        fields.append('deleted_time')
+
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+        sortby_index = None
+    else:
+        sortby_index = 0
+
+    receivers = sc.receivers(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
-            'id': lambda x: x.id[:8]
+            'id': lambda x: x.id[:8],
+            'cluster_id': lambda x: x.cluster_id[:8],
         }
-    utils.print_list(webhooks, fields, formatters=formatters, sortby_index=1)
+    utils.print_list(receivers, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
-def _show_webhook(sc, webhook_id=None, webhook=None):
-    if webhook is None:
-        try:
-            webhook = sc.get_webhook(webhook_id)
-        except exc.HTTPNotFound:
-            raise exc.CommandError(_('Webhook not found: %s') % webhook_id)
+def _show_receiver(sc, receiver_id):
+    try:
+        receiver = sc.get_receiver(receiver_id)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Receiver not found: %s') % receiver_id)
 
-    formatters = {}
-    utils.print_dict(webhook.to_dict(), formatters=formatters)
+    formatters = {
+        'actor': utils.json_formatter,
+        'params': utils.json_formatter,
+        'channel': utils.json_formatter,
+    }
 
-
-@utils.arg('id', metavar='<WEBHOOK>',
-           help=_('Name or ID of the webhook to show.'))
-def do_webhook_show(sc, args):
-    """Show the webhook details."""
-    _show_webhook(sc, webhook_id=args.id)
+    utils.print_dict(receiver.to_dict(), formatters=formatters)
 
 
+@utils.arg('id', metavar='<RECEIVER>',
+           help=_('Name or ID of the receiver to show.'))
+def do_receiver_show(sc, args):
+    """Show the receiver details."""
+    _show_receiver(sc, receiver_id=args.id)
+
+
+@utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
+           help=_('Type of the receiver to create.'))
 @utils.arg('-c', '--cluster', metavar='<CLUSTER>',
-           help=_('Targeted cluster for this webhook.'))
-@utils.arg('-n', '--node', metavar='<NODE>',
-           help=_('Targeted node for this webhook.'))
+           help=_('Targeted cluster for this receiver.'))
 @utils.arg('-a', '--action', metavar='<ACTION>', required=True,
-           help=_('Name of action to be triggered for this webhook.'))
-@utils.arg('-C', '--credential', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('The credential to be used when the webhook is triggered.'),
-           action='append')
+           help=_('Name or ID of the targeted action to be triggered.'))
 @utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('A dictionary of parameters that will be passed to target '
-                  'action when the webhook is triggered.'),
+                  'action when the receiver is triggered.'),
            action='append')
 @utils.arg('name', metavar='<NAME>',
-           help=_('Name of the webhook to create.'))
-def do_webhook_create(sc, args):
-    """Create a webhook."""
-
-    if args.cluster and args.node:
-        msg = _("Only one of 'cluster' or 'node' can be specified, not both.")
-        raise exc.CommandError(msg)
-
-    if args.cluster:
-        obj_type = 'cluster'
-        obj_id = args.cluster
-    elif args.node:
-        obj_type = 'node'
-        obj_id = args.node
-    else:
-        msg = _("One of 'cluster' or 'node' must be specified.")
-        raise exc.CommandError(msg)
+           help=_('Name of the receiver to create.'))
+def do_receiver_create(sc, args):
+    """Create a receiver."""
 
     params = {
         'name': args.name,
-        'obj_id': obj_id,
-        'obj_type': obj_type,
+        'type': args.type,
+        'cluster_id': args.cluster,
         'action': args.action,
-        'credential': utils.format_parameters(args.credential),
         'params': utils.format_parameters(args.params)
     }
 
-    webhook = sc.create_webhook(**params)
-    _show_webhook(sc, webhook=webhook)
+    receiver = sc.create_receiver(**params)
+    _show_receiver(sc, receiver.id)
 
 
-@utils.arg('id', metavar='<WEBHOOK>', nargs='+',
-           help=_('Name or ID of webhook(s) to delete.'))
-def do_webhook_delete(sc, args):
-    """Delete webhook(s)."""
+@utils.arg('id', metavar='<RECEIVER>', nargs='+',
+           help=_('Name or ID of receiver(s) to delete.'))
+def do_receiver_delete(sc, args):
+    """Delete receiver(s)."""
     failure_count = 0
 
     for wid in args.id:
         try:
-            sc.delete_webhook(wid)
+            sc.delete_receiver(wid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
     if failure_count > 0:
-        msg = _('Failed to delete some of the specified webhook(s).')
+        msg = _('Failed to delete some of the specified receiver(s).')
         raise exc.CommandError(msg)
-    print('Webhook deleted: %s' % args.id)
+    print('Receivers deleted: %s' % args.id)
 
 
 # POLICIES
