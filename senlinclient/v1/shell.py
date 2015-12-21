@@ -69,10 +69,6 @@ def do_profile_type_show(sc, args):
         print(utils.format_output(pt))
 
 
-def _short_id(obj):
-    return obj.id[:8]
-
-
 # PROFILES
 
 
@@ -97,7 +93,7 @@ def do_profile_list(sc, args=None):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'id': _short_id,
+            'id': lambda x: x.id[:8],
         }
     utils.print_list(profiles, fields, formatters=formatters, sortby_index=1)
 
@@ -268,7 +264,7 @@ def do_webhook_list(sc, args=None):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'id': _short_id,
+            'id': lambda x: x.id[:8]
         }
     utils.print_list(webhooks, fields, formatters=formatters, sortby_index=1)
 
@@ -378,7 +374,7 @@ def do_policy_list(sc, args=None):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'id': _short_id,
+            'id': lambda x: x.id[:8]
         }
     utils.print_list(policies, fields, formatters=formatters, sortby_index=1)
 
@@ -532,7 +528,7 @@ def do_cluster_list(sc, args=None):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'id': _short_id,
+            'id': lambda x: x.id[:8]
         }
     utils.print_list(clusters, fields, formatters=formatters,
                      sortby_index=sortby_index)
@@ -663,8 +659,6 @@ def do_cluster_show(sc, args):
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(sc, args):
     """List nodes from cluster."""
-    def _short_physical_id(obj):
-        return obj.physical_id[:8] if obj.physical_id else ''
 
     queries = {
         'cluster_id': args.id,
@@ -683,8 +677,8 @@ def do_cluster_node_list(sc, args):
 
     if not args.full_id:
         formatters = {
-            'id': _short_id,
-            'physical_id': _short_physical_id,
+            'id': lambda x: x.id[:8],
+            'physical_id': lambda x: x.physical_id[:8] if x.physical_id else ''
         }
     else:
         formatters = {}
@@ -871,7 +865,7 @@ def do_cluster_policy_list(sc, args):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'policy_id': _short_id,
+            'policy_id': lambda x: x.id[:8]
         }
 
     utils.print_list(policies, fields, formatters=formatters,
@@ -1009,11 +1003,6 @@ def do_cluster_policy_disable(sc, args):
            help=_('Print full IDs in list.'))
 def do_node_list(sc, args):
     """Show list of nodes."""
-    def _short_cluster_id(obj):
-        return obj.cluster_id[:8] if obj.cluster_id else ''
-
-    def _short_physical_id(obj):
-        return obj.physical_id[:8] if obj.physical_id else ''
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_time', 'updated_time']
@@ -1048,9 +1037,9 @@ def do_node_list(sc, args):
 
     if not args.full_id:
         formatters = {
-            'id': _short_id,
-            'cluster_id': _short_cluster_id,
-            'physical_id': _short_physical_id,
+            'id': lambda x: x.id[:8],
+            'cluster_id': lambda x: x.cluster_id[:8] if x.cluster_id else '',
+            'physical_id': lambda x: x.physical_id[:8] if x.physical_id else ''
         }
     else:
         formatters = {}
@@ -1212,8 +1201,6 @@ def do_node_leave(sc, args):
            help=_('Print full IDs in list.'))
 def do_event_list(sc, args):
     """List events."""
-    def _short_obj_id(obj):
-        return obj.obj_id[:8] if obj.obj_id else ''
 
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
               'status', 'status_reason', 'level']
@@ -1241,8 +1228,8 @@ def do_event_list(sc, args):
 
     formatters = {}
     if not args.full_id:
-        formatters['id'] = _short_id
-        formatters['obj_id'] = _short_obj_id
+        formatters['id'] = lambda x: x.id[:8]
+        formatters['obj_id'] = lambda x: x.obj_id[:8] if x.obj_id else ''
 
     events = sc.events(**queries)
     utils.print_list(events, fields, formatters=formatters,
@@ -1283,8 +1270,6 @@ def do_event_show(sc, args):
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
     """List actions."""
-    def _short_target(obj):
-        return obj.target[:8] if obj.target else ''
 
     def _fmt_depends_on(obj):
         if not obj.depends_on:
@@ -1334,8 +1319,8 @@ def do_action_list(sc, args):
         'depended_by': _fmt_depended_by
     }
     if not args.full_id:
-        formatters['id'] = _short_id
-        formatters['target'] = _short_target
+        formatters['id'] = lambda x: x.id[:8]
+        formatters['target'] = lambda x: x.target[:8] if x.target else ''
 
     utils.print_list(actions, fields, formatters=formatters,
                      sortby_index=sortby_index)
