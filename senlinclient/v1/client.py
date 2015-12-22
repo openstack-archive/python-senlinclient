@@ -32,55 +32,46 @@ class Client(object):
     # useless when OpenStackSDK has adopted all senlin resources.
     ######################################################################
 
-    def get_build_info(self, **kwargs):
-        return self.conn.cluster.get_build_info(**kwargs)
-        # return self.get(models.BuildInfo)
+    def get_profile_type(self, profile_type):
+        return self.conn.cluster.get_profile_type(profile_type)
 
-    def profile_types(self, **kwargs):
-        return self.list(models.ProfileType, paginated=False)
-
-    def get_profile_type(self, value):
-        return self.get(models.ProfileType, dict(name=value))
-
-    def profiles(self, **queries):
-        return self.list(models.Profile, **queries)
+    def profiles(self, **query):
+        return self.conn.cluster.profiles(**query)
 
     def create_profile(self, **attrs):
-        return self.create(models.Profile, attrs)
+        return self.conn.cluster.create_profile(**attrs)
 
-    def get_profile(self, value):
-        return self.get(models.Profile, dict(id=value))
+    def get_profile(self, profile):
+        return self.conn.cluster.get_profile(profile)
 
-    def update_profile(self, value, **attrs):
-        attrs['id'] = value
-        return self.update(models.Profile, attrs)
+    def update_profile(self, profile, **attrs):
+        return self.conn.cluster.update_profile(profile, **attrs)
 
-    def delete_profile(self, value, ignore_missing=True):
-        return self.delete(models.Profile,
-                           dict(id=value, ignore_missing=ignore_missing))
+    def delete_profile(self, profile, ignore_missing=True):
+        return self.conn.cluster.delete_profile(profile,
+                                                ignore_missing=ignore_missing)
 
-    def policy_types(self, **kwargs):
-        return self.list(models.PolicyType, paginated=False)
+    def policy_types(self, **query):
+        return self.conn.cluster.policy_types(**query)
 
-    def get_policy_type(self, value):
-        return self.get(models.PolicyType, dict(name=value))
+    def get_policy_type(self, policy_type):
+        return self.conn.cluster.get_policy_type(policy_type)
 
-    def policies(self, **queries):
-        return self.list(models.Policy, **queries)
+    def policies(self, **query):
+        return self.conn.cluster.policies(**query)
 
     def create_policy(self, **attrs):
-        return self.create(models.Policy, attrs)
+        return self.conn.cluster.create_policy(**attrs)
 
-    def get_policy(self, value):
-        return self.get(models.Policy, dict(id=value))
+    def get_policy(self, policy):
+        return self.conn.cluster.get_policy(policy)
 
-    def update_policy(self, value, **attrs):
-        attrs['id'] = value
-        return self.update(models.Policy, attrs)
+    def update_policy(self, policy, **attrs):
+        return self.conn.cluster.update_policy(policy, **attrs)
 
-    def delete_policy(self, value, ignore_missing=True):
-        return self.delete(models.Policy,
-                           dict(id=value, ignore_missing=ignore_missing))
+    def delete_policy(self, policy, ignore_missing=True):
+        return self.conn.cluster.delete_policy(policy,
+                                               ignore_missing=ignore_missing)
 
     def clusters(self, **queries):
         return self.conn.cluster.clusters(**queries)

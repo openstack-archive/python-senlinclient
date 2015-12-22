@@ -25,7 +25,7 @@ def do_build_info(sc, args=None):
     :param sc: Instance of senlinclient.
     :param args: Additional command line arguments, if any.
     """
-    result = sc.get_build_info()
+    result = sc.conn.cluster.get_build_info()
 
     formatters = {
         'api': utils.json_formatter,
@@ -43,7 +43,7 @@ def do_profile_type_list(sc, args=None):
     :param sc: Instance of senlinclient.
     :param args: Additional command line arguments, if any.
     """
-    types = sc.profile_types()
+    types = sc.conn.cluster.profile_types(paginated=False)
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -56,7 +56,7 @@ def do_profile_type_list(sc, args=None):
 def do_profile_type_show(sc, args):
     """Get the details about a profile type."""
     try:
-        res = sc.get_profile_type(args.type_name)
+        res = sc.conn.cluster.get_profile_type(args.type_name)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Profile Type %s not found.') % args.type_name)
@@ -89,7 +89,7 @@ def do_profile_list(sc, args=None):
         'marker': args.marker,
     }
 
-    profiles = sc.profiles(**queries)
+    profiles = sc.conn.cluster.profiles(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -100,7 +100,7 @@ def do_profile_list(sc, args=None):
 
 def _show_profile(sc, profile_id):
     try:
-        profile = sc.get_profile(profile_id)
+        profile = sc.conn.cluster.get_profile(profile_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Profile not found: %s') % profile_id)
 
@@ -150,7 +150,7 @@ def do_profile_create(sc, args):
         'metadata': utils.format_parameters(args.metadata),
     }
 
-    profile = sc.create_profile(**params)
+    profile = sc.conn.cluster.create_profile(**params)
     _show_profile(sc, profile.id)
 
 
@@ -183,11 +183,10 @@ def do_profile_update(sc, args):
 
     # Find the profile first, we need its id
     try:
-        profile = sc.get_profile(args.id)
+        profile = sc.conn.cluster.get_profile(args.id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Profile not found: %s') % args.id)
-
-    sc.update_profile(profile.id, **params)
+    sc.conn.cluster.update_profile(profile.id, **params)
     _show_profile(sc, profile.id)
 
 
@@ -199,7 +198,7 @@ def do_profile_delete(sc, args):
 
     for pid in args.id:
         try:
-            sc.delete_profile(pid)
+            sc.conn.cluster.delete_profile(pid)
         except Exception as ex:
             failure_count += 1
             print(ex)
@@ -214,7 +213,7 @@ def do_profile_delete(sc, args):
 
 def do_policy_type_list(sc, args):
     """List the available policy types."""
-    types = sc.policy_types()
+    types = sc.conn.cluster.policy_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
 
@@ -227,7 +226,7 @@ def do_policy_type_list(sc, args):
 def do_policy_type_show(sc, args):
     """Get the details about a policy type."""
     try:
-        res = sc.get_policy_type(args.type_name)
+        res = sc.conn.cluster.get_policy_type(args.type_name)
     except exc.HTTPNotFound:
         raise exc.CommandError(
             _('Policy type %s not found.') % args.type_name)
@@ -237,135 +236,6 @@ def do_policy_type_show(sc, args):
         print(utils.format_output(pt, format=args.format))
     else:
         print(utils.format_output(pt))
-
-
-# RECEIVERS
-
-
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include deleted receivers if any.'))
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('Filter parameters to apply on returned receivers. '
-                  'This can be specified multiple times, or once with '
-                  'parameters separated by a semicolon.'),
-           action='append')
-@utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of receivers returned.'))
-@utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return receivers that appear after the given ID.'))
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned receivers.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
-@utils.arg('-g', '--global-project', default=False, action="store_true",
-           help=_('Indicate that the list should include receivers from'
-                  ' all projects. This option is subject to access policy '
-                  'checking. Default is False.'))
-@utils.arg('-F', '--full-id', default=False, action="store_true",
-           help=_('Print full IDs in list.'))
-def do_receiver_list(sc, args=None):
-    """List receivers that meet the criteria."""
-    fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
-    sort_keys = ['name', 'type', 'cluster_id', 'created_time']
-    queries = {
-        'limit': args.limit,
-        'marker': args.marker,
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
-        'show_deleted': args.show_deleted,
-        'global_project': args.global_project,
-    }
-
-    if args.filters:
-        queries.update(utils.format_parameters(args.filters))
-
-    if args.show_deleted:
-        fields.append('deleted_time')
-
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-        sortby_index = None
-    else:
-        sortby_index = 0
-
-    receivers = sc.receivers(**queries)
-    formatters = {}
-    if not args.full_id:
-        formatters = {
-            'id': lambda x: x.id[:8],
-            'cluster_id': lambda x: x.cluster_id[:8],
-        }
-    utils.print_list(receivers, fields, formatters=formatters,
-                     sortby_index=sortby_index)
-
-
-def _show_receiver(sc, receiver_id):
-    try:
-        receiver = sc.get_receiver(receiver_id)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Receiver not found: %s') % receiver_id)
-
-    formatters = {
-        'actor': utils.json_formatter,
-        'params': utils.json_formatter,
-        'channel': utils.json_formatter,
-    }
-
-    utils.print_dict(receiver.to_dict(), formatters=formatters)
-
-
-@utils.arg('id', metavar='<RECEIVER>',
-           help=_('Name or ID of the receiver to show.'))
-def do_receiver_show(sc, args):
-    """Show the receiver details."""
-    _show_receiver(sc, receiver_id=args.id)
-
-
-@utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
-           help=_('Type of the receiver to create.'))
-@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
-           help=_('Targeted cluster for this receiver.'))
-@utils.arg('-a', '--action', metavar='<ACTION>', required=True,
-           help=_('Name or ID of the targeted action to be triggered.'))
-@utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help=_('A dictionary of parameters that will be passed to target '
-                  'action when the receiver is triggered.'),
-           action='append')
-@utils.arg('name', metavar='<NAME>',
-           help=_('Name of the receiver to create.'))
-def do_receiver_create(sc, args):
-    """Create a receiver."""
-
-    params = {
-        'name': args.name,
-        'type': args.type,
-        'cluster_id': args.cluster,
-        'action': args.action,
-        'params': utils.format_parameters(args.params)
-    }
-
-    receiver = sc.create_receiver(**params)
-    _show_receiver(sc, receiver.id)
-
-
-@utils.arg('id', metavar='<RECEIVER>', nargs='+',
-           help=_('Name or ID of receiver(s) to delete.'))
-def do_receiver_delete(sc, args):
-    """Delete receiver(s)."""
-    failure_count = 0
-
-    for wid in args.id:
-        try:
-            sc.delete_receiver(wid)
-        except exc.HTTPNotFound as ex:
-            failure_count += 1
-            print(ex)
-    if failure_count > 0:
-        msg = _('Failed to delete some of the specified receiver(s).')
-        raise exc.CommandError(msg)
-    print('Receivers deleted: %s' % args.id)
 
 
 # POLICIES
@@ -388,7 +258,7 @@ def do_policy_list(sc, args=None):
         'marker': args.marker,
     }
 
-    policies = sc.policies(**queries)
+    policies = sc.conn.cluster.policies(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -399,7 +269,7 @@ def do_policy_list(sc, args=None):
 
 def _show_policy(sc, policy_id):
     try:
-        policy = sc.get_policy(policy_id)
+        policy = sc.conn.cluster.get_policy(policy_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
@@ -430,7 +300,7 @@ def do_policy_create(sc, args):
         'level': args.enforcement_level,
     }
 
-    policy = sc.create_policy(**attrs)
+    policy = sc.conn.cluster.create_policy(**attrs)
     _show_policy(sc, policy.id)
 
 
@@ -459,10 +329,10 @@ def do_policy_update(sc, args):
         'level': args.enforcement_level,
     }
 
-    policy = sc.get_policy(args.id)
+    policy = sc.conn.cluster.get_policy(args.id)
     if policy is not None:
         params['id'] = policy.id
-        sc.update_policy(policy.id, params)
+        sc.conn.cluster.update_policy(policy.id, params)
         _show_policy(sc, policy_id=policy.id)
 
 
@@ -474,7 +344,7 @@ def do_policy_delete(sc, args):
 
     for pid in args.id:
         try:
-            sc.delete_policy(pid)
+            sc.conn.cluster.delete_policy(pid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -1190,6 +1060,135 @@ def do_node_leave(sc, args):
     resp = sc.node_leave(args.id)
     print('Request accepted by action: %s' % resp['action'])
     _show_node(sc, args.id)
+
+
+# RECEIVERS
+
+
+@utils.arg('-D', '--show-deleted', default=False, action="store_true",
+           help=_('Include deleted receivers if any.'))
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned receivers. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
+@utils.arg('-l', '--limit', metavar='<LIMIT>',
+           help=_('Limit the number of receivers returned.'))
+@utils.arg('-m', '--marker', metavar='<ID>',
+           help=_('Only return receivers that appear after the given ID.'))
+@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
+           help=_('Name of keys used for sorting the returned receivers.'))
+@utils.arg('-s', '--sort-dir', metavar='<DIR>',
+           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Indicate that the list should include receivers from'
+                  ' all projects. This option is subject to access policy '
+                  'checking. Default is False.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
+def do_receiver_list(sc, args=None):
+    """List receivers that meet the criteria."""
+    fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
+    sort_keys = ['name', 'type', 'cluster_id', 'created_time']
+    queries = {
+        'limit': args.limit,
+        'marker': args.marker,
+        'sort_keys': args.sort_keys,
+        'sort_dir': args.sort_dir,
+        'show_deleted': args.show_deleted,
+        'global_project': args.global_project,
+    }
+
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
+
+    if args.show_deleted:
+        fields.append('deleted_time')
+
+    if args.sort_keys:
+        for key in args.sort_keys.split(';'):
+            if len(key) > 0 and key not in sort_keys:
+                raise exc.CommandError(_('Invalid sorting key: %s') % key)
+        sortby_index = None
+    else:
+        sortby_index = 0
+
+    receivers = sc.receivers(**queries)
+    formatters = {}
+    if not args.full_id:
+        formatters = {
+            'id': lambda x: x.id[:8],
+            'cluster_id': lambda x: x.cluster_id[:8],
+        }
+    utils.print_list(receivers, fields, formatters=formatters,
+                     sortby_index=sortby_index)
+
+
+def _show_receiver(sc, receiver_id):
+    try:
+        receiver = sc.get_receiver(receiver_id)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Receiver not found: %s') % receiver_id)
+
+    formatters = {
+        'actor': utils.json_formatter,
+        'params': utils.json_formatter,
+        'channel': utils.json_formatter,
+    }
+
+    utils.print_dict(receiver.to_dict(), formatters=formatters)
+
+
+@utils.arg('id', metavar='<RECEIVER>',
+           help=_('Name or ID of the receiver to show.'))
+def do_receiver_show(sc, args):
+    """Show the receiver details."""
+    _show_receiver(sc, receiver_id=args.id)
+
+
+@utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
+           help=_('Type of the receiver to create.'))
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+           help=_('Targeted cluster for this receiver.'))
+@utils.arg('-a', '--action', metavar='<ACTION>', required=True,
+           help=_('Name or ID of the targeted action to be triggered.'))
+@utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('A dictionary of parameters that will be passed to target '
+                  'action when the receiver is triggered.'),
+           action='append')
+@utils.arg('name', metavar='<NAME>',
+           help=_('Name of the receiver to create.'))
+def do_receiver_create(sc, args):
+    """Create a receiver."""
+
+    params = {
+        'name': args.name,
+        'type': args.type,
+        'cluster_id': args.cluster,
+        'action': args.action,
+        'params': utils.format_parameters(args.params)
+    }
+
+    receiver = sc.create_receiver(**params)
+    _show_receiver(sc, receiver.id)
+
+
+@utils.arg('id', metavar='<RECEIVER>', nargs='+',
+           help=_('Name or ID of receiver(s) to delete.'))
+def do_receiver_delete(sc, args):
+    """Delete receiver(s)."""
+    failure_count = 0
+
+    for wid in args.id:
+        try:
+            sc.delete_receiver(wid)
+        except exc.HTTPNotFound as ex:
+            failure_count += 1
+            print(ex)
+    if failure_count > 0:
+        msg = _('Failed to delete some of the specified receiver(s).')
+        raise exc.CommandError(msg)
+    print('Receivers deleted: %s' % args.id)
 
 
 # EVENTS

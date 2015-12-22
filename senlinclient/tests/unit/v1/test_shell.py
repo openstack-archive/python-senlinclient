@@ -52,30 +52,30 @@ class ShellTest(testtools.TestCase):
     def test_do_build_info(self, mock_print):
         client = mock.Mock()
         result = mock.Mock()
-        client.get_build_info.return_value = result
+        client.conn.cluster.get_build_info.return_value = result
         sh.do_build_info(client)
         formatters = {
             'api': utils.json_formatter,
             'engine': utils.json_formatter,
         }
         mock_print.assert_called_once_with(result, formatters=formatters)
-        self.assertTrue(client.get_build_info.called)
+        self.assertTrue(client.conn.cluster.get_build_info.called)
 
     @mock.patch.object(utils, 'print_list')
     def test_do_profile_type_list(self, mock_print):
         client = mock.Mock()
         types = mock.Mock()
-        client.profile_types.return_value = types
+        client.conn.cluster.profile_types.return_value = types
         sh.do_profile_type_list(client)
         mock_print.assert_called_once_with(types, ['name'], sortby_index=0)
-        self.assertTrue(client.profile_types.called)
+        self.assertTrue(client.conn.cluster.profile_types.called)
 
     @mock.patch.object(utils, 'format_output')
     def test_do_profile_type_show(self, mock_format):
         client = mock.Mock()
         fake_pt = mock.Mock()
         fake_pt.to_dict.return_value = {'foo': 'bar'}
-        client.get_profile_type = mock.Mock(return_value=fake_pt)
+        client.conn.cluster.get_profile_type = mock.Mock(return_value=fake_pt)
         args_dict = {
             'format': 'json',
             'type_name': 'os.nova.server'
@@ -83,7 +83,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args_dict)
         sh.do_profile_type_show(client, args)
         mock_format.assert_called_with({'foo': 'bar'}, format=args.format)
-        client.get_profile_type.assert_called_with(
+        client.conn.cluster.get_profile_type.assert_called_with(
             'os.nova.server')
         args.format = None
         sh.do_profile_type_show(client, args)
@@ -97,7 +97,7 @@ class ShellTest(testtools.TestCase):
         }
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.get_profile_type = mock.Mock(side_effect=ex)
+        client.conn.cluster.get_profile_type = mock.Mock(side_effect=ex)
         ex = self.assertRaises(exc.CommandError,
                                sh.do_profile_type_show,
                                client, args)
@@ -108,7 +108,7 @@ class ShellTest(testtools.TestCase):
     def test_do_profile_list(self, mock_print):
         client = mock.Mock()
         profiles = mock.Mock()
-        client.profiles.return_value = profiles
+        client.conn.cluster.profiles.return_value = profiles
         fields = ['id', 'name', 'type', 'created_time']
         args = {
             'show_deleted': False,
@@ -120,7 +120,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         args.full_id = True
         sh.do_profile_list(client, args)
-        client.profiles.assert_called_once_with(**queries)
+        client.conn.cluster.profiles.assert_called_once_with(**queries)
         mock_print.assert_called_with(profiles, fields, formatters=formatters,
                                       sortby_index=1)
 
@@ -130,7 +130,7 @@ class ShellTest(testtools.TestCase):
         client = mock.Mock()
         profile = mock.Mock()
         profile_id = mock.Mock()
-        client.get_profile.return_value = profile
+        client.conn.cluster.get_profile.return_value = profile
         pro_to_dict = mock.Mock()
         profile.to_dict.return_value = pro_to_dict
         json_formatter = mock.Mock()
@@ -142,7 +142,7 @@ class ShellTest(testtools.TestCase):
             'spec': dict_formatter
         }
         sh._show_profile(client, profile_id)
-        client.get_profile.assert_called_once_with(profile_id)
+        client.conn.cluster.get_profile.assert_called_once_with(profile_id)
         mock_dict.assert_called_once_with(['type', 'version', 'properties'],
                                           ['property', 'value'])
         mock_print.assert_called_once_with(pro_to_dict, formatters=formatters)
@@ -150,13 +150,13 @@ class ShellTest(testtools.TestCase):
     def test_show_profile_not_found(self):
         client = mock.Mock()
         ex = exc.HTTPNotFound
-        client.get_profile.side_effect = ex
+        client.conn.cluster.get_profile.side_effect = ex
         profile_id = 'wrong_id'
         ex = self.assertRaises(exc.CommandError,
                                sh._show_profile,
                                client, profile_id)
         self.assertEqual(_('Profile not found: wrong_id'), six.text_type(ex))
-        client.get_profile.assert_called_once_with(profile_id)
+        client.conn.cluster.get_profile.assert_called_once_with(profile_id)
 
     @mock.patch.object(sh, '_show_profile')
     @mock.patch.object(utils, 'format_parameters')
@@ -181,12 +181,12 @@ class ShellTest(testtools.TestCase):
         profile = mock.Mock()
         profile_id = mock.Mock()
         profile.id = profile_id
-        client.create_profile.return_value = profile
+        client.conn.cluster.create_profile.return_value = profile
         sh.do_profile_create(client, args)
         mock_get.assert_called_once_with(args.spec_file)
         mock_proc.assert_called_once_with(self.profile_spec['properties'])
         mock_format.assert_called_once_with(args.metadata)
-        client.create_profile.assert_called_once_with(**params)
+        client.conn.cluster.create_profile.assert_called_once_with(**params)
         mock_show.assert_called_once_with(client, profile_id)
 
         # Miss 'type' key in spec file
@@ -232,16 +232,17 @@ class ShellTest(testtools.TestCase):
         profile_id = mock.Mock()
         profile.id = profile_id
         args.id = 'FAKE_ID'
-        client.get_profile.return_value = profile
+        client.conn.cluster.get_profile.return_value = profile
         sh.do_profile_update(client, args)
         mock_format.assert_called_once_with(args.metadata)
-        client.get_profile.assert_called_once_with('FAKE_ID')
+        client.conn.cluster.get_profile.assert_called_once_with('FAKE_ID')
         params = {
             'name': 'stack_spec',
             'permission': 'ok',
             'metadata': {'user': 'demo'},
         }
-        client.update_profile.assert_called_once_with(profile_id, **params)
+        client.conn.cluster.update_profile.assert_called_once_with(
+            profile_id, **params)
         mock_show.assert_called_once_with(client, profile_id)
 
     @mock.patch.object(utils, 'format_parameters')
@@ -251,7 +252,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         args.id = 'FAKE_ID'
         ex = exc.HTTPNotFound
-        client.get_profile.side_effect = ex
+        client.conn.cluster.get_profile.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh.do_profile_update,
                                client, args)
@@ -264,7 +265,7 @@ class ShellTest(testtools.TestCase):
         args = {'id': ['profile_id']}
         args = self._make_args(args)
         sh.do_profile_delete(client, args)
-        client.delete_profile.assert_called_with('profile_id')
+        client.conn.cluster.delete_profile.assert_called_with('profile_id')
 
     def test_do_profile_delete_fail(self):
         client = mock.Mock()
@@ -272,20 +273,20 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         sh.do_profile_delete(client, args)
         ex = Exception()
-        client.delete_profile.side_effect = ex
+        client.conn.cluster.delete_profile.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh.do_profile_delete,
                                client, args)
         self.assertEqual(_('Failed to delete some of the specified '
                            'profile(s).'), six.text_type(ex))
-        client.delete_profile.assert_called_with('profile2')
+        client.conn.cluster.delete_profile.assert_called_with('profile2')
 
     @mock.patch.object(utils, 'print_list')
     def test_do_policy_type_list(self, mock_print):
         client = mock.Mock()
         args = mock.Mock()
         types = mock.Mock()
-        client.policy_types.return_value = types
+        client.conn.cluster.policy_types.return_value = types
         sh.do_policy_type_list(client, args)
         mock_print.assert_called_once_with(types, ['name'], sortby_index=0)
 
@@ -300,7 +301,7 @@ class ShellTest(testtools.TestCase):
         res = mock.Mock()
         pt = mock.Mock()
         res.to_dict.return_value = pt
-        client.get_policy_type.return_value = res
+        client.conn.cluster.get_policy_type.return_value = res
         sh.do_policy_type_show(client, args)
         mock_format.assert_called_with(pt, format=args.format)
 
@@ -310,7 +311,7 @@ class ShellTest(testtools.TestCase):
             'format': None
         }
         args = self._make_args(args)
-        client.get_policy_type.return_value = res
+        client.conn.cluster.get_policy_type.return_value = res
         sh.do_policy_type_show(client, args)
         mock_format.assert_called_with(pt)
 
@@ -319,7 +320,7 @@ class ShellTest(testtools.TestCase):
         args = {'type_name': 'wrong_policy_type'}
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.get_policy_type.side_effect = ex
+        client.conn.cluster.get_policy_type.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh.do_policy_type_show, client, args)
         msg = _('Policy type wrong_policy_type not found.')
@@ -472,10 +473,10 @@ class ShellTest(testtools.TestCase):
             'fake_id',
         }
         policies = mock.Mock()
-        client.policies.return_value = policies
+        client.conn.cluster.policies.return_value = policies
         formatters = {}
         sh.do_policy_list(client, args)
-        client.policies.assert_called_once_with(**queries)
+        client.conn.cluster.policies.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(
             policies, fields, formatters=formatters, sortby_index=1)
 
@@ -489,7 +490,7 @@ class ShellTest(testtools.TestCase):
         policy_id = 'fake_policy_id'
         policy = mock.Mock()
         policy.id = policy_id
-        client.get_policy.return_value = policy
+        client.conn.cluster.get_policy.return_value = policy
         policy_dict = mock.Mock()
         policy.to_dict.return_value = policy_dict
         sh._show_policy(client, policy_id)
@@ -498,7 +499,7 @@ class ShellTest(testtools.TestCase):
 
         # policy not found
         ex = exc.HTTPNotFound
-        client.get_policy.side_effect = ex
+        client.conn.cluster.get_policy.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh._show_policy,
                                client, policy_id)
@@ -526,10 +527,10 @@ class ShellTest(testtools.TestCase):
         }
         policy = mock.Mock()
         policy.id = 'policy_id'
-        client.create_policy.return_value = policy
+        client.conn.cluster.create_policy.return_value = policy
         sh.do_policy_create(client, args)
         mock_get.assert_called_once_with(args.spec_file)
-        client.create_policy.assert_called_once_with(**attrs)
+        client.conn.cluster.create_policy.assert_called_once_with(**attrs)
         mock_show.assert_called_once_with(client, policy.id)
 
     @mock.patch.object(sh, '_show_policy')
@@ -558,28 +559,28 @@ class ShellTest(testtools.TestCase):
             'id': 'policy_id'
         }
         policy = mock.Mock()
-        client.get_policy.return_value = policy
+        client.conn.cluster.get_policy.return_value = policy
         policy.id = 'policy_id'
-        client.update_policy = mock.Mock()
         sh.do_policy_update(client, args)
-        client.get_policy.assert_called_once_with('policy_id')
-        client.update_policy.assert_called_once_with('policy_id', params)
+        client.conn.cluster.get_policy.assert_called_once_with('policy_id')
+        client.conn.cluster.update_policy.assert_called_once_with(
+            'policy_id', params)
         mock_show(client, policy_id=policy.id)
 
     def test_do_policy_delete(self):
         client = mock.Mock()
         args = {'id': ['policy_id']}
         args = self._make_args(args)
-        client.delete_policy = mock.Mock()
+        client.conn.cluster.delete_policy = mock.Mock()
         sh.do_policy_delete(client, args)
-        client.delete_policy.assert_called_once_with('policy_id')
+        client.conn.cluster.delete_policy.assert_called_once_with('policy_id')
 
     def test_do_policy_delete_not_found(self):
         client = mock.Mock()
         args = {'id': ['policy_id']}
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.delete_policy.side_effect = ex
+        client.conn.cluster.delete_policy.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh.do_policy_delete, client, args)
         msg = _('Failed to delete some of the specified policy(s).')
