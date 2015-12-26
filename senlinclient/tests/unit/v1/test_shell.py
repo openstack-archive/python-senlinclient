@@ -778,6 +778,324 @@ class ShellTest(testtools.TestCase):
         client.cluster_del_nodes.assert_called_once_with('cluster_id',
                                                          node_ids)
 
+    def test_do_cluster_resize(self):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster_id',
+            'capacity': 2,
+            'adjustment': 1,
+            'percentage': 50.0,
+            'min_size': 1,
+            'max_size': 10,
+            'min_step': 1,
+            'strict': True,
+        }
+        args = self._make_args(args)
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _("Only one of 'capacity', 'adjustment' and "
+                "'percentage' can be specified.")
+        self.assertEqual(msg, six.text_type(ex))
+
+        # capacity
+        args.adjustment = None
+        args.percentage = None
+        args.min_step = None
+        action_args = {
+            'adjustment_type': 'EXACT_CAPACITY',
+            'number': 2,
+            'min_size': 1,
+            'max_size': 10,
+            'strict': True,
+            'min_step': None,
+        }
+        resp = {'action': 'action_id'}
+        client.cluster_resize.return_value = resp
+        sh.do_cluster_resize(client, args)
+        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        # capacity is smaller than 0
+        args.capacity = -1
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Cluster capacity must be larger than '
+                ' or equal to zero.')
+        self.assertEqual(msg, six.text_type(ex))
+
+        # adjustment
+        args.capacity = None
+        args.percentage = None
+        args.adjustment = 1
+        action_args['adjustment_type'] = 'CHANGE_IN_CAPACITY'
+        action_args['number'] = 1
+        sh.do_cluster_resize(client, args)
+        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        # adjustment is 0
+        args.adjustment = 0
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Adjustment cannot be zero.')
+        self.assertEqual(msg, six.text_type(ex))
+
+        # percentage
+        args.capacity = None
+        args.percentage = 50.0
+        args.adjustment = None
+        action_args['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
+        action_args['number'] = 50.0
+        sh.do_cluster_resize(client, args)
+        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        # percentage is 0
+        args.percentage = 0
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Percentage cannot be zero.')
+        self.assertEqual(msg, six.text_type(ex))
+
+        # min_step is not None while percentage is None
+        args.capacity = 2
+        args.percentage = None
+        args.adjustment = None
+        args.min_step = 1
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Min step is only used with percentage.')
+        self.assertEqual(msg, six.text_type(ex))
+
+        # min_size < 0
+        args.capacity = 2
+        args.percentage = None
+        args.adjustment = None
+        args.min_step = None
+        args.min_size = -1
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Min size cannot be less than zero.')
+        self.assertEqual(msg, six.text_type(ex))
+        # max_size < min_size
+        args.capacity = 5
+        args.percentage = None
+        args.adjustment = None
+        args.min_step = None
+        args.min_size = 5
+        args.max_size = 4
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Min size cannot be larger than max size.')
+        self.assertEqual(msg, six.text_type(ex))
+        # min_size > capacity
+        args.capacity = 5
+        args.percentage = None
+        args.adjustment = None
+        args.min_step = None
+        args.min_size = 6
+        args.max_size = 8
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Min size cannot be larger than the specified capacity')
+        self.assertEqual(msg, six.text_type(ex))
+        # max_size < capacity
+        args.capacity = 5
+        args.percentage = None
+        args.adjustment = None
+        args.min_step = None
+        args.min_size = 1
+        args.max_size = 4
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_resize,
+                               client, args)
+        msg = _('Max size cannot be less than the specified capacity.')
+        self.assertEqual(msg, six.text_type(ex))
+
+    def test_do_cluster_scale_out(self):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster_id',
+            'count': 3,
+        }
+        args = self._make_args(args)
+        resp = {'action': 'action_id'}
+        client.cluster_scale_out.return_value = resp
+        sh.do_cluster_scale_out(client, args)
+        client.cluster_scale_out.assert_called_once_with('cluster_id', 3)
+
+    def test_do_cluster_scale_in(self):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster_id',
+            'count': 3,
+        }
+        args = self._make_args(args)
+        resp = {'action': 'action_id'}
+        client.cluster_scale_in.return_value = resp
+        sh.do_cluster_scale_in(client, args)
+        client.cluster_scale_in.assert_called_once_with('cluster_id', 3)
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_cluster_policy_list(self, mock_print):
+        fields = ['policy_id', 'policy', 'type', 'priority', 'level',
+                  'cooldown', 'enabled']
+        client = mock.Mock()
+        args = {
+            'id': 'cluster_id',
+            'filters': ['enabled=True'],
+            'sort_keys': 'level',
+            'sort_dir': 'asc',
+            'full_id': True,
+        }
+        args = self._make_args(args)
+        queries = {
+            'sort_keys': 'level',
+            'sort_dir': 'asc',
+            'enabled': 'True',
+        }
+        cluster = mock.Mock()
+        cluster.id = 'cluster_id'
+        client.get_cluster.return_value = cluster
+        policies = mock.Mock()
+        client.cluster_policies.return_value = policies
+        sh.do_cluster_policy_list(client, args)
+        client.get_cluster.assert_called_once_with('cluster_id')
+        client.cluster_policies.assert_called_once_with('cluster_id',
+                                                        **queries)
+        formatters = {}
+        mock_print.assert_called_once_with(policies, fields,
+                                           formatters=formatters,
+                                           sortby_index=None)
+        # wrong sort_key
+        args.sort_keys = 'level;wrong_key'
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_cluster_policy_list,
+                               client, args)
+        msg = _('Invalid sorting key: wrong_key')
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(utils, 'print_dict')
+    def test_do_cluster_policy_show(self, mock_print):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1',
+        }
+        args = self._make_args(args)
+        queries = {
+            'cluster_id': 'cluster1',
+            'policy_id': 'policy1',
+        }
+
+        class Binding(object):
+            def to_dict(self):
+                pass
+        binding = Binding()
+        client.get_cluster_policy.return_value = binding
+        sh.do_cluster_policy_show(client, args)
+        client.get_cluster_policy.assert_called_once_with(queries)
+        mock_print.assert_called_once_with(binding.to_dict())
+
+    def test_do_cluster_policy_attach(self):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1',
+            'priority': 50,
+            'enforcement_level': 60,
+            'cooldown': 120,
+            'enabled': 'True',
+        }
+        args = self._make_args(args)
+        kwargs = {
+            'policy_id': 'policy1',
+            'priority': 50,
+            'level': 60,
+            'cooldown': 120,
+            'enabled': 'True',
+        }
+        resp = {'action': 'action_id'}
+        client.cluster_attach_policy.return_value = resp
+        sh.do_cluster_policy_attach(client, args)
+        client.cluster_attach_policy.assert_called_once_with('cluster1',
+                                                             **kwargs)
+
+    def test_do_cluster_policy_detach(self):
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1'
+        }
+        client = mock.Mock()
+        args = self._make_args(args)
+        resp = {'action': 'action_id'}
+        client.cluster_detach_policy.return_value = resp
+        sh.do_cluster_policy_detach(client, args)
+        client.cluster_detach_policy.assert_called_once_with('cluster1',
+                                                             'policy1')
+
+    def test_do_cluster_policy_update(self):
+        client = mock.Mock()
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1',
+            'priority': 50,
+            'enforcement_level': 60,
+            'cooldown': 120,
+            'enabled': 'True',
+        }
+        args = self._make_args(args)
+        kwargs = {
+            'policy_id': 'policy1',
+            'priority': 50,
+            'level': 60,
+            'cooldown': 120,
+            'enabled': 'True',
+        }
+        resp = {'action': 'action_id'}
+        client.cluster_update_policy.return_value = resp
+        sh.do_cluster_policy_update(client, args)
+        client.cluster_update_policy.assert_called_once_with('cluster1',
+                                                             **kwargs)
+
+    def test_do_cluster_policy_enable(self):
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1'
+        }
+        args = self._make_args(args)
+        client = mock.Mock()
+        resp = {'action': 'action_id'}
+        client.cluster_enable_policy.return_value = resp
+        sh.do_cluster_policy_enable(client, args)
+        client.cluster_enable_policy.assert_called_once_with('cluster1',
+                                                             'policy1')
+
+    def test_do_cluster_policy_disable(self):
+        args = {
+            'id': 'cluster1',
+            'policy': 'policy1'
+        }
+        args = self._make_args(args)
+        client = mock.Mock()
+        resp = {'action': 'action_id'}
+        client.cluster_disable_policy.return_value = resp
+        sh.do_cluster_policy_disable(client, args)
+        client.cluster_disable_policy.assert_called_once_with('cluster1',
+                                                              'policy1')
+
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
         client = mock.Mock()
@@ -808,12 +1126,6 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         nodes = mock.Mock()
         client.nodes.return_value = nodes
-        short_id = mock.Mock()
-        sh._short_id = short_id
-        short_cluster_id = mock.Mock()
-        sh._short_cluster_id = short_cluster_id
-        short_physical_id = mock.Mock()
-        sh._short_physical_id = short_physical_id
         formatters = {}
         sh.do_node_list(client, args)
         mock_print.assert_called_once_with(nodes, fields,
@@ -825,4 +1137,263 @@ class ShellTest(testtools.TestCase):
         ex = exc.CommandError
         ex = self.assertRaises(ex, sh.do_node_list, client, args)
         msg = _('Invalid sorting key: wrong_key')
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(utils, 'print_dict')
+    @mock.patch.object(utils, 'nested_dict_formatter')
+    def test_show_node(self, mock_nested, mock_print):
+        client = mock.Mock()
+        node_id = 'node1'
+        node = mock.Mock()
+        client.get_node.return_value = node
+        formatters = {
+            'metadata': utils.json_formatter,
+            'data': utils.json_formatter,
+        }
+        data = mock.Mock()
+        node.to_dict.return_value = data
+        sh._show_node(client, node_id, show_details=False)
+        client.get_node.assert_called_once_with(node_id, False)
+        mock_print.assert_called_once_with(data, formatters=formatters)
+
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_create(self, mock_show):
+        args = {
+            'name': 'node1',
+            'cluster': 'cluster1',
+            'profile': 'profile1',
+            'role': 'master',
+            'metadata': ['user=demo'],
+        }
+        args = self._make_args(args)
+        attrs = {
+            'name': 'node1',
+            'cluster_id': 'cluster1',
+            'profile_id': 'profile1',
+            'role': 'master',
+            'metadata': {'user': 'demo'},
+        }
+        client = mock.Mock()
+        node = mock.Mock()
+        node.id = 'node_id'
+        client.create_node.return_value = node
+        sh.do_node_create(client, args)
+        client.create_node.assert_called_once_with(**attrs)
+        mock_show.assert_called_once_with(client, 'node_id')
+
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_show(self, mock_show):
+        client = mock.Mock()
+        args = {
+            'id': 'node1',
+            'details': False
+        }
+        args = self._make_args(args)
+        sh.do_node_show(client, args)
+        mock_show.assert_called_once_with(client, 'node1', False)
+
+    def test_do_node_delete(self):
+        client = mock.Mock()
+        args = {
+            'id': ['node1']
+        }
+        args = self._make_args(args)
+        client.delete_node = mock.Mock()
+        sh.do_node_delete(client, args)
+        client.delete_node.assert_called_once_with('node1')
+
+        # node not found
+        ex = exc.HTTPNotFound
+        client.delete_node.side_effect = ex
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_node_delete, client, args)
+        msg = _('Failed to delete some of the specified nodes.')
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_update(self, mock_show):
+        client = mock.Mock()
+        args = {
+            'id': 'node_id',
+            'name': 'node1',
+            'role': 'master',
+            'profile': 'profile1',
+            'metadata': ['user=demo'],
+        }
+        args = self._make_args(args)
+        attrs = {
+            'name': 'node1',
+            'role': 'master',
+            'profile_id': 'profile1',
+            'metadata': {'user': 'demo'},
+        }
+        node = mock.Mock()
+        node.id = 'node_id'
+        client.get_node.return_value = node
+        sh.do_node_update(client, args)
+        client.get_node.assert_called_once_with('node_id')
+        client.update_node.assert_called_once_with('node_id', **attrs)
+        mock_show.assert_called_once_with(client, 'node_id')
+
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_join(self, mock_show):
+        client = mock.Mock()
+        args = {
+            'id': 'node1',
+            'cluster': 'cluster1'
+        }
+        args = self._make_args(args)
+        resp = {'action': 'action_id'}
+        client.node_join.return_value = resp
+        sh.do_node_join(client, args)
+        client.node_join.assert_called_once_with('node1', 'cluster1')
+        mock_show.assert_called_once_with(client, 'node1')
+
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_leave(self, mock_show):
+        client = mock.Mock()
+        args = {
+            'id': 'node1',
+        }
+        args = self._make_args(args)
+        resp = {'action': 'action_id'}
+        client.node_leave.return_value = resp
+        sh.do_node_leave(client, args)
+        client.node_leave.assert_called_once_with('node1')
+        mock_show.assert_called_once_with(client, 'node1')
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_event_list(self, mock_print):
+        client = mock.Mock()
+        fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
+                  'action', 'status', 'status_reason', 'level']
+        args = {
+            'sort_keys': 'timestamp',
+            'sort_dir': 'asc',
+            'limit': 20,
+            'marker': 'marker_id',
+            'global_project': True,
+            'show_deleted': True,
+            'filters': ['action=NODE_DELETE'],
+            'full_id': True,
+        }
+        queries = copy.deepcopy(args)
+        del queries['full_id']
+        del queries['filters']
+        queries['action'] = 'NODE_DELETE'
+        args = self._make_args(args)
+        sortby_index = None
+        formatters = {}
+        events = mock.Mock()
+        client.events.return_value = events
+        sh.do_event_list(client, args)
+        client.events.assert_called_once_with(**queries)
+        mock_print.assert_called_once_with(events, fields,
+                                           formatters=formatters,
+                                           sortby_index=sortby_index)
+        # invalid sorting key
+        args.sort_keys = 'wrong_key'
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_event_list,
+                               client, args)
+        msg = _('Invalid sorting key: wrong_key')
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(utils, 'print_dict')
+    def test_do_event_show(self, mock_print):
+        client = mock.Mock()
+        args = {
+            'id': 'event_id'
+        }
+        args = self._make_args(args)
+
+        class Event(object):
+            def to_dict(self):
+                pass
+        event = Event()
+        client.get_event.return_value = event
+        sh.do_event_show(client, args)
+        client.get_event.assert_called_once_with('event_id')
+        mock_print.assert_called_once_with(event.to_dict())
+        # event not found
+        ex = exc.CommandError
+        client.get_event.side_effect = exc.HTTPNotFound
+        ex = self.assertRaises(ex,
+                               sh.do_event_show,
+                               client, args)
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_action_list(self, mock_print):
+        client = mock.Mock()
+        fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
+                  'depended_by']
+        args = {
+            'show_deleted': True,
+            'sort_keys': 'status',
+            'sort_dir': 'asc',
+            'limit': 20,
+            'marker': 'marker_id',
+        }
+        queries = copy.deepcopy(args)
+        args = self._make_args(args)
+        args.filters = ['status=ACTIVE']
+        queries['status'] = 'ACTIVE'
+        actions = mock.Mock()
+        client.actions.return_value = actions
+        fmt_dp_on = mock.Mock()
+        sh._fmt_depends_on = fmt_dp_on
+        fmt_dp_by = mock.Mock()
+        sh._fmt_depended_by = fmt_dp_by
+        formatters = {
+            'depends_on': fmt_dp_on,
+            'depended_by': fmt_dp_by
+        }
+        args.full_id = True
+        sortby_index = None
+        sh.do_action_list(client, args)
+        client.actions.assert_called_once_with(**queries)
+        mock_print.assert_called_once_with(actions, fields,
+                                           formatters=formatters,
+                                           sortby_index=sortby_index)
+        # invalid sorting key
+        args.sort_keys = 'wrong_key'
+        ex = exc.CommandError
+        ex = self.assertRaises(ex,
+                               sh.do_action_list,
+                               client, args)
+        msg = _('Invalid sorting key: wrong_key')
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(utils, 'print_dict')
+    def test_do_action_show(self, mock_print):
+        client = mock.Mock()
+        args = {
+            'id': 'action_id'
+        }
+        args = self._make_args(args)
+
+        class Action(object):
+            def to_dict(self):
+                pass
+        action = Action()
+        client.get_action.return_value = action
+        formatters = {
+            'inputs': utils.json_formatter,
+            'outputs': utils.json_formatter,
+            'metadata': utils.json_formatter,
+            'data': utils.json_formatter,
+        }
+        sh.do_action_show(client, args)
+        client.get_action.assert_called_once_with('action_id')
+        mock_print.assert_called_once_with(action.to_dict(),
+                                           formatters=formatters)
+        # action not found
+        args.id = 'fake_id'
+        ex = exc.CommandError
+        client.get_action.side_effect = exc.HTTPNotFound
+        ex = self.assertRaises(ex,
+                               sh.do_action_show,
+                               client, args)
+        msg = _('Action fake_id is not found')
         self.assertEqual(msg, six.text_type(ex))
