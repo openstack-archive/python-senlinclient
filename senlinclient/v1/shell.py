@@ -1268,22 +1268,6 @@ def do_event_show(sc, args):
 # ACTIONS
 
 
-def _fmt_depends_on(obj):
-    if not obj.depends_on:
-        return ''
-    idlist = obj.depends_on
-
-    return '\n'.join(idlist)
-
-
-def _fmt_depended_by(obj):
-    if not obj.depended_by:
-        return ''
-    idlist = obj.depended_by
-
-    return '\n'.join(idlist)
-
-
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned actions. '
                   'This can be specified multiple times, or once with '
@@ -1329,17 +1313,20 @@ def do_action_list(sc, args):
 
     actions = sc.actions(**queries)
 
-    formatters = {
-        'depends_on': _fmt_depends_on,
-        'depended_by': _fmt_depended_by
-    }
-    if not args.full_id:
+    formatters = {}
+    if args.full_id:
+        f_depon = lambda x: '\n'.join(a for a in x.depends_on)
+        f_depby = lambda x: '\n'.join(a for a in x.depended_by)
+
+        formatters['depends_on'] = f_depon
+        formatters['depended_by'] = f_depby
+    else:
         formatters['id'] = lambda x: x.id[:8]
-        formatters['target'] = lambda x: x.target[:8] if x.target else ''
-        dp_on = lambda x: [item[:8] for item in x.depends_on]
-        formatters['depend_on'] = '\n'.join(dp_on)
-        dp_by = lambda x: [item[:8] for item in x.depended_by]
-        formatters['depended_by'] = '\n'.join(dp_by)
+        formatters['target'] = lambda x: x.target[:8]
+        f_depon = lambda x: '\n'.join(a[:8] for a in x.depends_on)
+        f_depby = lambda x: '\n'.join(a[:8] for a in x.depended_by)
+        formatters['depends_on'] = f_depon
+        formatters['depended_by'] = f_depby
 
     utils.print_list(actions, fields, formatters=formatters,
                      sortby_index=sortby_index)
