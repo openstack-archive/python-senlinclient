@@ -606,11 +606,11 @@ class ShellTest(testtools.TestCase):
         queries['status'] = 'ACTIVE'
         args = self._make_args(args)
         clusters = mock.Mock()
-        client.clusters.return_value = clusters
+        client.conn.cluster.clusters.return_value = clusters
         args.full_id = True
         formatters = {}
         sh.do_cluster_list(client, args)
-        client.clusters.assert_called_once_with(**queries)
+        client.conn.cluster.clusters.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(clusters, fields,
                                            formatters=formatters,
                                            sortby_index=None)
@@ -627,7 +627,7 @@ class ShellTest(testtools.TestCase):
         cluster_id = 'cluster_id'
         cluster = mock.Mock()
         cluster.id = cluster_id
-        client.get_cluster.return_value = cluster
+        client.conn.cluster.get_cluster.return_value = cluster
         formatters = {
             'metadata': utils.json_formatter,
             'nodes': utils.list_formatter,
@@ -656,26 +656,26 @@ class ShellTest(testtools.TestCase):
         del attrs['profile']
         attrs['metadata'] = {'user': 'demo'}
         cluster = mock.Mock()
-        client.create_cluster.return_value = cluster
+        client.conn.cluster.create_cluster.return_value = cluster
         cluster.id = 'cluster_id'
         sh.do_cluster_create(client, args)
-        client.create_cluster.assert_called_once_with(**attrs)
+        client.conn.cluster.create_cluster.assert_called_once_with(**attrs)
         mock_show.assert_called_once_with(client, 'cluster_id')
 
     def test_do_cluster_delete(self):
         client = mock.Mock()
-        args = {'id': ['cluster_id']}
+        args = {'id': ['CID']}
         args = self._make_args(args)
-        client.delete_cluster = mock.Mock()
+        client.conn.cluster.delete_cluster = mock.Mock()
         sh.do_cluster_delete(client, args)
-        client.delete_cluster.assert_called_once_with('cluster_id')
+        client.conn.cluster.delete_cluster.assert_called_once_with('CID')
 
     def test_do_cluster_delete_not_found(self):
         client = mock.Mock()
         args = {'id': ['cluster_id']}
         args = self._make_args(args)
         ex = exc.HTTPNotFound
-        client.delete_cluster.side_effect = ex
+        client.conn.cluster.delete_cluster.side_effect = ex
         ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_delete, client, args)
         msg = _('Failed to delete some of the specified clusters.')
@@ -696,15 +696,16 @@ class ShellTest(testtools.TestCase):
         attrs['profile_id'] = 'test_profile'
         del attrs['profile']
         args = self._make_args(args)
-        args.id = 'cluster_id'
+        args.id = 'CID'
         cluster = mock.Mock()
-        cluster.id = 'cluster_id'
-        client.get_cluster.return_value = cluster
-        client.update_cluster = mock.Mock()
+        cluster.id = 'CID'
+        client.conn.cluster.get_cluster.return_value = cluster
+        client.conn.cluster.update_cluster = mock.Mock()
         sh.do_cluster_update(client, args)
-        client.get_cluster.assert_called_once_with('cluster_id')
-        client.update_cluster.assert_called_once_with('cluster_id', **attrs)
-        mock_show.assert_called_once_with(client, 'cluster_id')
+        client.conn.cluster.get_cluster.assert_called_once_with('CID')
+        client.conn.cluster.update_cluster.assert_called_once_with('CID',
+                                                                   **attrs)
+        mock_show.assert_called_once_with(client, 'CID')
 
     @mock.patch.object(sh, '_show_cluster')
     def test_do_cluster_show(self, mock_show):
