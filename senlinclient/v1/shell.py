@@ -43,7 +43,7 @@ def do_profile_type_list(sc, args=None):
     :param sc: Instance of senlinclient.
     :param args: Additional command line arguments, if any.
     """
-    types = sc.conn.cluster.profile_types(paginated=False)
+    types = sc.conn.cluster.profile_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
 
