@@ -1294,11 +1294,11 @@ def _fmt_depended_by(obj):
 @utils.arg('-s', '--sort-dir', metavar='<DIR>',
            help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
-           help=_('Limit the number of nodes returned.'))
+           help=_('Limit the number of actions returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
-           help=_('Only return nodes that appear after the given node ID.'))
+           help=_('Only return actions that appear after the given node ID.'))
 @utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted nodes if any.'))
+           help=_('Include soft-deleted actions if any.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
