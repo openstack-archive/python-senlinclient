@@ -412,7 +412,7 @@ def do_cluster_list(sc, args=None):
     else:
         sortby_index = 3
 
-    clusters = sc.clusters(**queries)
+    clusters = sc.conn.cluster.clusters(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
@@ -424,7 +424,7 @@ def do_cluster_list(sc, args=None):
 
 def _show_cluster(sc, cluster_id):
     try:
-        cluster = sc.get_cluster(cluster_id)
+        cluster = sc.conn.cluster.get_cluster(cluster_id)
     except exc.HTTPNotFound:
         raise exc.CommandError(_('Cluster %s is not found') % cluster_id)
 
@@ -470,7 +470,7 @@ def do_cluster_create(sc, args):
         'timeout': args.timeout
     }
 
-    cluster = sc.create_cluster(**attrs)
+    cluster = sc.conn.cluster.create_cluster(**attrs)
     _show_cluster(sc, cluster.id)
 
 
@@ -482,7 +482,7 @@ def do_cluster_delete(sc, args):
 
     for cid in args.id:
         try:
-            sc.delete_cluster(cid)
+            sc.conn.cluster.delete_cluster(cid)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -510,7 +510,7 @@ def do_cluster_delete(sc, args):
            help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(sc, args):
     """Update the cluster."""
-    cluster = sc.get_cluster(args.id)
+    cluster = sc.conn.cluster.get_cluster(args.id)
     attrs = {
         'name': args.name,
         'profile_id': args.profile,
@@ -519,7 +519,7 @@ def do_cluster_update(sc, args):
         'timeout': args.timeout,
     }
 
-    sc.update_cluster(cluster.id, **attrs)
+    sc.conn.cluster.update_cluster(cluster.id, **attrs)
     _show_cluster(sc, cluster.id)
 
 
