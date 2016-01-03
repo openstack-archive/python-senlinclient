@@ -72,8 +72,6 @@ def do_profile_type_show(sc, args):
 # PROFILES
 
 
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted profiles if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of profiles returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -84,7 +82,6 @@ def do_profile_list(sc, args=None):
     """List profiles that meet the criteria."""
     fields = ['id', 'name', 'type', 'created_time']
     queries = {
-        'show_deleted': args.show_deleted,
         'limit': args.limit,
         'marker': args.marker,
     }
@@ -241,8 +238,6 @@ def do_policy_type_show(sc, args):
 # POLICIES
 
 
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted policies if any.'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of policies returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -253,7 +248,6 @@ def do_policy_list(sc, args=None):
     """List policies that meet the criteria."""
     fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
     queries = {
-        'show_deleted': args.show_deleted,
         'limit': args.limit,
         'marker': args.marker,
     }
@@ -357,8 +351,6 @@ def do_policy_delete(sc, args):
 # CLUSTERS
 
 
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted clusters if any.'))
 @utils.arg('-n', '--show-nested', default=False, action="store_true",
            help=_('Include nested clusters if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -390,7 +382,6 @@ def do_cluster_list(sc, args=None):
         'marker': args.marker,
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
-        'show_deleted': args.show_deleted,
         'show_nested': args.show_nested,
         'global_project': args.global_project,
     }
@@ -530,8 +521,6 @@ def do_cluster_show(sc, args):
     _show_cluster(sc, args.id)
 
 
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned nodes. '
                   'This can be specified multiple times, or once with '
@@ -550,7 +539,6 @@ def do_cluster_node_list(sc, args):
 
     queries = {
         'cluster_id': args.id,
-        'show_deleted': args.show_deleted,
         'limit': args.limit,
         'marker': args.marker,
     }
@@ -868,8 +856,6 @@ def do_cluster_policy_disable(sc, args):
 
 @utils.arg('-c', '--cluster', metavar='<CLUSTER>',
            help=_('ID or name of cluster from which nodes are to be listed.'))
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted nodes if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned nodes. '
                   'This can be specified multiple times, or once with '
@@ -894,11 +880,9 @@ def do_node_list(sc, args):
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_time', 'updated_time']
-    sort_keys = ['index', 'name', 'created_time', 'updated_time',
-                 'deleted_time', 'status']
+    sort_keys = ['index', 'name', 'created_time', 'updated_time', 'status']
 
     queries = {
-        'show_deleted': args.show_deleted,
         'cluster_id': args.cluster,
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
@@ -909,9 +893,6 @@ def do_node_list(sc, args):
 
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
-
-    if args.show_deleted:
-        fields.append('deleted_time')
 
     sortby_index = None
     if args.sort_keys:
@@ -1065,8 +1046,6 @@ def do_node_leave(sc, args):
 # RECEIVERS
 
 
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include deleted receivers if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned receivers. '
                   'This can be specified multiple times, or once with '
@@ -1095,15 +1074,11 @@ def do_receiver_list(sc, args=None):
         'marker': args.marker,
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
-        'show_deleted': args.show_deleted,
         'global_project': args.global_project,
     }
 
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
-
-    if args.show_deleted:
-        fields.append('deleted_time')
 
     if args.sort_keys:
         for key in args.sort_keys.split(';'):
@@ -1211,9 +1186,6 @@ def do_receiver_delete(sc, args):
            help=_('Whether events from all projects should be listed. '
                   ' Default to False. Setting this to True may demand '
                   'for an admin privilege.'))
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Whether deleted events should be listed as well. '
-                  'Default to False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_event_list(sc, args):
@@ -1229,7 +1201,6 @@ def do_event_list(sc, args):
         'limit': args.limit,
         'marker': args.marker,
         'global_project': args.global_project,
-        'show_deleted': args.show_deleted,
     }
 
     if args.filters:
@@ -1281,8 +1252,6 @@ def do_event_show(sc, args):
            help=_('Limit the number of actions returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return actions that appear after the given node ID.'))
-@utils.arg('-D', '--show-deleted', default=False, action="store_true",
-           help=_('Include soft-deleted actions if any.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_action_list(sc, args):
@@ -1293,7 +1262,6 @@ def do_action_list(sc, args):
     sort_keys = ['name', 'target', 'action', 'created_time', 'status']
 
     queries = {
-        'show_deleted': args.show_deleted,
         'sort_keys': args.sort_keys,
         'sort_dir': args.sort_dir,
         'limit': args.limit,

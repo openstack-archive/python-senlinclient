@@ -55,7 +55,6 @@ class Cluster(resource.Resource):
     parent = resource.prop('parent')
     created_time = resource.prop('created_time')
     updated_time = resource.prop('updated_time')
-    deleted_time = resource.prop('deleted_time')
     min_size = resource.prop('min_size', type=int)
     max_size = resource.prop('max_size', type=int)
     desired_capacity = resource.prop('desired_capacity', type=int)
@@ -190,7 +189,6 @@ class Cluster(resource.Resource):
             'parent': self.parent,
             'created_time': self.created_time,
             'updated_time': self.updated_time,
-            'deleted_time': self.deleted_time,
             'min_size': self.min_size,
             'max_size': self.max_size,
             'desired_capacity': self.desired_capacity,
@@ -269,7 +267,6 @@ class Node(resource.Resource):
     init_time = resource.prop('init_time')
     created_time = resource.prop('created_time')
     updated_time = resource.prop('updated_time')
-    deleted_time = resource.prop('deleted_time')
     status = resource.prop('status')
     status_reason = resource.prop('status_reason')
     metadata = resource.prop('metadata', type=dict)
@@ -309,7 +306,6 @@ class Node(resource.Resource):
             'init_time': self.init_time,
             'created_time': self.created_time,
             'updated_time': self.updated_time,
-            'deleted_time': self.deleted_time,
             'status': self.status,
             'status_reason': self.status_reason,
             'metadata': self.metadata,
@@ -390,7 +386,6 @@ class Receiver(resource.Resource):
     cluster_id = resource.prop('cluster_id')
     action = resource.prop('action')
     created_time = resource.prop('created_time')
-    deleted_time = resource.prop('deleted_time')
     actor = resource.prop('actor', type=dict)
     params = resource.prop('params', type=dict)
     channel = resource.prop('channel', type=dict)
