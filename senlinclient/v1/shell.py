@@ -80,7 +80,7 @@ def do_profile_type_show(sc, args):
            help=_('Print full IDs in list.'))
 def do_profile_list(sc, args=None):
     """List profiles that meet the criteria."""
-    fields = ['id', 'name', 'type', 'created_time']
+    fields = ['id', 'name', 'type', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
@@ -246,7 +246,7 @@ def do_policy_type_show(sc, args):
            help=_('Print full IDs in list.'))
 def do_policy_list(sc, args=None):
     """List policies that meet the criteria."""
-    fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
+    fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
@@ -375,8 +375,8 @@ def do_policy_delete(sc, args):
            help=_('Print full IDs in list.'))
 def do_cluster_list(sc, args=None):
     """List the user's clusters."""
-    fields = ['id', 'name', 'status', 'created_time', 'updated_time']
-    sort_keys = ['name', 'status', 'created_time', 'updated_time']
+    fields = ['id', 'name', 'status', 'created_at', 'updated_at']
+    sort_keys = ['name', 'status', 'created_at', 'updated_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
@@ -394,7 +394,7 @@ def do_cluster_list(sc, args=None):
     # we only validate the sort keys
     # - if all keys are valid, we won't enforce sorting in the resulting list
     # - if any keys are invalid, we abort the command execution;
-    # - if no sort key is specified, we use created_time column for sorting
+    # - if no sort key is specified, we use created_at column for sorting
     if args.sort_keys:
         for key in args.sort_keys.split(';'):
             if len(key) > 0 and key not in sort_keys:
@@ -559,7 +559,7 @@ def do_cluster_node_list(sc, args):
     else:
         formatters = {}
 
-    fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_time']
+    fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_at']
     utils.print_list(nodes, fields, formatters=formatters, sortby_index=5)
 
 
@@ -879,8 +879,8 @@ def do_node_list(sc, args):
     """Show list of nodes."""
 
     fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-              'profile_name', 'created_time', 'updated_time']
-    sort_keys = ['index', 'name', 'created_time', 'updated_time', 'status']
+              'profile_name', 'created_at', 'updated_at']
+    sort_keys = ['index', 'name', 'created_at', 'updated_at', 'status']
 
     queries = {
         'cluster_id': args.cluster,
@@ -1067,8 +1067,8 @@ def do_node_leave(sc, args):
            help=_('Print full IDs in list.'))
 def do_receiver_list(sc, args=None):
     """List receivers that meet the criteria."""
-    fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
-    sort_keys = ['name', 'type', 'cluster_id', 'created_time']
+    fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
+    sort_keys = ['name', 'type', 'cluster_id', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
@@ -1259,7 +1259,7 @@ def do_action_list(sc, args):
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by']
-    sort_keys = ['name', 'target', 'action', 'created_time', 'status']
+    sort_keys = ['name', 'target', 'action', 'created_at', 'status']
 
     queries = {
         'sort_keys': args.sort_keys,

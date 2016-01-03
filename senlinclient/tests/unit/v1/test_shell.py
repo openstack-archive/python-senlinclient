@@ -109,7 +109,7 @@ class ShellTest(testtools.TestCase):
         client = mock.Mock()
         profiles = mock.Mock()
         client.conn.cluster.profiles.return_value = profiles
-        fields = ['id', 'name', 'type', 'created_time']
+        fields = ['id', 'name', 'type', 'created_at']
         args = {
             'limit': 20,
             'marker': 'mark_id',
@@ -337,7 +337,7 @@ class ShellTest(testtools.TestCase):
             'global_project': False,
             'full_id': False,
         }
-        fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
+        fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
         args = self._make_args(params)
         queries = copy.deepcopy(params)
         del queries['filters']
@@ -455,7 +455,7 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_policy_list(self, mock_print):
         client = mock.Mock()
-        fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
+        fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_at']
         args = {
             'limit': 20,
             'marker': 'fake_id',
@@ -534,8 +534,7 @@ class ShellTest(testtools.TestCase):
         args = {'id': 'policy_id'}
         args = self._make_args(args)
         sh.do_policy_show(client, args)
-        mock_show.assert_called_once_with(client,
-                                          policy_id='policy_id')
+        mock_show.assert_called_once_with(client, policy_id='policy_id')
 
     @mock.patch.object(sh, '_show_policy')
     def test_do_policy_update(self, mock_show):
@@ -584,8 +583,7 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_list(self, mock_print):
         client = mock.Mock()
-        fields = ['id', 'name', 'status', 'created_time', 'updated_time',
-                  'parent']
+        fields = ['id', 'name', 'status', 'created_at', 'updated_at', 'parent']
         args = {
             'limit': 20,
             'marker': 'fake_id',
@@ -728,8 +726,7 @@ class ShellTest(testtools.TestCase):
         nodes = mock.Mock()
         client.nodes.return_value = nodes
         formatters = {}
-        fields = ['id', 'name', 'index', 'status', 'physical_id',
-                  'created_time']
+        fields = ['id', 'name', 'index', 'status', 'physical_id', 'created_at']
         sh.do_cluster_node_list(client, args)
         client.nodes.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(nodes, fields,
@@ -1096,7 +1093,7 @@ class ShellTest(testtools.TestCase):
     def test_do_node_list(self, mock_print):
         client = mock.Mock()
         fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-                  'profile_name', 'created_time', 'updated_time']
+                  'profile_name', 'created_at', 'updated_at']
         args = {
             'cluster': 'cluster1',
             'sort_keys': 'name',
