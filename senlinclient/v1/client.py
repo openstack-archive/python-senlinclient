@@ -89,53 +89,20 @@ class Client(object):
         return self.conn.cluster.delete_cluster(value,
                                                 ignore_missing=ignore_missing)
 
-    def cluster_add_nodes(self, value, nodes):
-        params = {
-            'id': value,
-            'action': 'add_nodes',
-            'action_args': {
-                'nodes': nodes,
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_add_nodes(self, cluster, nodes):
+        return self.conn.cluster.cluster_add_nodes(cluster, nodes)
 
-    def cluster_del_nodes(self, value, nodes):
-        params = {
-            'id': value,
-            'action': 'del_nodes',
-            'action_args': {
-                'nodes': nodes,
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_del_nodes(self, cluster, nodes):
+        return self.conn.cluster.cluster_del_nodes(cluster, nodes)
 
-    def cluster_resize(self, value, **kwargs):
-        params = {
-            'id': value,
-            'action': 'resize',
-            'action_args': kwargs,
-        }
-        return self.action(models.Cluster, params)
+    def cluster_resize(self, cluster, **params):
+        return self.conn.cluster.cluster_resize(cluster, **params)
 
-    def cluster_scale_out(self, value, count):
-        params = {
-            'id': value,
-            'action': 'scale_out',
-            'action_args': {
-                'count': count
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_scale_out(self, cluster, count):
+        return self.conn.cluster.cluster_scale_out(cluster, count)
 
-    def cluster_scale_in(self, value, count):
-        params = {
-            'id': value,
-            'action': 'scale_in',
-            'action_args': {
-                'count': count
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_scale_in(self, cluster, count):
+        return self.conn.cluster.cluster_scale_in(cluster, count)
 
     def cluster_policies(self, value, **queries):
         return self.list(models.ClusterPolicy, path_args={'cluster_id': value},
@@ -144,51 +111,22 @@ class Client(object):
     def get_cluster_policy(self, value):
         return self.get(models.ClusterPolicy, value)
 
-    def cluster_attach_policy(self, value, **kwargs):
-        params = {
-            'id': value,
-            'action': 'policy_attach',
-            'action_args': kwargs
-        }
-        return self.action(models.Cluster, params)
+    def cluster_attach_policy(self, cluster, policy, **attrs):
+        return self.conn.cluster.cluster_attach_policy(cluster, policy,
+                                                       **attrs)
 
-    def cluster_detach_policy(self, value, policy):
-        params = {
-            'id': value,
-            'action': 'policy_detach',
-            'action_args': {
-                'policy_id': policy,
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_detach_policy(self, cluster, policy):
+        return self.conn.cluster.cluster_detach_policy(cluster, policy)
 
-    def cluster_update_policy(self, value, **attrs):
-        params = {
-            'id': value,
-            'action': 'policy_update',
-            'action_args': attrs
-        }
-        return self.action(models.Cluster, params)
+    def cluster_update_policy(self, cluster, policy, **attrs):
+        return self.conn.cluster.cluster_update_policy(cluster, policy,
+                                                       **attrs)
 
-    def cluster_enable_policy(self, value, policy):
-        params = {
-            'id': value,
-            'action': 'policy_enable',
-            'action_args': {
-                'policy_id': policy
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_enable_policy(self, cluster, policy):
+        return self.conn.cluster.cluster_enable_policy(cluster, policy)
 
-    def cluster_disable_policy(self, value, policy):
-        params = {
-            'id': value,
-            'action': 'policy_disable',
-            'action_args': {
-                'policy_id': policy
-            }
-        }
-        return self.action(models.Cluster, params)
+    def cluster_disable_policy(self, cluster, policy):
+        return self.conn.cluster.cluster_disable_policy(cluster, policy)
 
     def nodes(self, **queries):
         return self.list(models.Node, **queries)

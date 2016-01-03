@@ -583,7 +583,7 @@ def do_cluster_node_list(sc, args):
 def do_cluster_node_add(sc, args):
     """Add specified nodes to cluster."""
     node_ids = args.nodes.split(',')
-    resp = sc.cluster_add_nodes(args.id, node_ids)
+    resp = sc.conn.cluster.cluster_add_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -595,7 +595,7 @@ def do_cluster_node_add(sc, args):
 def do_cluster_node_del(sc, args):
     """Delete specified nodes from cluster."""
     node_ids = args.nodes.split(',')
-    resp = sc.cluster_del_nodes(args.id, node_ids)
+    resp = sc.conn.cluster.cluster_del_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -689,7 +689,7 @@ def do_cluster_resize(sc, args):
     action_args['min_step'] = min_step
     action_args['strict'] = args.strict
 
-    resp = sc.cluster_resize(args.id, **action_args)
+    resp = sc.conn.cluster.cluster_resize(args.id, **action_args)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -699,7 +699,7 @@ def do_cluster_resize(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(sc, args):
     """Scale out a cluster by the specified number of nodes."""
-    resp = sc.cluster_scale_out(args.id, args.count)
+    resp = sc.conn.cluster.cluster_scale_out(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -709,7 +709,7 @@ def do_cluster_scale_out(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(sc, args):
     """Scale in a cluster by the specified number of nodes."""
-    resp = sc.cluster_scale_in(args.id, args.count)
+    resp = sc.conn.cluster.cluster_scale_in(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -801,7 +801,7 @@ def do_cluster_policy_attach(sc, args):
         'enabled': args.enabled,
     }
 
-    resp = sc.cluster_attach_policy(args.id, **kwargs)
+    resp = sc.conn.cluster.cluster_attach_policy(args.id, **kwargs)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -811,7 +811,7 @@ def do_cluster_policy_attach(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(sc, args):
     """Detach policy from cluster."""
-    resp = sc.cluster_detach_policy(args.id, args.policy)
+    resp = sc.conn.cluster.cluster_detach_policy(args.id, args.policy)
     print('Request accepted by action %s' % resp['action'])
 
 
@@ -839,7 +839,7 @@ def do_cluster_policy_update(sc, args):
         'enabled': args.enabled,
     }
 
-    resp = sc.cluster_update_policy(args.id, **kwargs)
+    resp = sc.conn.cluster.cluster_update_policy(args.id, **kwargs)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -849,7 +849,7 @@ def do_cluster_policy_update(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_enable(sc, args):
     """Enable a policy on a cluster."""
-    resp = sc.cluster_enable_policy(args.id, args.policy)
+    resp = sc.conn.cluster.cluster_enable_policy(args.id, args.policy)
     print('Request accepted by action: %s' % resp['action'])
 
 
@@ -859,7 +859,7 @@ def do_cluster_policy_enable(sc, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_disable(sc, args):
     """Disable a policy on a cluster."""
-    resp = sc.cluster_disable_policy(args.id, args.policy)
+    resp = sc.conn.cluster.cluster_disable_policy(args.id, args.policy)
     print('Request accepted by action: %s' % resp['action'])
 
 

@@ -760,10 +760,10 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         node_ids = ['node1', 'node2']
         resp = {'action': 'CLUSTER_NODE_ADD'}
-        client.cluster_add_nodes.return_value = resp
+        client.conn.cluster.cluster_add_nodes.return_value = resp
         sh.do_cluster_node_add(client, args)
-        client.cluster_add_nodes.assert_called_once_with('cluster_id',
-                                                         node_ids)
+        client.conn.cluster.cluster_add_nodes.assert_called_once_with(
+            'cluster_id', node_ids)
 
     def test_do_cluster_node_del(self):
         client = mock.Mock()
@@ -774,10 +774,10 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         node_ids = ['node1', 'node2']
         resp = {'action': 'CLUSTER_NODE_DEL'}
-        client.cluster_del_nodes.return_value = resp
+        client.conn.cluster.cluster_del_nodes.return_value = resp
         sh.do_cluster_node_del(client, args)
-        client.cluster_del_nodes.assert_called_once_with('cluster_id',
-                                                         node_ids)
+        client.conn.cluster.cluster_del_nodes.assert_called_once_with(
+            'cluster_id', node_ids)
 
     def test_do_cluster_resize(self):
         client = mock.Mock()
@@ -792,8 +792,7 @@ class ShellTest(testtools.TestCase):
             'strict': True,
         }
         args = self._make_args(args)
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _("Only one of 'capacity', 'adjustment' and "
@@ -813,13 +812,14 @@ class ShellTest(testtools.TestCase):
             'min_step': None,
         }
         resp = {'action': 'action_id'}
-        client.cluster_resize.return_value = resp
+        client.conn.cluster.cluster_resize.return_value = resp
         sh.do_cluster_resize(client, args)
-        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        client.conn.cluster.cluster_resize.assert_called_with(
+            'cluster_id', **action_args)
+
         # capacity is smaller than 0
         args.capacity = -1
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Cluster capacity must be larger than '
@@ -833,11 +833,12 @@ class ShellTest(testtools.TestCase):
         action_args['adjustment_type'] = 'CHANGE_IN_CAPACITY'
         action_args['number'] = 1
         sh.do_cluster_resize(client, args)
-        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        client.conn.cluster.cluster_resize.assert_called_with(
+            'cluster_id', **action_args)
+
         # adjustment is 0
         args.adjustment = 0
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Adjustment cannot be zero.')
@@ -850,11 +851,12 @@ class ShellTest(testtools.TestCase):
         action_args['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
         action_args['number'] = 50.0
         sh.do_cluster_resize(client, args)
-        client.cluster_resize.assert_called_with('cluster_id', **action_args)
+        client.conn.cluster.cluster_resize.assert_called_with(
+            'cluster_id', **action_args)
+
         # percentage is 0
         args.percentage = 0
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Percentage cannot be zero.')
@@ -865,8 +867,7 @@ class ShellTest(testtools.TestCase):
         args.percentage = None
         args.adjustment = None
         args.min_step = 1
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Min step is only used with percentage.')
@@ -878,12 +879,12 @@ class ShellTest(testtools.TestCase):
         args.adjustment = None
         args.min_step = None
         args.min_size = -1
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Min size cannot be less than zero.')
         self.assertEqual(msg, six.text_type(ex))
+
         # max_size < min_size
         args.capacity = 5
         args.percentage = None
@@ -891,12 +892,12 @@ class ShellTest(testtools.TestCase):
         args.min_step = None
         args.min_size = 5
         args.max_size = 4
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Min size cannot be larger than max size.')
         self.assertEqual(msg, six.text_type(ex))
+
         # min_size > capacity
         args.capacity = 5
         args.percentage = None
@@ -904,12 +905,12 @@ class ShellTest(testtools.TestCase):
         args.min_step = None
         args.min_size = 6
         args.max_size = 8
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Min size cannot be larger than the specified capacity')
         self.assertEqual(msg, six.text_type(ex))
+
         # max_size < capacity
         args.capacity = 5
         args.percentage = None
@@ -917,8 +918,7 @@ class ShellTest(testtools.TestCase):
         args.min_step = None
         args.min_size = 1
         args.max_size = 4
-        ex = exc.CommandError
-        ex = self.assertRaises(ex,
+        ex = self.assertRaises(exc.CommandError,
                                sh.do_cluster_resize,
                                client, args)
         msg = _('Max size cannot be less than the specified capacity.')
@@ -932,9 +932,10 @@ class ShellTest(testtools.TestCase):
         }
         args = self._make_args(args)
         resp = {'action': 'action_id'}
-        client.cluster_scale_out.return_value = resp
+        client.conn.cluster.cluster_scale_out.return_value = resp
         sh.do_cluster_scale_out(client, args)
-        client.cluster_scale_out.assert_called_once_with('cluster_id', 3)
+        client.conn.cluster.cluster_scale_out.assert_called_once_with(
+            'cluster_id', 3)
 
     def test_do_cluster_scale_in(self):
         client = mock.Mock()
@@ -944,9 +945,10 @@ class ShellTest(testtools.TestCase):
         }
         args = self._make_args(args)
         resp = {'action': 'action_id'}
-        client.cluster_scale_in.return_value = resp
+        client.conn.cluster.cluster_scale_in.return_value = resp
         sh.do_cluster_scale_in(client, args)
-        client.cluster_scale_in.assert_called_once_with('cluster_id', 3)
+        client.conn.cluster.cluster_scale_in.assert_called_once_with(
+            'cluster_id', 3)
 
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_policy_list(self, mock_print):
@@ -1029,10 +1031,10 @@ class ShellTest(testtools.TestCase):
             'enabled': 'True',
         }
         resp = {'action': 'action_id'}
-        client.cluster_attach_policy.return_value = resp
+        client.conn.cluster.cluster_attach_policy.return_value = resp
         sh.do_cluster_policy_attach(client, args)
-        client.cluster_attach_policy.assert_called_once_with('cluster1',
-                                                             **kwargs)
+        client.conn.cluster.cluster_attach_policy.assert_called_once_with(
+            'cluster1', **kwargs)
 
     def test_do_cluster_policy_detach(self):
         args = {
@@ -1042,10 +1044,10 @@ class ShellTest(testtools.TestCase):
         client = mock.Mock()
         args = self._make_args(args)
         resp = {'action': 'action_id'}
-        client.cluster_detach_policy.return_value = resp
+        client.conn.cluster.cluster_detach_policy.return_value = resp
         sh.do_cluster_policy_detach(client, args)
-        client.cluster_detach_policy.assert_called_once_with('cluster1',
-                                                             'policy1')
+        client.conn.cluster.cluster_detach_policy.assert_called_once_with(
+            'cluster1', 'policy1')
 
     def test_do_cluster_policy_update(self):
         client = mock.Mock()
@@ -1066,10 +1068,10 @@ class ShellTest(testtools.TestCase):
             'enabled': 'True',
         }
         resp = {'action': 'action_id'}
-        client.cluster_update_policy.return_value = resp
+        client.conn.cluster.cluster_update_policy.return_value = resp
         sh.do_cluster_policy_update(client, args)
-        client.cluster_update_policy.assert_called_once_with('cluster1',
-                                                             **kwargs)
+        client.conn.cluster.cluster_update_policy.assert_called_once_with(
+            'cluster1', **kwargs)
 
     def test_do_cluster_policy_enable(self):
         args = {
@@ -1079,10 +1081,10 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         client = mock.Mock()
         resp = {'action': 'action_id'}
-        client.cluster_enable_policy.return_value = resp
+        client.conn.cluster.cluster_enable_policy.return_value = resp
         sh.do_cluster_policy_enable(client, args)
-        client.cluster_enable_policy.assert_called_once_with('cluster1',
-                                                             'policy1')
+        client.conn.cluster.cluster_enable_policy.assert_called_once_with(
+            'cluster1', 'policy1')
 
     def test_do_cluster_policy_disable(self):
         args = {
@@ -1092,10 +1094,10 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         client = mock.Mock()
         resp = {'action': 'action_id'}
-        client.cluster_disable_policy.return_value = resp
+        client.conn.cluster.cluster_disable_policy.return_value = resp
         sh.do_cluster_policy_disable(client, args)
-        client.cluster_disable_policy.assert_called_once_with('cluster1',
-                                                              'policy1')
+        client.conn.cluster.cluster_disable_policy.assert_called_once_with(
+            'cluster1', 'policy1')
 
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
