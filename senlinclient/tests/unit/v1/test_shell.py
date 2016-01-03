@@ -1342,13 +1342,9 @@ class ShellTest(testtools.TestCase):
         queries['status'] = 'ACTIVE'
         actions = mock.Mock()
         client.actions.return_value = actions
-        fmt_dp_on = mock.Mock()
-        sh._fmt_depends_on = fmt_dp_on
-        fmt_dp_by = mock.Mock()
-        sh._fmt_depended_by = fmt_dp_by
         formatters = {
-            'depends_on': fmt_dp_on,
-            'depended_by': fmt_dp_by
+            'depends_on': mock.ANY,
+            'depended_by': mock.ANY
         }
         args.full_id = True
         sortby_index = None
