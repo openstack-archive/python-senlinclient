@@ -111,7 +111,6 @@ class ShellTest(testtools.TestCase):
         client.conn.cluster.profiles.return_value = profiles
         fields = ['id', 'name', 'type', 'created_time']
         args = {
-            'show_deleted': False,
             'limit': 20,
             'marker': 'mark_id',
         }
@@ -335,12 +334,10 @@ class ShellTest(testtools.TestCase):
             'sort_keys': 'name',
             'sort_dir': 'asc',
             'filters': ['filter_key=filter_value'],
-            'show_deleted': True,
             'global_project': False,
             'full_id': False,
         }
-        fields = ['id', 'name', 'type', 'cluster_id', 'action',
-                  'created_time', 'deleted_time']
+        fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_time']
         args = self._make_args(params)
         queries = copy.deepcopy(params)
         del queries['filters']
@@ -460,14 +457,12 @@ class ShellTest(testtools.TestCase):
         client = mock.Mock()
         fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_time']
         args = {
-            'show_deleted': True,
             'limit': 20,
             'marker': 'fake_id',
             'full_id': True
         }
         args = self._make_args(args)
         queries = {
-            'show_deleted': True,
             'limit': 20,
             'marker':
             'fake_id',
@@ -596,7 +591,6 @@ class ShellTest(testtools.TestCase):
             'marker': 'fake_id',
             'sort_keys': 'name',
             'sort_dir': 'asc',
-            'show_deleted': True,
             'show_nested': True,
             'global_project': False,
             'filters': ['status=ACTIVE'],
@@ -720,7 +714,6 @@ class ShellTest(testtools.TestCase):
         client = mock.Mock()
         args = {
             'id': 'cluster_id',
-            'show_deleted': True,
             'limit': 20,
             'marker': 'marker_id',
             'filters': ['status=ACTIVE'],
@@ -1101,10 +1094,8 @@ class ShellTest(testtools.TestCase):
     def test_do_node_list(self, mock_print):
         client = mock.Mock()
         fields = ['id', 'name', 'status', 'cluster_id', 'physical_id',
-                  'profile_name', 'created_time', 'updated_time',
-                  'deleted_time']
+                  'profile_name', 'created_time', 'updated_time']
         args = {
-            'show_deleted': True,
             'cluster': 'cluster1',
             'sort_keys': 'name',
             'sort_dir': 'asc',
@@ -1115,7 +1106,6 @@ class ShellTest(testtools.TestCase):
             'full_id': True,
         }
         queries = {
-            'show_deleted': True,
             'cluster_id': 'cluster1',
             'sort_keys': 'name',
             'sort_dir': 'asc',
@@ -1274,7 +1264,6 @@ class ShellTest(testtools.TestCase):
             'limit': 20,
             'marker': 'marker_id',
             'global_project': True,
-            'show_deleted': True,
             'filters': ['action=NODE_DELETE'],
             'full_id': True,
         }
@@ -1330,7 +1319,6 @@ class ShellTest(testtools.TestCase):
         fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
                   'depended_by']
         args = {
-            'show_deleted': True,
             'sort_keys': 'status',
             'sort_dir': 'asc',
             'limit': 20,
