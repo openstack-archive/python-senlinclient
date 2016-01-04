@@ -291,7 +291,7 @@ class SenlinShell(object):
         if profile:
             osprofiler_profiler.init(options.profile)
 
-        args.func(sc, args)
+        args.func(sc.service, args)
 
         if profile:
             trace_id = osprofiler_profiler.get().get_base_id()
