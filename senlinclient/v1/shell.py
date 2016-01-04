@@ -716,7 +716,7 @@ def do_cluster_scale_in(service, args):
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(service, args):
     """List policies from cluster."""
-    fields = ['policy_id', 'policy', 'type', 'priority', 'level',
+    fields = ['policy_id', 'policy_name', 'policy_type', 'priority', 'level',
               'cooldown', 'enabled']
     sort_keys = ['priority', 'level', 'cooldown', 'enabled']
 

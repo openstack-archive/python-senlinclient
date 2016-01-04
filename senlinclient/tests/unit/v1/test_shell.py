@@ -944,8 +944,8 @@ class ShellTest(testtools.TestCase):
 
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_policy_list(self, mock_print):
-        fields = ['policy_id', 'policy', 'type', 'priority', 'level',
-                  'cooldown', 'enabled']
+        fields = ['policy_id', 'policy_name', 'policy_type', 'priority',
+                  'level', 'cooldown', 'enabled']
         service = mock.Mock()
         args = {
             'id': 'C1',
