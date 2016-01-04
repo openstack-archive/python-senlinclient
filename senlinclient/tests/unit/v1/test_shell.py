@@ -1014,7 +1014,6 @@ class ShellTest(testtools.TestCase):
         }
         args = self._make_args(args)
         kwargs = {
-            'policy_id': 'policy1',
             'priority': 50,
             'level': 60,
             'cooldown': 120,
@@ -1024,7 +1023,7 @@ class ShellTest(testtools.TestCase):
         client.conn.cluster.cluster_attach_policy.return_value = resp
         sh.do_cluster_policy_attach(client, args)
         client.conn.cluster.cluster_attach_policy.assert_called_once_with(
-            'cluster1', **kwargs)
+            'cluster1', 'policy1', **kwargs)
 
     def test_do_cluster_policy_detach(self):
         args = {

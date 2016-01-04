@@ -782,14 +782,14 @@ def do_cluster_policy_show(sc, args):
 def do_cluster_policy_attach(sc, args):
     """Attach policy to cluster."""
     kwargs = {
-        'policy_id': args.policy,
         'priority': args.priority,
         'level': args.enforcement_level,
         'cooldown': args.cooldown,
         'enabled': args.enabled,
     }
 
-    resp = sc.conn.cluster.cluster_attach_policy(args.id, **kwargs)
+    policy = args.policy
+    resp = sc.conn.cluster.cluster_attach_policy(args.id, policy, **kwargs)
     print('Request accepted by action: %s' % resp['action'])
 
 
