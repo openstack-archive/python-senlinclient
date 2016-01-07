@@ -125,6 +125,7 @@ def _show_profile(service, profile_id):
            help=_('Name of the profile to create.'))
 def do_profile_create(service, args):
     """Create a profile."""
+
     spec = utils.get_spec_content(args.spec_file)
     type_name = spec.get('type', None)
     type_version = spec.get('version', None)
