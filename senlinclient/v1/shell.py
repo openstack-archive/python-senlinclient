@@ -76,6 +76,14 @@ def do_profile_type_show(service, args):
            help=_('Limit the number of profiles returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return profiles that appear after the given ID.'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Indicate that the list should include profiles from'
+                  ' all projects. This option is subject to access policy '
+                  'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_profile_list(service, args=None):
@@ -84,7 +92,11 @@ def do_profile_list(service, args=None):
     queries = {
         'limit': args.limit,
         'marker': args.marker,
+        'sort': args.sort,
+        'global_project': args.global_project,
     }
+
+    sortby_index = None if args.sort else 1
 
     profiles = service.profiles(**queries)
     formatters = {}
@@ -92,7 +104,8 @@ def do_profile_list(service, args=None):
         formatters = {
             'id': lambda x: x.id[:8],
         }
-    utils.print_list(profiles, fields, formatters=formatters, sortby_index=1)
+    utils.print_list(profiles, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 def _show_profile(service, profile_id):
@@ -243,6 +256,14 @@ def do_policy_type_show(service, args):
            help=_('Limit the number of policies returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return policies that appear after the given ID.'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Indicate that the list should include policies from'
+                  ' all projects. This option is subject to access policy '
+                  'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_policy_list(service, args=None):
@@ -251,15 +272,19 @@ def do_policy_list(service, args=None):
     queries = {
         'limit': args.limit,
         'marker': args.marker,
+        'sort': args.sort,
+        'global_project': args.global_project,
     }
 
+    sortby_index = None if args.sort else 1
     policies = service.policies(**queries)
     formatters = {}
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8]
         }
-    utils.print_list(policies, fields, formatters=formatters, sortby_index=1)
+    utils.print_list(policies, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 def _show_policy(service, policy_id):
@@ -359,10 +384,10 @@ def do_policy_delete(service, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned clusters.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of clusters returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -377,12 +402,10 @@ def do_policy_delete(service, args):
 def do_cluster_list(service, args=None):
     """List the user's clusters."""
     fields = ['id', 'name', 'status', 'created_at', 'updated_at']
-    sort_keys = ['name', 'status', 'created_at', 'updated_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
         'show_nested': args.show_nested,
         'global_project': args.global_project,
     }
@@ -392,17 +415,7 @@ def do_cluster_list(service, args=None):
     if args.show_nested:
         fields.append('parent')
 
-    # we only validate the sort keys
-    # - if all keys are valid, we won't enforce sorting in the resulting list
-    # - if any keys are invalid, we abort the command execution;
-    # - if no sort key is specified, we use created_at column for sorting
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-        sortby_index = None
-    else:
-        sortby_index = 3
+    sortby_index = None if args.sort else 3
 
     clusters = service.clusters(**queries)
     formatters = {}
@@ -707,10 +720,10 @@ def do_cluster_scale_in(service, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned policies.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY[:DIR]>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 @utils.arg('id', metavar='<CLUSTER>',
@@ -719,25 +732,15 @@ def do_cluster_policy_list(service, args):
     """List policies from cluster."""
     fields = ['policy_id', 'policy_name', 'policy_type', 'priority', 'level',
               'cooldown', 'enabled']
-    sort_keys = ['priority', 'level', 'cooldown', 'enabled']
-
     cluster = service.get_cluster(args.id)
     queries = {
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
     }
 
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    sortby_index = None
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-    else:
-        sortby_index = 3
-
+    sortby_index = None if args.sort else 3
     policies = service.cluster_policies(cluster.id, **queries)
     formatters = {}
     if not args.full_id:
@@ -857,10 +860,10 @@ def do_cluster_policy_disable(service, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned nodes.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -876,12 +879,9 @@ def do_node_list(service, args):
 
     fields = ['id', 'name', 'index', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_at', 'updated_at']
-    sort_keys = ['index', 'name', 'created_at', 'updated_at', 'status']
-
     queries = {
         'cluster_id': args.cluster,
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
         'limit': args.limit,
         'marker': args.marker,
         'global_project': args.global_project,
@@ -890,13 +890,7 @@ def do_node_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    sortby_index = None
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-    else:
-        sortby_index = 6
+    sortby_index = None if args.sort else 6
 
     nodes = service.nodes(**queries)
 
@@ -1053,10 +1047,10 @@ def do_node_leave(service, args):
            help=_('Limit the number of receivers returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return receivers that appear after the given ID.'))
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned receivers.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY[:DIR]>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Indicate that the list should include receivers from'
                   ' all projects. This option is subject to access policy '
@@ -1066,25 +1060,17 @@ def do_node_leave(service, args):
 def do_receiver_list(service, args=None):
     """List receivers that meet the criteria."""
     fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
-    sort_keys = ['name', 'type', 'cluster_id', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
         'global_project': args.global_project,
     }
 
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-        sortby_index = None
-    else:
-        sortby_index = 0
+    sortby_index = None if args.sort else 0
 
     receivers = service.receivers(**queries)
     formatters = {}
@@ -1176,10 +1162,10 @@ def do_receiver_delete(service, args):
            help=_('Limit the number of events returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return events that appear after the given event ID.'))
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned events.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Whether events from all projects should be listed. '
                   ' Default to False. Setting this to True may demand '
@@ -1191,11 +1177,8 @@ def do_event_list(service, args):
 
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
               'status', 'status_reason', 'level']
-    sort_keys = ['timestamp', 'obj_type', 'obj_name', 'level', 'action']
-
     queries = {
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
         'limit': args.limit,
         'marker': args.marker,
         'global_project': args.global_project,
@@ -1204,14 +1187,7 @@ def do_event_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    sortby_index = None
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-    else:
-        sortby_index = 0
-
+    sortby_index = None if args.sort else 0
     formatters = {}
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
@@ -1242,10 +1218,10 @@ def do_event_show(service, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-k', '--sort-keys', metavar='<KEYS>',
-           help=_('Name of keys used for sorting the returned actions.'))
-@utils.arg('-s', '--sort-dir', metavar='<DIR>',
-           help=_('Direction for sorting, where DIR can be "asc" or "desc".'))
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
+           help=_('Sorting option which is a string containing a list of keys '
+                  'separated by commas. Each key can be optionally appened by '
+                  'a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of actions returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -1257,11 +1233,9 @@ def do_action_list(service, args):
 
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by', 'created_at']
-    sort_keys = ['name', 'target', 'action', 'created_at', 'status']
 
     queries = {
-        'sort_keys': args.sort_keys,
-        'sort_dir': args.sort_dir,
+        'sort': args.sort,
         'limit': args.limit,
         'marker': args.marker,
     }
@@ -1269,13 +1243,7 @@ def do_action_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    sortby_index = None
-    if args.sort_keys:
-        for key in args.sort_keys.split(';'):
-            if len(key) > 0 and key not in sort_keys:
-                raise exc.CommandError(_('Invalid sorting key: %s') % key)
-    else:
-        sortby_index = 0
+    sortby_index = None if args.sort else 0
 
     actions = service.actions(**queries)
 
