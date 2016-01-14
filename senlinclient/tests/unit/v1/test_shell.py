@@ -463,7 +463,7 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_policy_list(self, mock_print):
         service = mock.Mock()
-        fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_at']
+        fields = ['id', 'name', 'type', 'created_at']
         args = {
             'limit': 20,
             'marker': 'fake_id',
@@ -527,15 +527,11 @@ class ShellTest(testtools.TestCase):
         args = {
             'name': 'new_policy',
             'spec_file': 'policy_file',
-            'cooldown': 20,
-            'enforcement_level': 50
         }
         args = self._make_args(args)
         attrs = {
             'name': 'new_policy',
             'spec': spec,
-            'cooldown': 20,
-            'level': 50
         }
         policy = mock.Mock()
         policy.id = 'policy_id'
@@ -558,15 +554,11 @@ class ShellTest(testtools.TestCase):
         service = mock.Mock()
         args = {
             'name': 'deletion_policy',
-            'cooldown': 10,
-            'enforcement_level': 50,
             'id': 'policy_id',
         }
         args = self._make_args(args)
         params = {
             'name': 'deletion_policy',
-            'cooldown': 10,
-            'level': 50,
             'id': 'policy_id'
         }
         policy = mock.Mock()
@@ -956,18 +948,17 @@ class ShellTest(testtools.TestCase):
 
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_policy_list(self, mock_print):
-        fields = ['policy_id', 'policy_name', 'policy_type', 'priority',
-                  'level', 'cooldown', 'enabled']
+        fields = ['policy_id', 'policy_name', 'policy_type', 'enabled']
         service = mock.Mock()
         args = {
             'id': 'C1',
             'filters': ['enabled=True'],
-            'sort': 'level:asc',
+            'sort': 'enabled:asc',
             'full_id': True,
         }
         args = self._make_args(args)
         queries = {
-            'sort': 'level:asc',
+            'sort': 'enabled:asc',
             'enabled': 'True',
         }
         cluster = mock.Mock()
@@ -1006,16 +997,10 @@ class ShellTest(testtools.TestCase):
         args = {
             'id': 'C1',
             'policy': 'P1',
-            'priority': 50,
-            'enforcement_level': 60,
-            'cooldown': 120,
             'enabled': 'True',
         }
         args = self._make_args(args)
         kwargs = {
-            'priority': 50,
-            'level': 60,
-            'cooldown': 120,
             'enabled': 'True',
         }
         service.cluster_attach_policy.return_value = {'action': 'action_id'}
@@ -1040,17 +1025,11 @@ class ShellTest(testtools.TestCase):
         args = {
             'id': 'C1',
             'policy': 'policy1',
-            'priority': 50,
-            'enforcement_level': 60,
-            'cooldown': 120,
             'enabled': 'True',
         }
         args = self._make_args(args)
         kwargs = {
             'policy_id': 'policy1',
-            'priority': 50,
-            'level': 60,
-            'cooldown': 120,
             'enabled': 'True',
         }
         service.cluster_update_policy.return_value = {'action': 'action_id'}

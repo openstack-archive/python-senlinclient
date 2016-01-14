@@ -268,7 +268,7 @@ def do_policy_type_show(service, args):
            help=_('Print full IDs in list.'))
 def do_policy_list(service, args=None):
     """List policies that meet the criteria."""
-    fields = ['id', 'name', 'type', 'level', 'cooldown', 'created_at']
+    fields = ['id', 'name', 'type', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,
@@ -302,12 +302,6 @@ def _show_policy(service, policy_id):
 
 @utils.arg('-s', '--spec-file', metavar='<SPEC_FILE>', required=True,
            help=_('The spec file used to create the policy.'))
-@utils.arg('-c', '--cooldown', metavar='<SECONDS>', default=0,
-           help=_('An integer indicating the cooldown seconds once the '
-                  'policy is effected. Default to 0.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>', default=0,
-           help=_('An integer between 0 and 100 representing the enforcement '
-                  'level. Default to 0.'))
 @utils.arg('name', metavar='<NAME>',
            help=_('Name of the policy to create.'))
 def do_policy_create(service, args):
@@ -316,8 +310,6 @@ def do_policy_create(service, args):
     attrs = {
         'name': args.name,
         'spec': spec,
-        'cooldown': args.cooldown,
-        'level': args.enforcement_level,
     }
 
     policy = service.create_policy(**attrs)
@@ -331,12 +323,6 @@ def do_policy_show(service, args):
     _show_policy(service, policy_id=args.id)
 
 
-@utils.arg('-c', '--cooldown', metavar='<SECONDS>',
-           help=_('An integer indicating the cooldown seconds once the '
-                  'policy is effected. Default to 0.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
-           help=_('An integer between 0 and 100 representing the enforcement '
-                  'level. Default to 0.'))
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name of the policy to be updated.'))
 @utils.arg('id', metavar='<POLICY>',
@@ -345,8 +331,6 @@ def do_policy_update(service, args):
     """Update a policy."""
     params = {
         'name': args.name,
-        'cooldown': args.cooldown,
-        'level': args.enforcement_level,
     }
 
     policy = service.get_policy(args.id)
@@ -730,8 +714,8 @@ def do_cluster_scale_in(service, args):
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(service, args):
     """List policies from cluster."""
-    fields = ['policy_id', 'policy_name', 'policy_type', 'priority', 'level',
-              'cooldown', 'enabled']
+    fields = ['policy_id', 'policy_name', 'policy_type', 'enabled']
+
     cluster = service.get_cluster(args.id)
     queries = {
         'sort': args.sort,
@@ -764,16 +748,6 @@ def do_cluster_policy_show(service, args):
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
            help=_('ID or name of policy to be attached.'))
-@utils.arg('-r', '--priority', metavar='<PRIORITY>', default=50,
-           help=_('An integer specifying the relative priority among '
-                  'all policies attached to a cluster. The lower the '
-                  'value, the higher the priority. Default is 50.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
-           help=_('An integer between 0 and 100 representing the enforcement '
-                  'level. Default to enforcement level of policy.'))
-@utils.arg('-c', '--cooldown', metavar='<SECONDS>',
-           help=_('An integer indicating the cooldown seconds once the '
-                  'policy is effected. Default to cooldown of policy.'))
 @utils.arg('-e', '--enabled', default=True, action="store_true",
            help=_('Whether the policy should be enabled once attached. '
                   'Default to enabled.'))
@@ -782,9 +756,6 @@ def do_cluster_policy_show(service, args):
 def do_cluster_policy_attach(service, args):
     """Attach policy to cluster."""
     kwargs = {
-        'priority': args.priority,
-        'level': args.enforcement_level,
-        'cooldown': args.cooldown,
         'enabled': args.enabled,
     }
 
@@ -804,14 +775,6 @@ def do_cluster_policy_detach(service, args):
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
            help=_('ID or name of policy to be updated.'))
-@utils.arg('-r', '--priority', metavar='<PRIORITY>',
-           help=_('An integer specifying the relative priority among '
-                  'all policies attached to a cluster. The lower the '
-                  'value, the higher the priority. Default is 50.'))
-@utils.arg('-l', '--enforcement-level', metavar='<LEVEL>',
-           help=_('New enforcement level.'))
-@utils.arg('-c', '--cooldown', metavar='<COOLDOWN>',
-           help=_('Cooldown interval in seconds.'))
 @utils.arg('-e', '--enabled', metavar='<BOOLEAN>',
            help=_('Whether the policy should be enabled.'))
 @utils.arg('id', metavar='<NAME or ID>',
@@ -820,9 +783,6 @@ def do_cluster_policy_update(service, args):
     """Update a policy's properties on a cluster."""
     kwargs = {
         'policy_id': args.policy,
-        'priority': args.priority,
-        'level': args.enforcement_level,
-        'cooldown': args.cooldown,
         'enabled': args.enabled,
     }
 
