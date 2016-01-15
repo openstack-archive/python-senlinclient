@@ -1035,30 +1035,6 @@ class ShellTest(testtools.TestCase):
 
         service.cluster_update_policy.assert_called_once_with('C1', **kwargs)
 
-    def test_do_cluster_policy_enable(self):
-        args = {
-            'id': 'CC',
-            'policy': 'PP'
-        }
-        args = self._make_args(args)
-        service = mock.Mock()
-        resp = {'action': 'action_id'}
-        service.cluster_enable_policy.return_value = resp
-        sh.do_cluster_policy_enable(service, args)
-        service.cluster_enable_policy.assert_called_once_with('CC', 'PP')
-
-    def test_do_cluster_policy_disable(self):
-        args = {
-            'id': 'CC',
-            'policy': 'PP'
-        }
-        args = self._make_args(args)
-        service = mock.Mock()
-        resp = {'action': 'action_id'}
-        service.cluster_disable_policy.return_value = resp
-        sh.do_cluster_policy_disable(service, args)
-        service.cluster_disable_policy.assert_called_once_with('CC', 'PP')
-
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
         service = mock.Mock()
