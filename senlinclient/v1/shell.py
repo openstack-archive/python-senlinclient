@@ -784,26 +784,6 @@ def do_cluster_policy_update(service, args):
     print('Request accepted by action: %s' % resp['action'])
 
 
-@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
-           help=_('ID or name of policy to be enabled.'))
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_enable(service, args):
-    """Enable a policy on a cluster."""
-    resp = service.cluster_enable_policy(args.id, args.policy)
-    print('Request accepted by action: %s' % resp['action'])
-
-
-@utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
-           help=_('ID or name of policy to be disabled.'))
-@utils.arg('id', metavar='<NAME or ID>',
-           help=_('Name or ID of cluster to operate on.'))
-def do_cluster_policy_disable(service, args):
-    """Disable a policy on a cluster."""
-    resp = service.cluster_disable_policy(args.id, args.policy)
-    print('Request accepted by action: %s' % resp['action'])
-
-
 # NODES
 
 
