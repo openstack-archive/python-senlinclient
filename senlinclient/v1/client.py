@@ -131,12 +131,6 @@ class Client(object):
     def delete_node(self, node, ignore_missing=True):
         return self.service.delete_node(node, ignore_missing)
 
-    def node_join(self, node, cluster):
-        return self.service.node_join(node, cluster)
-
-    def node_leave(self, node):
-        return self.service.node_leave(node)
-
     def receivers(self, **queries):
         return self.service.receivers(**queries)
 

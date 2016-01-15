@@ -1192,33 +1192,6 @@ class ShellTest(testtools.TestCase):
         service.update_node.assert_called_once_with('node_id', **attrs)
         mock_show.assert_called_once_with(service, 'node_id')
 
-    @mock.patch.object(sh, '_show_node')
-    def test_do_node_join(self, mock_show):
-        service = mock.Mock()
-        args = {
-            'id': 'node1',
-            'cluster': 'cluster1'
-        }
-        args = self._make_args(args)
-        resp = {'action': 'action_id'}
-        service.node_join.return_value = resp
-        sh.do_node_join(service, args)
-        service.node_join.assert_called_once_with('node1', 'cluster1')
-        mock_show.assert_called_once_with(service, 'node1')
-
-    @mock.patch.object(sh, '_show_node')
-    def test_do_node_leave(self, mock_show):
-        service = mock.Mock()
-        args = {
-            'id': 'node1',
-        }
-        args = self._make_args(args)
-        resp = {'action': 'action_id'}
-        service.node_leave.return_value = resp
-        sh.do_node_leave(service, args)
-        service.node_leave.assert_called_once_with('node1')
-        mock_show.assert_called_once_with(service, 'node1')
-
     @mock.patch.object(utils, 'print_list')
     def test_do_event_list(self, mock_print):
         service = mock.Mock()

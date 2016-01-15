@@ -969,26 +969,6 @@ def do_node_update(service, args):
     _show_node(service, node.id)
 
 
-@utils.arg('-c', '--cluster', required=True,
-           help=_('ID or name of cluster for node to join.'))
-@utils.arg('id', metavar='<NODE>',
-           help=_('Name or ID of node to operate on.'))
-def do_node_join(service, args):
-    """Make node join the specified cluster."""
-    resp = service.node_join(args.id, args.cluster)
-    print('Request accepted by action: %s' % resp['action'])
-    _show_node(service, args.id)
-
-
-@utils.arg('id', metavar='<NODE>',
-           help=_('Name or ID of node to operate on.'))
-def do_node_leave(service, args):
-    """Make node leave its current cluster."""
-    resp = service.node_leave(args.id)
-    print('Request accepted by action: %s' % resp['action'])
-    _show_node(service, args.id)
-
-
 # RECEIVERS
 
 
