@@ -127,8 +127,6 @@ def _show_profile(service, profile_id):
 
 @utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
            help=_('The spec file used to create the profile.'))
-@utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
-           help=_('A string format permission for this profile.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
@@ -157,7 +155,6 @@ def do_profile_create(service, args):
     params = {
         'name': args.name,
         'spec': spec,
-        'permission': args.permission,
         'metadata': utils.format_parameters(args.metadata),
     }
 
@@ -174,8 +171,6 @@ def do_profile_show(service, args):
 
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('The new name for the profile.'))
-@utils.arg('-p', '--permission', metavar='<PERMISSION>', default='',
-           help=_('A string format permission for this profile.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
@@ -187,7 +182,6 @@ def do_profile_update(service, args):
     """Update a profile."""
     params = {
         'name': args.name,
-        'permission': args.permission,
     }
     if args.metadata:
         params['metadata'] = utils.format_parameters(args.metadata)

@@ -179,7 +179,6 @@ class ShellTest(testtools.TestCase):
         params = {
             'name': 'stack_spec',
             'spec': spec,
-            'permission': 'ok',
             'metadata': {'user': 'demo'},
         }
         service = mock.Mock()
@@ -247,7 +246,6 @@ class ShellTest(testtools.TestCase):
         service.get_profile.assert_called_once_with('FAKE_ID')
         params = {
             'name': 'stack_spec',
-            'permission': 'ok',
             'metadata': {'user': 'demo'},
         }
         service.update_profile.assert_called_once_with(profile_id, **params)
