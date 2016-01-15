@@ -698,7 +698,7 @@ def do_cluster_scale_in(service, args):
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
            action='append')
-@utils.arg('-o', '--sort', metavar='<KEY[:DIR]>',
+@utils.arg('-o', '--sort', metavar='<SORT_STRING>',
            help=_('Sorting option which is a string containing a list of keys '
                   'separated by commas. Each key can be optionally appened by '
                   'a sort direction (:asc or :desc)'))
