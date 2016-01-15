@@ -557,7 +557,6 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         params = {
             'name': 'deletion_policy',
-            'id': 'policy_id'
         }
         policy = mock.Mock()
         service.get_policy.return_value = policy
@@ -565,7 +564,7 @@ class ShellTest(testtools.TestCase):
         sh.do_policy_update(service, args)
         service.get_policy.assert_called_once_with('policy_id')
         service.update_policy.assert_called_once_with(
-            'policy_id', params)
+            'policy_id', **params)
         mock_show(service, policy_id=policy.id)
 
     def test_do_policy_delete(self):

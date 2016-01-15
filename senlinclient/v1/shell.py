@@ -329,8 +329,7 @@ def do_policy_update(service, args):
 
     policy = service.get_policy(args.id)
     if policy is not None:
-        params['id'] = policy.id
-        service.update_policy(policy.id, params)
+        service.update_policy(policy.id, **params)
         _show_policy(service, policy_id=policy.id)
 
 
