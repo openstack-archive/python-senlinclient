@@ -119,8 +119,8 @@ class Client(object):
     def create_node(self, **attrs):
         return self.service.create_node(**attrs)
 
-    def get_node(self, node, show_details=False):
-        return self.service.get_node(node)
+    def get_node(self, node, args=None):
+        return self.service.get_node(node, args=args)
 
     def update_node(self, node, **attrs):
         return self.service.update_node(node, **attrs)

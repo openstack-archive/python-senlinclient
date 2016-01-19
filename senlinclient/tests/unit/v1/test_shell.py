@@ -1083,7 +1083,7 @@ class ShellTest(testtools.TestCase):
 
         sh._show_node(service, node_id, show_details=False)
 
-        service.get_node.assert_called_once_with(node_id)
+        service.get_node.assert_called_once_with(node_id, args=None)
         mock_print.assert_called_once_with(data, formatters=formatters)
 
     @mock.patch.object(sh, '_show_node')

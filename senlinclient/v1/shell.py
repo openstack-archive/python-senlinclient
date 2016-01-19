@@ -843,9 +843,9 @@ def do_node_list(service, args):
 def _show_node(service, node_id, show_details=False):
     """Show detailed info about the specified node."""
 
-    # TODO(Qiming): Re-enable show_details after SDK adopts related patch.
+    args = {'show_details': True} if show_details else None
     try:
-        node = service.get_node(node_id)
+        node = service.get_node(node_id, args=args)
     except exc.HTTPNotFound:
         msg = _('Node %s is not found') % node_id
         raise exc.CommandError(msg)
