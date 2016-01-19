@@ -276,8 +276,8 @@ class ShellTest(testtools.TestCase):
         args.project_id = None
         args.tenant_id = None
         sh._check_identity_arguments(args)
-        msg = _('WARNING: Both user name and user ID are specified, Senin '
-                'will use user ID for authentication')
+        msg = _('WARNING: Both user name and user ID are specified, '
+                'Senlin will use user ID for authentication')
         mock_print.assert_called_with(msg)
 
         # 'v3' in auth_url but neither user_domain_id nor user_domain_name
@@ -320,7 +320,8 @@ class ShellTest(testtools.TestCase):
         args.user_id = None
         sh._check_identity_arguments(args)
         msg = _('Both project/tenant name and project/tenant ID are '
-                'specified, Senin will use project ID for authentication')
+                'specified, Senlin will use project ID for '
+                'authentication')
         mock_print.assert_called_with(_('WARNING: %s') % msg)
         # Project name may not be unique
         args = TestArgs()

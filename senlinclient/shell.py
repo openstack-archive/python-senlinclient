@@ -160,8 +160,8 @@ class SenlinShell(object):
 
         # if both username and user_id are specified, user_id takes precedence
         if (args.username and args.user_id):
-            msg = _('Both user name and user ID are specified, Senin will use '
-                    'user ID for authentication')
+            msg = _('Both user name and user ID are specified, Senlin will '
+                    'use user ID for authentication')
             print(_('WARNING: %s') % msg)
 
         if 'v3' in args.auth_url:
@@ -198,7 +198,8 @@ class SenlinShell(object):
         if ((args.project_id or args.tenant_id) and
                 (args.project_name or args.tenant_name)):
             msg = _('Both project/tenant name and project/tenant ID are '
-                    'specified, Senin will use project ID for authentication')
+                    'specified, Senlin will use project ID for '
+                    'authentication')
             print(_('WARNING: %s') % msg)
 
         # project name may not be unique
