@@ -4,7 +4,6 @@
 
 Babel>=1.3 # BSD
 pbr>=1.6 # Apache-2.0
-argparse # PSF
 PrettyTable<0.8,>=0.7 # BSD
 openstacksdk # Apache-2.0
 oslo.i18n>=1.5.0 # Apache-2.0
