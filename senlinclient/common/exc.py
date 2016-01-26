@@ -239,7 +239,7 @@ def parse_exception(exc):
             # If the exc.details is not in JSON format
             record = {
                 'error': {
-                    'code': exc.status_code,
+                    'code': exc.http_status,
                     'message': exc.details,
                 }
             }
