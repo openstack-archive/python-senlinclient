@@ -948,6 +948,42 @@ def do_node_update(service, args):
     _show_node(service, node.id)
 
 
+@utils.arg('id', metavar='<NODE>', nargs='+',
+           help=_('ID of node(s) to check.'))
+def do_node_check(service, args):
+    """Check the node(s)."""
+    failure_count = 0
+
+    for nid in args.id:
+        try:
+            service.check_node(nid)
+        except exc.HTTPNotFound:
+            failure_count += 1
+            print('Node id "%s" not found' % nid)
+    if failure_count > 0:
+        msg = _('Failed to check some of the specified nodes.')
+        raise exc.CommandError(msg)
+    print('Request accepted')
+
+
+@utils.arg('id', metavar='<NODE>', nargs='+',
+           help=_('ID of node(s) to recover.'))
+def do_node_recover(service, args):
+    """Recover the node(s)."""
+    failure_count = 0
+
+    for nid in args.id:
+        try:
+            service.recover_node(nid)
+        except exc.HTTPNotFound:
+            failure_count += 1
+            print('Node id "%s" not found' % nid)
+    if failure_count > 0:
+        msg = _('Failed to recover some of the specified nodes.')
+        raise exc.CommandError(msg)
+    print('Request accepted')
+
+
 # RECEIVERS
 
 

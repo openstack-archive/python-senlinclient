@@ -128,6 +128,12 @@ class Client(object):
     def delete_node(self, node, ignore_missing=True):
         return self.service.delete_node(node, ignore_missing)
 
+    def check_node(self, node, **params):
+        return self.service.check_node(node, **params)
+
+    def recover_node(self, node, **params):
+        return self.service.recover_node(node, **params)
+
     def receivers(self, **queries):
         return self.service.receivers(**queries)
 
