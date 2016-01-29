@@ -589,12 +589,11 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_list(self, mock_print):
         service = mock.Mock()
-        fields = ['id', 'name', 'status', 'created_at', 'updated_at', 'parent']
+        fields = ['id', 'name', 'status', 'created_at', 'updated_at']
         args = {
             'limit': 20,
             'marker': 'fake_id',
             'sort': 'key:dir',
-            'show_nested': True,
             'global_project': False,
             'filters': ['status=ACTIVE'],
         }
@@ -641,7 +640,6 @@ class ShellTest(testtools.TestCase):
             'min_size': 1,
             'max_size': 10,
             'desired_capacity': 5,
-            'parent': 'CLUSTER',
             'metadata': ['user=demo'],
             'timeout': 200,
         }
@@ -682,7 +680,6 @@ class ShellTest(testtools.TestCase):
         args = {
             'profile': 'test_profile',
             'name': 'CLUSTER1',
-            'parent': 'parent_cluster',
             'metadata': ['user=demo'],
             'timeout': 100,
         }
