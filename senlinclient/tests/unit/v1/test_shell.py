@@ -1026,14 +1026,14 @@ class ShellTest(testtools.TestCase):
         }
         args = self._make_args(args)
         kwargs = {
-            'policy_id': 'policy1',
             'enabled': 'True',
         }
         service.cluster_update_policy.return_value = {'action': 'action_id'}
 
         sh.do_cluster_policy_update(service, args)
 
-        service.cluster_update_policy.assert_called_once_with('C1', **kwargs)
+        service.cluster_update_policy.assert_called_once_with('C1', 'policy1',
+                                                              **kwargs)
 
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):

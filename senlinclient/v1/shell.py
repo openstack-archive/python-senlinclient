@@ -775,11 +775,10 @@ def do_cluster_policy_detach(service, args):
 def do_cluster_policy_update(service, args):
     """Update a policy's properties on a cluster."""
     kwargs = {
-        'policy_id': args.policy,
         'enabled': args.enabled,
     }
 
-    resp = service.cluster_update_policy(args.id, **kwargs)
+    resp = service.cluster_update_policy(args.id, args.policy, **kwargs)
     print('Request accepted by action: %s' % resp['action'])
 
 
