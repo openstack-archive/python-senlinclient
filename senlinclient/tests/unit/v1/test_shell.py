@@ -271,9 +271,9 @@ class ShellTest(testtools.TestCase):
         args = {'id': ['profile_id']}
         args = self._make_args(args)
         sh.do_profile_delete(service, args)
-        service.delete_profile.assert_called_with('profile_id')
+        service.delete_profile.assert_called_with('profile_id', False)
 
-    def test_do_profile_delete_fail(self):
+    def test_do_profile_delete_not_found(self):
         service = mock.Mock()
         args = {'id': ['profile1', 'profile2']}
         args = self._make_args(args)
@@ -285,7 +285,7 @@ class ShellTest(testtools.TestCase):
                                service, args)
         self.assertEqual(_('Failed to delete some of the specified '
                            'profile(s).'), six.text_type(ex))
-        service.delete_profile.assert_called_with('profile2')
+        service.delete_profile.assert_called_with('profile2', False)
 
     @mock.patch.object(utils, 'print_list')
     def test_do_policy_type_list(self, mock_print):
@@ -445,7 +445,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         service.delete_receiver = mock.Mock()
         sh.do_receiver_delete(service, args)
-        service.delete_receiver.assert_called_once_with('FAKE')
+        service.delete_receiver.assert_called_once_with('FAKE', False)
 
     def test_do_receiver_delete_not_found(self):
         service = mock.Mock()
@@ -573,7 +573,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         service.delete_policy = mock.Mock()
         sh.do_policy_delete(service, args)
-        service.delete_policy.assert_called_once_with('policy_id')
+        service.delete_policy.assert_called_once_with('policy_id', False)
 
     def test_do_policy_delete_not_found(self):
         service = mock.Mock()
@@ -661,7 +661,7 @@ class ShellTest(testtools.TestCase):
         args = self._make_args(args)
         service.delete_cluster = mock.Mock()
         sh.do_cluster_delete(service, args)
-        service.delete_cluster.assert_called_once_with('CID')
+        service.delete_cluster.assert_called_once_with('CID', False)
 
     def test_do_cluster_delete_not_found(self):
         service = mock.Mock()
@@ -1126,7 +1126,7 @@ class ShellTest(testtools.TestCase):
 
         sh.do_node_delete(service, args)
 
-        service.delete_node.assert_called_once_with('node1', True)
+        service.delete_node.assert_called_once_with('node1', False)
 
     def test_do_node_delete_not_found(self):
         service = mock.Mock()

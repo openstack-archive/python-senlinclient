@@ -203,7 +203,7 @@ def do_profile_delete(service, args):
 
     for pid in args.id:
         try:
-            service.delete_profile(pid)
+            service.delete_profile(pid, False)
         except Exception as ex:
             failure_count += 1
             print(ex)
@@ -341,7 +341,7 @@ def do_policy_delete(service, args):
 
     for pid in args.id:
         try:
-            service.delete_policy(pid)
+            service.delete_policy(pid, False)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -455,7 +455,7 @@ def do_cluster_delete(service, args):
 
     for cid in args.id:
         try:
-            service.delete_cluster(cid)
+            service.delete_cluster(cid, False)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
@@ -893,7 +893,7 @@ def do_node_delete(service, args):
 
     for nid in args.id:
         try:
-            service.delete_node(nid, True)
+            service.delete_node(nid, False)
         except exc.HTTPNotFound:
             failure_count += 1
             print('Node id "%s" not found' % nid)
@@ -1040,7 +1040,7 @@ def do_receiver_delete(service, args):
 
     for wid in args.id:
         try:
-            service.delete_receiver(wid)
+            service.delete_receiver(wid, False)
         except exc.HTTPNotFound as ex:
             failure_count += 1
             print(ex)
