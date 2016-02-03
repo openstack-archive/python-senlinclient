@@ -240,7 +240,7 @@ def parse_exception(exc):
             record = {
                 'error': {
                     'code': exc.http_status,
-                    'message': exc.details,
+                    'message': exc,
                 }
             }
     elif isinstance(exc, reqexc.RequestException):
