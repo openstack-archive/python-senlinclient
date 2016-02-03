@@ -354,8 +354,6 @@ def do_policy_delete(service, args):
 # CLUSTERS
 
 
-@utils.arg('-n', '--show-nested', default=False, action="store_true",
-           help=_('Include nested clusters if any.'))
 @utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Filter parameters to apply on returned clusters. '
                   'This can be specified multiple times, or once with '
@@ -383,14 +381,10 @@ def do_cluster_list(service, args=None):
         'limit': args.limit,
         'marker': args.marker,
         'sort': args.sort,
-        'show_nested': args.show_nested,
         'global_project': args.global_project,
     }
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
-
-    if args.show_nested:
-        fields.append('parent')
 
     sortby_index = None if args.sort else 3
 
@@ -426,8 +420,6 @@ def _show_cluster(service, cluster_id):
 @utils.arg('-c', '--desired-capacity', metavar='<DESIRED-CAPACITY>', default=0,
            help=_('Desired capacity of the cluster. Default to min_size if '
                   'min_size is specified else 0.'))
-@utils.arg('-o', '--parent', metavar='<PARENT_ID>',
-           help=_('ID of the parent cluster, if exists.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in seconds.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -447,7 +439,6 @@ def do_cluster_create(service, args):
         'min_size': args.min_size,
         'max_size': args.max_size,
         'desired_capacity': args.desired_capacity,
-        'parent': args.parent,
         'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout
     }
@@ -479,8 +470,6 @@ def do_cluster_delete(service, args):
            help=_('ID of new profile to use.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
-@utils.arg('-r', '--parent', metavar='<PARENT>',
-           help=_('ID of parent cluster for the cluster.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
@@ -496,7 +485,6 @@ def do_cluster_update(service, args):
     attrs = {
         'name': args.name,
         'profile_id': args.profile,
-        'parent': args.parent,
         'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout,
     }
