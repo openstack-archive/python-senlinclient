@@ -12,6 +12,7 @@
 
 import logging
 
+from openstack import exceptions as sdk_exc
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
@@ -57,9 +58,9 @@ def do_profile_type_show(service, args):
     """Get the details about a profile type."""
     try:
         res = service.get_profile_type(args.type_name)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(
-            _('Profile Type %s not found.') % args.type_name)
+            _('Profile Type not found: %s') % args.type_name)
 
     pt = res.to_dict()
 
@@ -111,7 +112,7 @@ def do_profile_list(service, args=None):
 def _show_profile(service, profile_id):
     try:
         profile = service.get_profile(profile_id)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Profile not found: %s') % profile_id)
 
     formatters = {
@@ -189,7 +190,7 @@ def do_profile_update(service, args):
     # Find the profile first, we need its id
     try:
         profile = service.get_profile(args.id)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Profile not found: %s') % args.id)
     service.update_profile(profile.id, **params)
     _show_profile(service, profile.id)
@@ -232,9 +233,8 @@ def do_policy_type_show(service, args):
     """Get the details about a policy type."""
     try:
         res = service.get_policy_type(args.type_name)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(
-            _('Policy type %s not found.') % args.type_name)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Policy type not found: %s') % args.type_name)
 
     pt = res.to_dict()
     if args.format:
@@ -284,7 +284,7 @@ def do_policy_list(service, args=None):
 def _show_policy(service, policy_id):
     try:
         policy = service.get_policy(policy_id)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Policy not found: %s') % policy_id)
 
     formatters = {
@@ -342,7 +342,7 @@ def do_policy_delete(service, args):
     for pid in args.id:
         try:
             service.delete_policy(pid, False)
-        except exc.HTTPNotFound as ex:
+        except Exception as ex:
             failure_count += 1
             print(ex)
     if failure_count > 0:
@@ -401,8 +401,8 @@ def do_cluster_list(service, args=None):
 def _show_cluster(service, cluster_id):
     try:
         cluster = service.get_cluster(cluster_id)
-    except exc.HTTPNotFound:
-        raise exc.CommandError(_('Cluster %s is not found') % cluster_id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
 
     formatters = {
         'metadata': utils.json_formatter,
@@ -456,13 +456,12 @@ def do_cluster_delete(service, args):
     for cid in args.id:
         try:
             service.delete_cluster(cid, False)
-        except exc.HTTPNotFound as ex:
+        except Exception as ex:
             failure_count += 1
             print(ex)
     if failure_count > 0:
         msg = _('Failed to delete some of the specified clusters.')
         raise exc.CommandError(msg)
-
     print('Request accepted')
 
 
@@ -524,12 +523,7 @@ def do_cluster_node_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
-    try:
-        nodes = service.nodes(**queries)
-    except exc.HTTPNotFound:
-        msg = _('No node matching criteria is found')
-        raise exc.CommandError(msg)
-
+    nodes = service.nodes(**queries)
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
@@ -833,9 +827,8 @@ def _show_node(service, node_id, show_details=False):
     args = {'show_details': True} if show_details else None
     try:
         node = service.get_node(node_id, args=args)
-    except exc.HTTPNotFound:
-        msg = _('Node %s is not found') % node_id
-        raise exc.CommandError(msg)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Node not found: %s') % node_id)
 
     formatters = {
         'metadata': utils.json_formatter,
@@ -894,9 +887,9 @@ def do_node_delete(service, args):
     for nid in args.id:
         try:
             service.delete_node(nid, False)
-        except exc.HTTPNotFound:
+        except Exception as ex:
             failure_count += 1
-            print('Node id "%s" not found' % nid)
+            print(ex)
     if failure_count > 0:
         msg = _('Failed to delete some of the specified nodes.')
         raise exc.CommandError(msg)
@@ -921,7 +914,7 @@ def do_node_update(service, args):
     # Find the node first, we need its UUID
     try:
         node = service.get_node(args.id)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Node not found: %s') % args.id)
 
     attrs = {
@@ -986,7 +979,7 @@ def do_receiver_list(service, args=None):
 def _show_receiver(service, receiver_id):
     try:
         receiver = service.get_receiver(receiver_id)
-    except exc.HTTPNotFound:
+    except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Receiver not found: %s') % receiver_id)
 
     formatters = {
@@ -1041,7 +1034,7 @@ def do_receiver_delete(service, args):
     for wid in args.id:
         try:
             service.delete_receiver(wid, False)
-        except exc.HTTPNotFound as ex:
+        except Exception as ex:
             failure_count += 1
             print(ex)
     if failure_count > 0:
@@ -1104,8 +1097,8 @@ def do_event_show(service, args):
     """Describe the event."""
     try:
         event = service.get_event(args.id)
-    except exc.HTTPNotFound as ex:
-        raise exc.CommandError(str(ex))
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_("Event not found: %s") % args.id)
 
     utils.print_dict(event.to_dict())
 
@@ -1172,9 +1165,8 @@ def do_action_show(service, args):
     """Show detailed info about the specified action."""
     try:
         action = service.get_action(args.id)
-    except exc.HTTPNotFound:
-        msg = _('Action %(id)s is not found') % {'id': args.id}
-        raise exc.CommandError(msg)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Action not found: %s') % args.id)
 
     formatters = {
         'inputs': utils.json_formatter,
