@@ -1266,6 +1266,8 @@ class ShellTest(testtools.TestCase):
             'outputs': utils.json_formatter,
             'metadata': utils.json_formatter,
             'data': utils.json_formatter,
+            'depends_on': utils.list_formatter,
+            'depended_by': utils.list_formatter,
         }
         sh.do_action_show(service, args)
         service.get_action.assert_called_once_with('action_id')

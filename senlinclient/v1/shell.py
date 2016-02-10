@@ -1181,6 +1181,8 @@ def do_action_show(service, args):
         'outputs': utils.json_formatter,
         'metadata': utils.json_formatter,
         'data': utils.json_formatter,
+        'depends_on': utils.list_formatter,
+        'depended_by': utils.list_formatter,
     }
 
     utils.print_dict(action.to_dict(), formatters=formatters)
