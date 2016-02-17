@@ -10,14 +10,31 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import collections
 import mock
 import six
+import sys
 import testtools
 
 from heatclient.common import template_utils
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
+from six import moves
+
+
+class CaptureStdout(object):
+    """Context manager for capturing stdout from statements in its block."""
+    def __enter__(self):
+        self.real_stdout = sys.stdout
+        self.stringio = moves.StringIO()
+        sys.stdout = self.stringio
+        return self
+
+    def __exit__(self, *args):
+        sys.stdout = self.real_stdout
+        self.stringio.seek(0)
+        self.read = self.stringio.read
 
 
 class shellTest(testtools.TestCase):
@@ -81,3 +98,117 @@ class shellTest(testtools.TestCase):
         self.assertEqual(stack_spec, new_spec)
         mock_get_temp.assert_called_once_with(template_file='temp.yaml')
         mock_process.assert_called_once_with(env_paths=None)
+
+    def test_json_formatter_with_empty_json(self):
+        params = {}
+        self.assertEqual('{}', utils.json_formatter(params))
+
+    def test_list_formatter_with_list(self):
+        params = ['foo', 'bar']
+        self.assertEqual('foo\nbar', utils.list_formatter(params))
+
+    def test_list_formatter_with_empty_list(self):
+        params = []
+        self.assertEqual('', utils.list_formatter(params))
+
+
+class PrintListTestCase(testtools.TestCase):
+
+    def test_print_list_with_list(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo1', bar='fake_bar2'),
+                    Row(foo='fake_foo2', bar='fake_bar1')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'])
+        # Output should be sorted by the first key (foo)
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo1 | fake_bar2 |
+| fake_foo2 | fake_bar1 |
++-----------+-----------+
+""", cso.read())
+
+    def test_print_list_with_None_data(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo1', bar='None'),
+                    Row(foo='fake_foo2', bar='fake_bar1')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'])
+        # Output should be sorted by the first key (foo)
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo1 | None      |
+| fake_foo2 | fake_bar1 |
++-----------+-----------+
+""", cso.read())
+
+    def test_print_list_with_list_sortby(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo1', bar='fake_bar2'),
+                    Row(foo='fake_foo2', bar='fake_bar1')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'], sortby_index=1)
+        # Output should be sorted by the first key (bar)
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo2 | fake_bar1 |
+| fake_foo1 | fake_bar2 |
++-----------+-----------+
+""", cso.read())
+
+    def test_print_list_with_list_no_sort(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo2', bar='fake_bar1'),
+                    Row(foo='fake_foo1', bar='fake_bar2')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'], sortby_index=None)
+        # Output should be in the order given
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo2 | fake_bar1 |
+| fake_foo1 | fake_bar2 |
++-----------+-----------+
+""", cso.read())
+
+    def test_print_list_with_generator(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+
+        def gen_rows():
+            for row in [Row(foo='fake_foo1', bar='fake_bar2'),
+                        Row(foo='fake_foo2', bar='fake_bar1')]:
+                yield row
+        with CaptureStdout() as cso:
+            utils.print_list(gen_rows(), ['foo', 'bar'])
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo1 | fake_bar2 |
+| fake_foo2 | fake_bar1 |
++-----------+-----------+
+""", cso.read())
+
+
+class PrintDictTestCase(testtools.TestCase):
+
+    def test_print_dict(self):
+        data = {'foo': 'fake_foo', 'bar': 'fake_bar'}
+        with CaptureStdout() as cso:
+            utils.print_dict(data)
+        # Output should be sorted by the Property
+        self.assertEqual("""\
++----------+----------+
+| Property | Value    |
++----------+----------+
+| bar      | fake_bar |
+| foo      | fake_foo |
++----------+----------+
+""", cso.read())
