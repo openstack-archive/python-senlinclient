@@ -13,7 +13,9 @@
 """Clustering v1 profile action implementations"""
 
 import logging
+import sys
 
+from cliff import command
 from cliff import lister
 from cliff import show
 from openstack import exceptions as sdk_exc
@@ -21,6 +23,7 @@ from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
+from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
@@ -138,3 +141,57 @@ class ListProfile(lister.Lister):
             (utils.get_item_properties(p, columns, formatters=formatters)
              for p in data)
         )
+
+
+class DeleteProfile(command.Command):
+    """Delete profile(s)."""
+
+    log = logging.getLogger(__name__ + ".DeleteProfile")
+
+    def get_parser(self, prog_name):
+        parser = super(DeleteProfile, self).get_parser(prog_name)
+        parser.add_argument(
+            'id',
+            metavar='<PROFILE>',
+            nargs='+',
+            help=_('Name or ID of profile(s) to delete')
+        )
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help=_('Skip yes/no prompt (assume yes)')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        try:
+            if not parsed_args.force and sys.stdin.isatty():
+                sys.stdout.write(
+                    _("Are you sure you want to delete this profile(s)"
+                      " [y/N]?"))
+                prompt_response = sys.stdin.readline().lower()
+                if not prompt_response.startswith('y'):
+                    return
+        except KeyboardInterrupt:  # Ctrl-c
+            self.log.info(_LI('Ctrl-c detected.'))
+            return
+        except EOFError:  # Ctrl-d
+            self.log.info(_LI('Ctrl-d detected'))
+            return
+
+        failure_count = 0
+        for pid in parsed_args.id:
+            try:
+                senlin_client.delete_profile(pid, False)
+            except Exception as ex:
+                failure_count += 1
+                print(ex)
+        if failure_count:
+            raise exc.CommandError(_('Failed to delete %(count)s of the '
+                                     '%(total)s specified profile(s).') %
+                                   {'count': failure_count,
+                                   'total': len(parsed_args.id)})
+        print('Profile deleted: %s' % parsed_args.id)
