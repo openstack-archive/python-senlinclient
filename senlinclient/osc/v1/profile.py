@@ -195,3 +195,60 @@ class DeleteProfile(command.Command):
                                    {'count': failure_count,
                                    'total': len(parsed_args.id)})
         print('Profile deleted: %s' % parsed_args.id)
+
+
+class CreateProfile(show.ShowOne):
+    """Create a profile."""
+
+    log = logging.getLogger(__name__ + ".CreateProfile")
+
+    def get_parser(self, prog_name):
+        parser = super(CreateProfile, self).get_parser(prog_name)
+        parser.add_argument(
+            '--spec-file',
+            metavar='<SPEC FILE>',
+            required=True,
+            help=_('The spec file used to create the profile')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+            help=_('Metadata values to be attached to the profile. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon'),
+            action='append'
+        )
+        parser.add_argument(
+            'name',
+            metavar='<PROFILE_NAME>',
+            help=_('Name of the profile to create')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        spec = senlin_utils.get_spec_content(parsed_args.spec_file)
+        type_name = spec.get('type', None)
+        type_version = spec.get('version', None)
+        properties = spec.get('properties', None)
+        if type_name is None:
+            raise exc.CommandError(_("Missing 'type' key in spec file."))
+        if type_version is None:
+            raise exc.CommandError(_("Missing 'version' key in spec file."))
+        if properties is None:
+            raise exc.CommandError(_("Missing 'properties' key in spec file."))
+
+        if type_name == 'os.heat.stack':
+            stack_properties = senlin_utils.process_stack_spec(properties)
+            spec['properties'] = stack_properties
+
+        params = {
+            'name': parsed_args.name,
+            'spec': spec,
+            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+        }
+
+        profile = senlin_client.create_profile(**params)
+        return _show_profile(senlin_client, profile_id=profile.id)

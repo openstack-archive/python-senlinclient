@@ -273,3 +273,60 @@ class TestProfileDelete(TestProfile):
 
         mock_stdin.readline.assert_called_with()
         self.mock_client.delete_profile.assert_not_called()
+
+
+class TestProfileCreate(TestProfile):
+
+    spec_path = 'senlinclient/tests/test_specs/nova_server.yaml'
+    response = {"profile": {
+        "created_at": "2016-02-17T12:10:57",
+        "domain": None,
+        "id": "e3057c77-a178-4265-bafd-16b2fae50eea",
+        "metadata": {},
+        "name": "pro-nova",
+        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+        "spec": {"properties": {
+            "flavor": 1,
+            "image": "cirros-0.3.4-x86_64-uec",
+            "name": "cirros_server"},
+            "type": "os.nova.server",
+            "version": 1.0},
+        "type": "os.nova.server-1.0",
+        "updated_at": None,
+        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
+
+    defaults = {"spec": {
+        "version": 1.0,
+        "type": "os.nova.server",
+        "properties": {
+            "flavor": 1,
+            "name": "cirros_server",
+            "image": "cirros-0.3.4-x86_64-uec"}
+        },
+        "name": "my_profile",
+        "metadata": {}
+    }
+
+    def setUp(self):
+        super(TestProfileCreate, self).setUp()
+        self.cmd = osc_profile.CreateProfile(self.app, None)
+        self.mock_client.create_profile = mock.Mock(
+            return_value=sdk_profile.Profile(None, self.response))
+        self.mock_client.get_profile = mock.Mock(
+            return_value=sdk_profile.Profile(None, self.response))
+        utils.get_dict_properties = mock.Mock(return_value='')
+
+    def test_profile_create_defaults(self):
+        arglist = ['my_profile', '--spec-file', self.spec_path]
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_profile.assert_called_with(**self.defaults)
+
+    def test_profile_create_metadata(self):
+        arglist = ['my_profile', '--spec-file', self.spec_path,
+                   '--metadata', 'key1=value1']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['metadata'] = {'key1': 'value1'}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_profile.assert_called_with(**kwargs)
