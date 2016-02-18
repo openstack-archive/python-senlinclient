@@ -115,8 +115,11 @@ class ShellTest(testtools.TestCase):
             'marker': 'mark_id',
             'sort': 'key:dir',
             'global_project': True,
+            'filters': ['name=stack_spec']
         }
         queries = copy.deepcopy(args)
+        del queries['filters']
+        queries['name'] = 'stack_spec'
         formatters = {}
         args = self._make_args(args)
         args.full_id = True
