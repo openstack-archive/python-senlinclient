@@ -252,3 +252,50 @@ class CreateProfile(show.ShowOne):
 
         profile = senlin_client.create_profile(**params)
         return _show_profile(senlin_client, profile_id=profile.id)
+
+
+class UpdateProfile(show.ShowOne):
+    """Update a profile."""
+
+    log = logging.getLogger(__name__ + ".UpdateProfile")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdateProfile, self).get_parser(prog_name)
+        parser.add_argument(
+            '--name',
+            metavar='<NAME>',
+            help=_('The new name for the profile')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+            help=_('Metadata values to be attached to the profile. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon'),
+            action='append'
+        )
+        parser.add_argument(
+            'id',
+            metavar='<PROFILE_ID>',
+            help=_('Name or ID of the profile to update')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        params = {
+            'name': parsed_args.name,
+        }
+        if parsed_args.metadata:
+            params['metadata'] = senlin_utils.format_parameters(
+                parsed_args.metadata)
+
+        # Find the profile first, we need its id
+        try:
+            profile = senlin_client.get_profile(parsed_args.id)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Profile not found: %s') % parsed_args.id)
+        senlin_client.update_profile(profile.id, **params)
+        return _show_profile(senlin_client, profile_id=profile.id)

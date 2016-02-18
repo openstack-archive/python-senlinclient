@@ -330,3 +330,62 @@ class TestProfileCreate(TestProfile):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_profile.assert_called_with(**kwargs)
+
+
+class TestProfileUpdate(TestProfile):
+
+    response = {"profile": {
+        "created_at": "2016-02-17T12:10:57",
+        "domain": None,
+        "id": "e3057c77-a178-4265-bafd-16b2fae50eea",
+        "metadata": {
+            "nk1": "nv1",
+            "nk2": "nv2",
+        },
+        "name": "new_profile",
+        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+        "spec": {"properties": {
+            "flavor": 1,
+            "image": "cirros-0.3.4-x86_64-uec",
+            "name": "cirros_server"},
+            "type": "os.nova.server",
+            "version": 1.0},
+        "type": "os.nova.server-1.0",
+        "updated_at": None,
+        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
+
+    defaults = {
+        "name": "new_profile",
+        "metadata": {
+            "nk1": "nv1",
+            "nk2": "nv2",
+        }
+    }
+
+    def setUp(self):
+        super(TestProfileUpdate, self).setUp()
+        self.cmd = osc_profile.UpdateProfile(self.app, None)
+        self.mock_client.update_profile = mock.Mock(
+            return_value=sdk_profile.Profile(None, self.response))
+        self.mock_client.get_profile = mock.Mock(
+            return_value=sdk_profile.Profile(None, self.response))
+        utils.get_dict_properties = mock.Mock(return_value='')
+
+    def test_profile_update_defaults(self):
+        arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
+                   'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.update_profile.assert_called_with(None,
+                                                           **self.defaults)
+
+    def test_profile_update_not_found(self):
+        arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
+                   'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_profile.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(
+            exc.CommandError,
+            self.cmd.take_action,
+            parsed_args)
+        self.assertIn('Profile not found: c6b8b252', str(error))
