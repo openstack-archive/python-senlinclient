@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import copy
 import mock
 
 from openstack.cluster.v1 import profile as sdk_profile
@@ -107,3 +108,94 @@ class TestProfileShow(TestProfile):
             exc.CommandError,
             self.cmd.take_action,
             parsed_args)
+
+
+class TestProfileList(TestProfile):
+    columns = ['id', 'name', 'type', 'created_at']
+    data = {"profiles": [
+        {
+            "created_at": "2016-02-17T13:01:05",
+            "domain": None,
+            "id": "757347e0-6526-4a77-a16d-e099fecde123",
+            "metadata": {},
+            "name": "my_profile",
+            "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+            "spec": {
+                "properties": {
+                    "flavor": 1,
+                    "name": "cirros_server"
+                },
+                "type": "os.nova.server",
+                "version": 1
+            },
+            "type": "os.nova.server-1.0",
+            "updated_at": None,
+            "user": "2d7aca950f3e465d8ef0c81720faf6ff"
+        }
+    ]}
+    defaults = {
+        'limit': None,
+        'marker': None,
+        'sort': None,
+        'global_project': False,
+    }
+
+    def setUp(self):
+        super(TestProfileList, self).setUp()
+        self.cmd = osc_profile.ListProfile(self.app, None)
+        self.mock_client.profiles = mock.Mock(
+            return_value=sdk_profile.Profile(None, {}))
+
+    def test_profile_list_defaults(self):
+        arglist = []
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.profiles.assert_called_with(**self.defaults)
+        self.assertEqual(self.columns, columns)
+
+    def test_profile_list_full_id(self):
+        arglist = ['--full-id']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.profiles.assert_called_with(**self.defaults)
+        self.assertEqual(self.columns, columns)
+
+    def test_profile_list_limit(self):
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['limit'] = '3'
+        arglist = ['--limit', '3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.profiles.assert_called_with(**kwargs)
+        self.assertEqual(self.columns, columns)
+
+    def test_profile_list_sort(self):
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['sort'] = 'id:asc'
+        arglist = ['--sort', 'id:asc']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.profiles.assert_called_with(**kwargs)
+        self.assertEqual(self.columns, columns)
+
+    def test_profile_list_sort_invalid_key(self):
+        self.mock_client.profiles = mock.Mock(
+            return_value=self.data)
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['sort'] = 'bad_key'
+        arglist = ['--sort', 'bad_key']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.profiles.side_effect = sdk_exc.HttpException()
+        self.assertRaises(sdk_exc.HttpException,
+                          self.cmd.take_action, parsed_args)
+
+    def test_profile_list_sort_invalid_direction(self):
+        self.mock_client.profiles = mock.Mock(
+            return_value=self.data)
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['sort'] = 'id:bad_direction'
+        arglist = ['--sort', 'id:bad_direction']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.profiles.side_effect = sdk_exc.HttpException()
+        self.assertRaises(sdk_exc.HttpException,
+                          self.cmd.take_action, parsed_args)
