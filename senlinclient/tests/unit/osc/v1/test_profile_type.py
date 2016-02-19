@@ -13,6 +13,8 @@
 import mock
 
 from openstack.cluster.v1 import profile_type as sdk_profile_type
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 
 from senlinclient.osc.v1 import profile_type as osc_profile_type
 from senlinclient.tests.unit.osc.v1 import fakes
@@ -60,3 +62,34 @@ class TestProfileTypeList(TestProfileType):
         self.mock_client.profile_types.assert_called_with()
         self.assertEqual(self.expected_columns, columns)
         self.assertEqual(self.expected_rows, rows)
+
+
+class TestProfileTypeShow(TestProfileType):
+
+    response = ({'name': 'os.heat.stack-1.0',
+                 'schema': {
+                     'foo': 'bar'}})
+
+    def setUp(self):
+        super(TestProfileTypeShow, self).setUp()
+        self.cmd = osc_profile_type.ProfileTypeShow(self.app, None)
+        self.mock_client.get_profile_type = mock.Mock(
+            return_value=sdk_profile_type.ProfileType(self.response)
+        )
+
+    def test_profile_type_show(self):
+        arglist = ['os.heat.stack-1.0']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.get_profile_type.assert_called_once_with(
+            'os.heat.stack-1.0')
+
+    def test_profile_type_show_not_found(self):
+        arglist = ['os.heat.stack-1.1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_profile_type.side_effect = (
+            sdk_exc.ResourceNotFound())
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Profile Type not found: os.heat.stack-1.1',
+                         str(error))
