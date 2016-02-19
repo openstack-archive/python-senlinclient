@@ -12,6 +12,7 @@
 
 import copy
 import mock
+import six
 
 from openstack.cluster.v1 import profile as sdk_profile
 from openstack import exceptions as sdk_exc
@@ -199,3 +200,76 @@ class TestProfileList(TestProfile):
         self.mock_client.profiles.side_effect = sdk_exc.HttpException()
         self.assertRaises(sdk_exc.HttpException,
                           self.cmd.take_action, parsed_args)
+
+
+class TestProfileDelete(TestProfile):
+    def setUp(self):
+        super(TestProfileDelete, self).setUp()
+        self.cmd = osc_profile.DeleteProfile(self.app, None)
+        self.mock_client.delete_profile = mock.Mock()
+
+    def test_profile_delete(self):
+        arglist = ['profile1', 'profile2', 'profile3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_profile.assert_has_calls(
+            [mock.call('profile1', False), mock.call('profile2', False),
+             mock.call('profile3', False)]
+        )
+
+    def test_profile_delete_force(self):
+        arglist = ['profile1', 'profile2', 'profile3', '--force']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_profile.assert_has_calls(
+            [mock.call('profile1', False), mock.call('profile2', False),
+             mock.call('profile3', False)]
+        )
+
+    def test_profile_delete_not_found(self):
+        arglist = ['my_profile']
+        self.mock_client.delete_profile.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Failed to delete 1 of the 1 specified profile(s).',
+                      str(error))
+
+    def test_profile_delete_one_found_one_not_found(self):
+        arglist = ['profile1', 'profile2']
+        self.mock_client.delete_profile.side_effect = (
+            [None, sdk_exc.ResourceNotFound]
+        )
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action, parsed_args)
+        self.mock_client.delete_profile.assert_has_calls(
+            [mock.call('profile1', False), mock.call('profile2', False)]
+        )
+        self.assertEqual('Failed to delete 1 of the 2 specified profile(s).',
+                         str(error))
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_profile_delete_prompt_yes(self, mock_stdin):
+        arglist = ['my_profile']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'y'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_profile.assert_called_with('my_profile',
+                                                           False)
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_profile_delete_prompt_no(self, mock_stdin):
+        arglist = ['my_profile']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'n'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_profile.assert_not_called()
