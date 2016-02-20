@@ -193,3 +193,76 @@ class TestNodeShow(TestNode):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertEqual('Node not found: my_node', str(error))
+
+
+class TestNodeCreate(TestNode):
+    response = {"node": {
+        "action": "2366d440-c73e-4961-9254-6d1c3af7c167",
+        "cluster_id": None,
+        "created_at": None,
+        "data": {},
+        "domain": None,
+        "id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
+        "index": -1,
+        "init_time": "2015-03-05T08:53:15",
+        "metadata": {},
+        "name": "my_node",
+        "physical_id": "",
+        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+        "profile_name": "mystack",
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "role": "master",
+        "status": "INIT",
+        "status_reason": "Initializing",
+        "updated_at": None,
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    defaults = {
+        "cluster_id": None,
+        "metadata": {},
+        "name": "my_node",
+        "profile_id": "mystack",
+        "role": None
+    }
+
+    def setUp(self):
+        super(TestNodeCreate, self).setUp()
+        self.cmd = osc_node.CreateNode(self.app, None)
+        self.mock_client.create_node = mock.Mock(
+            return_value=sdk_node.Node(None, self.response))
+        self.mock_client.get_node = mock.Mock(
+            return_value=sdk_node.Node(None, self.response))
+
+    def test_node_create_defaults(self):
+        arglist = ['my_node', '--profile', 'mystack']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_node.assert_called_with(**self.defaults)
+
+    def test_node_create_with_metadata(self):
+        arglist = ['my_node', '--profile', 'mystack',
+                   '--metadata', 'key1=value1;key2=value2']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['metadata'] = {'key1': 'value1', 'key2': 'value2'}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_node.assert_called_with(**kwargs)
+
+    def test_node_create_with_cluster(self):
+        arglist = ['my_node', '--profile', 'mystack',
+                   '--cluster', 'mycluster']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['cluster_id'] = 'mycluster'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_node.assert_called_with(**kwargs)
+
+    def test_node_create_with_role(self):
+        arglist = ['my_node', '--profile', 'mystack',
+                   '--role', 'master']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['role'] = 'master'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_node.assert_called_with(**kwargs)
