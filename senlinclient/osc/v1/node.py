@@ -216,3 +216,62 @@ class CreateNode(show.ShowOne):
 
         node = senlin_client.create_node(**attrs)
         return _show_node(senlin_client, node.id)
+
+
+class UpdateNode(show.ShowOne):
+    """Update the node."""
+
+    log = logging.getLogger(__name__ + ".UpdateNode")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdateNode, self).get_parser(prog_name)
+        parser.add_argument(
+            '--name',
+            metavar='<name>',
+            help=_('New name for the node')
+        )
+        parser.add_argument(
+            '--profile',
+            metavar='<profile_id>',
+            help=_('ID of new profile to use')
+        )
+        parser.add_argument(
+            '--role',
+            metavar='<role>',
+            help=_('Role for this node in the specific cluster')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('Metadata values to be attached to the node. '
+                   'Metadata can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon'),
+            action='append'
+        )
+        parser.add_argument(
+            'node',
+            metavar='<node>',
+            help=_('Name or ID of node to update')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+
+        # Find the node first, we need its UUID
+        try:
+            node = senlin_client.get_node(parsed_args.node)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Node not found: %s') % parsed_args.node)
+
+        attrs = {
+            'name': parsed_args.name,
+            'role': parsed_args.role,
+            'profile_id': parsed_args.profile,
+            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+        }
+
+        senlin_client.update_node(parsed_args.node, **attrs)
+        return _show_node(senlin_client, node.id)

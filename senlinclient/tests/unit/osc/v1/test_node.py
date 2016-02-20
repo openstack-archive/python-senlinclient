@@ -266,3 +266,64 @@ class TestNodeCreate(TestNode):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_node.assert_called_with(**kwargs)
+
+
+class TestNodeUpdate(TestNode):
+    response = {"node": {
+        "action": "2366d440-c73e-4961-9254-6d1c3af7c167",
+        "cluster_id": None,
+        "created_at": None,
+        "data": {},
+        "domain": None,
+        "id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
+        "index": -1,
+        "init_time": "2015-03-05T08:53:15",
+        "metadata": {},
+        "name": "my_node",
+        "physical_id": "",
+        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+        "profile_name": "mystack",
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "role": "master",
+        "status": "INIT",
+        "status_reason": "Initializing",
+        "updated_at": None,
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    defaults = {
+        "name": "new_node",
+        "metadata": {
+            "nk1": "nv1",
+            "nk2": "nv2",
+        },
+        "profile_id": "new_profile",
+        "role": "new_role"
+    }
+
+    def setUp(self):
+        super(TestNodeUpdate, self).setUp()
+        self.cmd = osc_node.UpdateNode(self.app, None)
+        self.mock_client.update_node = mock.Mock(
+            return_value=sdk_node.Node(None, self.response))
+        self.mock_client.get_node = mock.Mock(
+            return_value=sdk_node.Node(None, self.response))
+
+    def test_node_update_defaults(self):
+        arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', '--role', 'new_role',
+                   'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.update_node.assert_called_with('c6b8b252',
+                                                        **self.defaults)
+
+    def test_node_update_not_found(self):
+        arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', '--role', 'new_role',
+                   'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_node.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Node not found: c6b8b252', str(error))
