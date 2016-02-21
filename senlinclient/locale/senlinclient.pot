@@ -1,0 +1,1013 @@
+# Translations template for python-senlinclient.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the python-senlinclient
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: python-senlinclient 0.3.1.dev32\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-02-20 23:26-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+
+#: senlinclient/cliargs.py:24
+msgid "Authentication plugin, default to env[OS_AUTH_PLUGIN]"
+msgstr ""
+
+#: senlinclient/cliargs.py:29
+msgid "Defaults to env[OS_AUTH_URL]"
+msgstr ""
+
+#: senlinclient/cliargs.py:34
+msgid "Defaults to env[OS_PROJECT_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:39
+msgid "Defaults to env[OS_PROJECT_NAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:44
+msgid "Defaults to env[OS_TENANT_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:49
+msgid "Defaults to env[OS_TENANT_NAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:54
+msgid "Domain ID for scope of authorization, defaults to env[OS_DOMAIN_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:60
+msgid "Domain name for scope of authorization, defaults to env[OS_DOMAIN_NAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:67
+msgid ""
+"Project domain ID for scope of authorization, defaults to "
+"env[OS_PROJECT_DOMAIN_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:74
+msgid ""
+"Project domain name for scope of authorization, defaults to "
+"env[OS_PROJECT_DOMAIN_NAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:81
+msgid ""
+"User domain ID for scope of authorization, defaults to "
+"env[OS_USER_DOMAIN_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:88
+msgid ""
+"User domain name for scope of authorization, defaults to "
+"env[OS_USER_DOMAIN_NAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:94
+msgid "Defaults to env[OS_USERNAME]."
+msgstr ""
+
+#: senlinclient/cliargs.py:99
+msgid "Defaults to env[OS_USER_ID]."
+msgstr ""
+
+#: senlinclient/cliargs.py:104
+msgid "Defaults to env[OS_PASSWORD]"
+msgstr ""
+
+#: senlinclient/cliargs.py:109
+msgid "Defaults to env[OS_TRUST_ID]"
+msgstr ""
+
+#: senlinclient/cliargs.py:116
+msgid ""
+"Path of CA TLS certificate(s) used to verify the remote server's "
+"certificate. Without this option senlin looks for the default system CA "
+"certificates."
+msgstr ""
+
+#: senlinclient/cliargs.py:123
+msgid "Verify server certificate (default)"
+msgstr ""
+
+#: senlinclient/cliargs.py:127
+msgid ""
+"Explicitly allow senlinclient to perform \"insecure SSL\" (HTTPS) "
+"requests. The server's certificate will not be verified against any "
+"certificate authorities. This option should be used with caution."
+msgstr ""
+
+#: senlinclient/cliargs.py:135
+msgid ""
+"A string token to bootstrap the Keystone database, defaults to "
+"env[OS_TOKEN]"
+msgstr ""
+
+#: senlinclient/cliargs.py:141
+msgid "Access info, defaults to env[OS_ACCESS_INFO]"
+msgstr ""
+
+#: senlinclient/cliargs.py:148
+msgid "Desired API names, defaults to env[OS_API_NAME]"
+msgstr ""
+
+#: senlinclient/cliargs.py:155
+msgid "Desired API region, defaults to env[OS_API_REGION]"
+msgstr ""
+
+#: senlinclient/cliargs.py:162
+msgid "Desired API versions, defaults to env[OS_API_VERSION]"
+msgstr ""
+
+#: senlinclient/cliargs.py:169
+msgid "Desired API interface, defaults to env[OS_INTERFACE]"
+msgstr ""
+
+#: senlinclient/cliargs.py:191
+msgid "Shows the client version and exits."
+msgstr ""
+
+#: senlinclient/cliargs.py:196
+msgid "Defaults to env[SENLINCLIENT_DEBUG]."
+msgstr ""
+
+#: senlinclient/cliargs.py:200
+msgid "Print more verbose output."
+msgstr ""
+
+#: senlinclient/cliargs.py:204
+msgid ""
+"Number of seconds to wait for an API response, defaults to system socket "
+"timeout"
+msgstr ""
+
+#: senlinclient/cliargs.py:210
+msgid "Version number for Senlin API to use, Default to \"1\"."
+msgstr ""
+
+#: senlinclient/shell.py:105
+msgid ""
+"HMAC key to use for encrypting context data for performance profiling of "
+"operation. This key should be the value of HMAC key configured in "
+"osprofiler middleware in senlin, it is specified in the paste deploy "
+"configuration (/etc/senlin/api-paste.ini). Without the key, profiling "
+"will not be triggered even if osprofiler is enabled on server side."
+msgstr ""
+
+#: senlinclient/shell.py:134
+msgid "Display help for <subcommand>."
+msgstr ""
+
+#: senlinclient/shell.py:151 senlinclient/tests/unit/test_shell.py:261
+msgid "You must provide an auth url via --os-auth-url (or  env[OS_AUTH_URL])"
+msgstr ""
+
+#: senlinclient/shell.py:157 senlinclient/tests/unit/test_shell.py:269
+msgid "You must provide a user name, a user_id or a token for authentication"
+msgstr ""
+
+#: senlinclient/shell.py:163
+msgid ""
+"Both user name and user ID are specified, Senlin will use user ID for "
+"authentication"
+msgstr ""
+
+#: senlinclient/shell.py:165 senlinclient/shell.py:195
+#: senlinclient/shell.py:203 senlinclient/tests/unit/test_shell.py:316
+#: senlinclient/tests/unit/test_shell.py:325
+#, python-format
+msgid "WARNING: %s"
+msgstr ""
+
+#: senlinclient/shell.py:170 senlinclient/tests/unit/test_shell.py:289
+msgid ""
+"Either user domain ID (--user-domain-id / env[OS_USER_DOMAIN_ID]) or user"
+" domain name (--user-domain-name / env[OS_USER_DOMAIN_NAME]) must be "
+"specified, because user name may not be unique."
+msgstr ""
+
+#: senlinclient/shell.py:179
+#, python-format
+msgid "You must provide a password for user %s"
+msgstr ""
+
+#: senlinclient/shell.py:187 senlinclient/tests/unit/test_shell.py:305
+msgid ""
+"Either project/tenant ID or project/tenant name must be specified, or "
+"else Senlin cannot know which project to use."
+msgstr ""
+
+#: senlinclient/shell.py:192 senlinclient/tests/unit/test_shell.py:313
+msgid ""
+"Neither project ID nor project name is specified. Senlin will use user's "
+"default project which may result in authentication error."
+msgstr ""
+
+#: senlinclient/shell.py:200 senlinclient/tests/unit/test_shell.py:322
+msgid ""
+"Both project/tenant name and project/tenant ID are specified, Senlin will"
+" use project ID for authentication"
+msgstr ""
+
+#: senlinclient/shell.py:210 senlinclient/tests/unit/test_shell.py:333
+msgid ""
+"Either project domain ID (--project-domain-id / "
+"env[OS_PROJECT_DOMAIN_ID]) orr project domain name (--project-domain-name"
+" / env[OS_PROJECT_DOMAIN_NAME must be specified, because project/tenant "
+"name may not be unique."
+msgstr ""
+
+#: senlinclient/shell.py:246
+msgid "Type \"senlin help <COMMAND>\" for help on a specific command."
+msgstr ""
+
+#: senlinclient/shell.py:299
+#, python-format
+msgid "Trace ID: %s"
+msgstr ""
+
+#: senlinclient/shell.py:300
+#, python-format
+msgid ""
+"To display trace use next command:\n"
+"osprofiler trace show --html %s "
+msgstr ""
+
+#: senlinclient/shell.py:311
+msgid "... terminating senlin client"
+msgstr ""
+
+#: senlinclient/common/exc.py:52
+msgid "Key \"error\" not exists"
+msgstr ""
+
+#: senlinclient/common/exc.py:66
+#, python-format
+msgid ""
+"ERROR: %(message)s\n"
+"%(traceback)s"
+msgstr ""
+
+#: senlinclient/common/exc.py:70
+#, python-format
+msgid "ERROR(%(code)s): %(message)s"
+msgstr ""
+
+#: senlinclient/common/exc.py:275
+#, python-format
+msgid "Unknown exception: %s"
+msgstr ""
+
+#: senlinclient/common/exc.py:281
+#, python-format
+msgid "Malformed exception record, missing field \"%s\""
+msgstr ""
+
+#: senlinclient/common/exc.py:282
+#, python-format
+msgid "Original error record: %s"
+msgstr ""
+
+#: senlinclient/common/utils.py:117
+#, python-format
+msgid ""
+"Field labels list %(labels)s has different number of elements than fields"
+" list %(fields)s"
+msgstr ""
+
+#: senlinclient/common/utils.py:199
+#, python-format
+msgid "Malformed parameter(%s). Use the key=value format."
+msgstr ""
+
+#: senlinclient/common/utils.py:217 senlinclient/common/utils.py:228
+#, python-format
+msgid "The specified file is not a valid YAML file: %s"
+msgstr ""
+
+#: senlinclient/common/utils.py:231
+msgid "No template found in the given spec file"
+msgstr ""
+
+#: senlinclient/common/utils.py:259
+#, python-format
+msgid "The format(%s) is unsupported."
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:34
+msgid "ID or name of cluster from which nodes are to be listed"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:39
+msgid ""
+"Filter parameters to apply on returned nodes. This can be specified "
+"multiple times, or once with parameters separated by a semicolon. The "
+"valid filter keys are: ['status','name']"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:48
+msgid ""
+"Sorting option which is a string containing a list of keys separated by "
+"commas. Each key can be optionally appended by a sort direction (:asc or "
+":desc). The valid sort keys are:'['index', 'name', 'status', 'init_at', "
+"'created_at', 'updated_at']'"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:57
+msgid "Limit the number of nodes returned"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:62
+msgid "Only return nodes that appear after the given node ID"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:67
+msgid ""
+"Indicate that this node list should include nodes from all projects. This"
+" option is subject to access policy checking. Default is False"
+msgstr ""
+
+#: senlinclient/osc/v1/node.py:74
+msgid "Print full IDs in list"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:90 senlinclient/v1/shell.py:81
+msgid "Limit the number of profiles returned."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:95 senlinclient/v1/shell.py:83
+msgid "Only return profiles that appear after the given ID."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:100
+msgid ""
+"Sorting option which is a string containing a list of keys separated by "
+"commas. Each key can be optionally appended by a sort direction (:asc or "
+":desc). The valid sort_keys are:['type', 'name', 'created_at', "
+"'updated_at']"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:109 senlinclient/v1/shell.py:89
+msgid ""
+"Indicate that the list should include profiles from all projects. This "
+"option is subject to access policy checking. Default is False."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:117 senlinclient/v1/shell.py:93
+#: senlinclient/v1/shell.py:268 senlinclient/v1/shell.py:382
+#: senlinclient/v1/shell.py:518 senlinclient/v1/shell.py:693
+#: senlinclient/v1/shell.py:796 senlinclient/v1/shell.py:958
+#: senlinclient/v1/shell.py:1073 senlinclient/v1/shell.py:1129
+msgid "Print full IDs in list."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:157
+msgid "Name or ID of profile(s) to delete"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:162
+msgid "Skip yes/no prompt (assume yes)"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:173
+msgid "Are you sure you want to delete this profile(s) [y/N]?"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:193
+#, python-format
+msgid "Failed to delete %(count)s of the %(total)s specified profile(s)."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:211
+msgid "The spec file used to create the profile"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:216 senlinclient/osc/v1/profile.py:272
+msgid ""
+"Metadata values to be attached to the profile. This can be specified "
+"multiple times, or once with key-value pairs separated by a semicolon"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:224
+msgid "Name of the profile to create"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:237
+#: senlinclient/tests/unit/v1/test_shell.py:207 senlinclient/v1/shell.py:152
+msgid "Missing 'type' key in spec file."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:239
+#: senlinclient/tests/unit/v1/test_shell.py:215 senlinclient/v1/shell.py:154
+msgid "Missing 'version' key in spec file."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:241
+#: senlinclient/tests/unit/v1/test_shell.py:223 senlinclient/v1/shell.py:156
+msgid "Missing 'properties' key in spec file."
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:267
+msgid "The new name for the profile"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:280
+msgid "Name or ID of the profile to update"
+msgstr ""
+
+#: senlinclient/osc/v1/profile.py:299 senlinclient/v1/shell.py:122
+#: senlinclient/v1/shell.py:200
+#, python-format
+msgid "Profile not found: %s"
+msgstr ""
+
+#: senlinclient/osc/v1/profile_type.py:53
+msgid "Profile type to retrieve"
+msgstr ""
+
+#: senlinclient/osc/v1/profile_type.py:64 senlinclient/v1/shell.py:63
+#, python-format
+msgid "Profile Type not found: %s"
+msgstr ""
+
+#: senlinclient/tests/unit/test_shell.py:250
+#, python-format
+msgid "'%s' is not a valid subcommand"
+msgstr ""
+
+#: senlinclient/tests/unit/test_shell.py:279
+msgid ""
+"WARNING: Both user name and user ID are specified, Senlin will use user "
+"ID for authentication"
+msgstr ""
+
+#: senlinclient/tests/unit/test_utils.py:62
+msgid "Malformed parameter(status:ACTIVE). Use the key=value format."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:104
+msgid "Profile Type not found: wrong_type"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:167
+msgid "Profile not found: wrong_id"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:269
+msgid "Profile not found: FAKE_ID"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:289 senlinclient/v1/shell.py:218
+msgid "Failed to delete some of the specified profile(s)."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:335
+msgid "Policy type not found: BAD"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:409
+msgid "Receiver not found: wrong_id"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:461 senlinclient/v1/shell.py:1047
+msgid "Failed to delete some of the specified receiver(s)."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:519
+msgid "Policy not found: fake_policy_id"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:589 senlinclient/v1/shell.py:355
+msgid "Failed to delete some of the specified policy(s)."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:677 senlinclient/v1/shell.py:469
+msgid "Failed to delete some of the specified clusters."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:786 senlinclient/v1/shell.py:607
+msgid "Only one of 'capacity', 'adjustment' and 'percentage' can be specified."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:812 senlinclient/v1/shell.py:615
+msgid "Cluster capacity must be larger than  or equal to zero."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:830 senlinclient/v1/shell.py:622
+msgid "Adjustment cannot be zero."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:847 senlinclient/v1/shell.py:628
+msgid "Percentage cannot be zero."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:858 senlinclient/v1/shell.py:634
+msgid "Min step is only used with percentage."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:870 senlinclient/v1/shell.py:638
+msgid "Min size cannot be less than zero."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:883 senlinclient/v1/shell.py:640
+msgid "Min size cannot be larger than max size."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:896 senlinclient/v1/shell.py:643
+msgid "Min size cannot be larger than the specified capacity"
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:909 senlinclient/v1/shell.py:648
+msgid "Max size cannot be less than the specified capacity."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:1135 senlinclient/v1/shell.py:900
+msgid "Failed to delete some of the specified nodes."
+msgstr ""
+
+#: senlinclient/tests/unit/v1/test_shell.py:1281
+msgid "Action not found: fake_id"
+msgstr ""
+
+#: senlinclient/v1/shell.py:52
+msgid "Profile type to retrieve."
+msgstr ""
+
+#: senlinclient/v1/shell.py:55 senlinclient/v1/shell.py:236
+#, python-format
+msgid "The template output format, one of: %s."
+msgstr ""
+
+#: senlinclient/v1/shell.py:76
+msgid ""
+"Filter parameters to apply on returned profiles. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:85 senlinclient/v1/shell.py:260
+#: senlinclient/v1/shell.py:369 senlinclient/v1/shell.py:689
+#: senlinclient/v1/shell.py:784 senlinclient/v1/shell.py:950
+#: senlinclient/v1/shell.py:1065 senlinclient/v1/shell.py:1121
+msgid ""
+"Sorting option which is a string containing a list of keys separated by "
+"commas. Each key can be optionally appened by a sort direction (:asc or "
+":desc)"
+msgstr ""
+
+#: senlinclient/v1/shell.py:136
+msgid "The spec file used to create the profile."
+msgstr ""
+
+#: senlinclient/v1/shell.py:138 senlinclient/v1/shell.py:182
+msgid ""
+"Metadata values to be attached to the profile. This can be specified "
+"multiple times, or once with key-value pairs separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:143
+msgid "Name of the profile to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:173
+msgid "Name or ID of profile to show."
+msgstr ""
+
+#: senlinclient/v1/shell.py:180
+msgid "The new name for the profile."
+msgstr ""
+
+#: senlinclient/v1/shell.py:187
+msgid "Name or ID of the profile to update."
+msgstr ""
+
+#: senlinclient/v1/shell.py:206
+msgid "Name or ID of profile(s) to delete."
+msgstr ""
+
+#: senlinclient/v1/shell.py:233
+msgid "Policy type to retrieve."
+msgstr ""
+
+#: senlinclient/v1/shell.py:243
+#, python-format
+msgid "Policy type not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:256
+msgid "Limit the number of policies returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:258
+msgid "Only return policies that appear after the given ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:264
+msgid ""
+"Indicate that the list should include policies from all projects. This "
+"option is subject to access policy checking. Default is False."
+msgstr ""
+
+#: senlinclient/v1/shell.py:294
+#, python-format
+msgid "Policy not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:304
+msgid "The spec file used to create the policy."
+msgstr ""
+
+#: senlinclient/v1/shell.py:306
+msgid "Name of the policy to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:320 senlinclient/v1/shell.py:329
+msgid "Name of the policy to be updated."
+msgstr ""
+
+#: senlinclient/v1/shell.py:327
+msgid "New name of the policy to be updated."
+msgstr ""
+
+#: senlinclient/v1/shell.py:343
+msgid "Name or ID of policy(s) to delete."
+msgstr ""
+
+#: senlinclient/v1/shell.py:364
+msgid ""
+"Filter parameters to apply on returned clusters. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:373
+msgid "Limit the number of clusters returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:375
+msgid "Only return clusters that appear after the given cluster ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:378
+msgid ""
+"Indicate that the cluster list should include clusters from all projects."
+" This option is subject to access policy checking. Default is False."
+msgstr ""
+
+#: senlinclient/v1/shell.py:411
+#, python-format
+msgid "Cluster not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:421
+msgid "Profile Id used for this cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:423
+msgid "Min size of the cluster. Default to 0."
+msgstr ""
+
+#: senlinclient/v1/shell.py:425
+msgid "Max size of the cluster. Default to -1, means unlimited."
+msgstr ""
+
+#: senlinclient/v1/shell.py:427
+msgid ""
+"Desired capacity of the cluster. Default to min_size if min_size is "
+"specified else 0."
+msgstr ""
+
+#: senlinclient/v1/shell.py:430
+msgid "Cluster creation timeout in seconds."
+msgstr ""
+
+#: senlinclient/v1/shell.py:432 senlinclient/v1/shell.py:479
+msgid ""
+"Metadata values to be attached to the cluster. This can be specified "
+"multiple times, or once with key-value pairs separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:437
+msgid "Name of the cluster to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:457
+msgid "Name or ID of cluster(s) to delete."
+msgstr ""
+
+#: senlinclient/v1/shell.py:475 senlinclient/v1/shell.py:908
+msgid "ID of new profile to use."
+msgstr ""
+
+#: senlinclient/v1/shell.py:477
+msgid "New timeout (in seconds) value for the cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:484
+msgid "New name for the cluster to update."
+msgstr ""
+
+#: senlinclient/v1/shell.py:486
+msgid "Name or ID of cluster to be updated."
+msgstr ""
+
+#: senlinclient/v1/shell.py:502
+msgid "Name or ID of cluster to show."
+msgstr ""
+
+#: senlinclient/v1/shell.py:509 senlinclient/v1/shell.py:779
+msgid ""
+"Filter parameters to apply on returned nodes. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:514 senlinclient/v1/shell.py:788
+msgid "Limit the number of nodes returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:516 senlinclient/v1/shell.py:790
+msgid "Only return nodes that appear after the given node ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:520
+msgid "Name or ID of cluster to nodes from."
+msgstr ""
+
+#: senlinclient/v1/shell.py:546
+msgid "ID of nodes to be added; multiple nodes can be separated with \",\""
+msgstr ""
+
+#: senlinclient/v1/shell.py:549 senlinclient/v1/shell.py:561
+#: senlinclient/v1/shell.py:591 senlinclient/v1/shell.py:666
+#: senlinclient/v1/shell.py:676 senlinclient/v1/shell.py:736
+#: senlinclient/v1/shell.py:750 senlinclient/v1/shell.py:762
+msgid "Name or ID of cluster to operate on."
+msgstr ""
+
+#: senlinclient/v1/shell.py:558
+msgid "ID of nodes to be deleted; multiple nodes can be separated with \",\"."
+msgstr ""
+
+#: senlinclient/v1/shell.py:570
+msgid "The desired number of nodes of the cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:572
+msgid ""
+"A positive integer meaning the number of nodes to add, or a negative "
+"integer indicating the number of nodes to remove."
+msgstr ""
+
+#: senlinclient/v1/shell.py:576
+msgid ""
+"A value that is interpreted as the percentage of size adjustment. This "
+"value can be positive or negative."
+msgstr ""
+
+#: senlinclient/v1/shell.py:579
+msgid ""
+"An integer specifying the number of nodes for adjustment when "
+"<PERCENTAGE> is specified."
+msgstr ""
+
+#: senlinclient/v1/shell.py:582
+msgid ""
+"A boolean specifying whether the resize should be performed on a best-"
+"effort basis when the new capacity may go beyond size constraints."
+msgstr ""
+
+#: senlinclient/v1/shell.py:586
+msgid "New lower bound of cluster size."
+msgstr ""
+
+#: senlinclient/v1/shell.py:588
+msgid ""
+"New upper bound of cluster size. A value of -1 indicates no upper limit "
+"on cluster size."
+msgstr ""
+
+#: senlinclient/v1/shell.py:664
+msgid "Number of nodes to be added to the specified cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:674
+msgid "Number of nodes to be deleted from the specified cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:684
+msgid ""
+"Filter parameters to apply on returned results. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:695
+msgid "Name or ID of cluster to query on."
+msgstr ""
+
+#: senlinclient/v1/shell.py:721
+msgid "ID or name of the policy to query on."
+msgstr ""
+
+#: senlinclient/v1/shell.py:723
+msgid "ID or name of the cluster to query on."
+msgstr ""
+
+#: senlinclient/v1/shell.py:731
+msgid "ID or name of policy to be attached."
+msgstr ""
+
+#: senlinclient/v1/shell.py:733
+msgid "Whether the policy should be enabled once attached. Default to enabled."
+msgstr ""
+
+#: senlinclient/v1/shell.py:748
+msgid "ID or name of policy to be detached."
+msgstr ""
+
+#: senlinclient/v1/shell.py:758
+msgid "ID or name of policy to be updated."
+msgstr ""
+
+#: senlinclient/v1/shell.py:760
+msgid "Whether the policy should be enabled."
+msgstr ""
+
+#: senlinclient/v1/shell.py:777
+msgid "ID or name of cluster from which nodes are to be listed."
+msgstr ""
+
+#: senlinclient/v1/shell.py:792
+msgid ""
+"Indicate that this node list should include nodes from all projects. This"
+" option is subject to access policy checking. Default is False."
+msgstr ""
+
+#: senlinclient/v1/shell.py:837 senlinclient/v1/shell.py:924
+#, python-format
+msgid "Node not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:852
+msgid "Profile Id used for this node."
+msgstr ""
+
+#: senlinclient/v1/shell.py:854
+msgid "Cluster Id for this node."
+msgstr ""
+
+#: senlinclient/v1/shell.py:856 senlinclient/v1/shell.py:910
+msgid "Role for this node in the specific cluster."
+msgstr ""
+
+#: senlinclient/v1/shell.py:858
+msgid ""
+"Metadata values to be attached to the node. This can be specified "
+"multiple times, or once with key-value pairs separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:863
+msgid "Name of the node to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:879
+msgid "Include physical object details."
+msgstr ""
+
+#: senlinclient/v1/shell.py:881
+msgid "Name or ID of the node to show the details for."
+msgstr ""
+
+#: senlinclient/v1/shell.py:888
+msgid "Name or ID of node(s) to delete."
+msgstr ""
+
+#: senlinclient/v1/shell.py:906
+msgid "New name for the node."
+msgstr ""
+
+#: senlinclient/v1/shell.py:912
+msgid ""
+"Metadata values to be attached to the node. Metadata can be specified "
+"multiple times, or once with key-value pairs separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:917
+msgid "Name or ID of node to update."
+msgstr ""
+
+#: senlinclient/v1/shell.py:941
+msgid ""
+"Filter parameters to apply on returned receivers. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:946
+msgid "Limit the number of receivers returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:948
+msgid "Only return receivers that appear after the given ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:954
+msgid ""
+"Indicate that the list should include receivers from all projects. This "
+"option is subject to access policy checking. Default is False."
+msgstr ""
+
+#: senlinclient/v1/shell.py:989
+#, python-format
+msgid "Receiver not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:1001
+msgid "Name or ID of the receiver to show."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1008
+msgid "Type of the receiver to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1010
+msgid "Targeted cluster for this receiver."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1012
+msgid "Name or ID of the targeted action to be triggered."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1014
+msgid ""
+"A dictionary of parameters that will be passed to target action when the "
+"receiver is triggered."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1018
+msgid "Name of the receiver to create."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1035
+msgid "Name or ID of receiver(s) to delete."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1056
+msgid ""
+"Filter parameters to apply on returned events. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1061
+msgid "Limit the number of events returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1063
+msgid "Only return events that appear after the given event ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1069
+msgid ""
+"Whether events from all projects should be listed.  Default to False. "
+"Setting this to True may demand for an admin privilege."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1101
+msgid "ID of event to display details for."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1107
+#, python-format
+msgid "Event not found: %s"
+msgstr ""
+
+#: senlinclient/v1/shell.py:1116
+msgid ""
+"Filter parameters to apply on returned actions. This can be specified "
+"multiple times, or once with parameters separated by a semicolon."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1125
+msgid "Limit the number of actions returned."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1127
+msgid "Only return actions that appear after the given node ID."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1169
+msgid "Name or ID of the action to show the details for."
+msgstr ""
+
+#: senlinclient/v1/shell.py:1175
+#, python-format
+msgid "Action not found: %s"
+msgstr ""
+
