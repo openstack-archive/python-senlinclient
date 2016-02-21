@@ -15,6 +15,9 @@
 import logging
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -97,3 +100,49 @@ class ListPolicy(lister.Lister):
             (utils.get_item_properties(p, columns, formatters=formatters)
              for p in policies)
         )
+
+
+class ShowPolicy(show.ShowOne):
+    """Show the policy details."""
+
+    log = logging.getLogger(__name__ + ".ShowPolicy")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowPolicy, self).get_parser(prog_name)
+        parser.add_argument(
+            'policy',
+            metavar='<policy>',
+            help=_('Name or Id of the policy to show')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        return _show_policy(senlin_client, policy_id=parsed_args.policy)
+
+
+def _show_policy(senlin_client, policy_id):
+    try:
+        policy = senlin_client.get_policy(policy_id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Policy not found: %s') % policy_id)
+
+    formatters = {
+        'spec': senlin_utils.json_formatter
+    }
+    columns = [
+        'created_at',
+        'data',
+        'domain',
+        'id',
+        'name',
+        'project',
+        'spec',
+        'type',
+        'updated_at',
+        'user'
+    ]
+    return columns, utils.get_dict_properties(policy.to_dict(), columns,
+                                              formatters=formatters)

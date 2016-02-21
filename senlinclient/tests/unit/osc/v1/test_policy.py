@@ -15,6 +15,7 @@ import mock
 
 from openstack.cluster.v1 import policy as sdk_policy
 from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 
 from senlinclient.osc.v1 import policy as osc_policy
 from senlinclient.tests.unit.osc.v1 import fakes
@@ -136,3 +137,48 @@ class TestPolicyList(TestPolicy):
         columns, data = self.cmd.take_action(parsed_args)
         self.mock_client.policies.assert_called_with(**kwargs)
         self.assertEqual(self.columns, columns)
+
+
+class TestPolicyShow(TestPolicy):
+    get_response = {"policy": {
+        "created_at": "2015-03-02T07:40:31",
+        "data": {},
+        "domain": 'null',
+        "id": "02f62195-2198-4797-b0a9-877632208527",
+        "name": "sp001",
+        "project": "42d9e9663331431f97b75e25136307ff",
+        "spec": {
+            "properties": {
+                "adjustment": {
+                    "best_effort": True,
+                    "min_step": 1,
+                    "number": 1,
+                    "type": "CHANGE_IN_CAPACITY"
+                },
+                "event": "CLUSTER_SCALE_IN"
+            },
+            "type": "senlin.policy.scaling",
+            "version": "1.0"
+        },
+        "type": "senlin.policy.scaling-1.0",
+        "updated_at": 'null',
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    def setUp(self):
+        super(TestPolicyShow, self).setUp()
+        self.cmd = osc_policy.ShowPolicy(self.app, None)
+        self.mock_client.get_policy = mock.Mock(
+            return_value=sdk_policy.Policy(None, self.get_response))
+
+    def test_policy_show(self):
+        arglist = ['sp001']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.get_policy.assert_called_with('sp001')
+
+    def test_policy_show_not_found(self):
+        arglist = ['sp001']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_policy.side_effect = sdk_exc.ResourceNotFound()
+        self.assertRaises(exc.CommandError, self.cmd.take_action, parsed_args)
