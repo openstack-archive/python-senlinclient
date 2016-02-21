@@ -12,6 +12,7 @@
 
 import copy
 import mock
+import six
 
 from openstack.cluster.v1 import policy as sdk_policy
 from openstack import exceptions as sdk_exc
@@ -292,3 +293,76 @@ class TestPolicyUpdate(TestPolicy):
                                   self.cmd.take_action,
                                   parsed_args)
         self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
+
+
+class TestPolicyDelete(TestPolicy):
+    def setUp(self):
+        super(TestPolicyDelete, self).setUp()
+        self.cmd = osc_policy.DeletePolicy(self.app, None)
+        self.mock_client.delete_policy = mock.Mock()
+
+    def test_policy_delete(self):
+        arglist = ['policy1', 'policy2', 'policy3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_policy.assert_has_calls(
+            [mock.call('policy1', False), mock.call('policy2', False),
+             mock.call('policy3', False)]
+        )
+
+    def test_policy_delete_force(self):
+        arglist = ['policy1', 'policy2', 'policy3', '--force']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_policy.assert_has_calls(
+            [mock.call('policy1', False), mock.call('policy2', False),
+             mock.call('policy3', False)]
+        )
+
+    def test_policy_delete_not_found(self):
+        arglist = ['my_policy']
+        self.mock_client.delete_policy.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Failed to delete 1 of the 1 specified policy(s).',
+                      str(error))
+
+    def test_policy_delete_one_found_one_not_found(self):
+        arglist = ['policy1', 'policy2']
+        self.mock_client.delete_policy.side_effect = (
+            [None, sdk_exc.ResourceNotFound]
+        )
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action, parsed_args)
+        self.mock_client.delete_policy.assert_has_calls(
+            [mock.call('policy1', False), mock.call('policy2', False)]
+        )
+        self.assertEqual('Failed to delete 1 of the 2 specified policy(s).',
+                         str(error))
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_policy_delete_prompt_yes(self, mock_stdin):
+        arglist = ['my_policy']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'y'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_policy.assert_called_with('my_policy',
+                                                          False)
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_policy_delete_prompt_no(self, mock_stdin):
+        arglist = ['my_policy']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'n'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_policy.assert_not_called()
