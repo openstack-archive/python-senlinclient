@@ -1,0 +1,8 @@
+type: senlin.policy.deletion
+version: 1.0
+description: A policy for choosing victim node(s) from a cluster for deletion.
+properties:
+  criteria: OLDEST_FIRST
+  destroy_after_deletion: True
+  grace_period: 60
+  reduce_desired_capacity: False

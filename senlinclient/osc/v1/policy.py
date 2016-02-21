@@ -146,3 +146,37 @@ def _show_policy(senlin_client, policy_id):
     ]
     return columns, utils.get_dict_properties(policy.to_dict(), columns,
                                               formatters=formatters)
+
+
+class CreatePolicy(show.ShowOne):
+    """Create a policy."""
+
+    log = logging.getLogger(__name__ + ".CreatePolicy")
+
+    def get_parser(self, prog_name):
+        parser = super(CreatePolicy, self).get_parser(prog_name)
+        parser.add_argument(
+            '--spec-file',
+            metavar='<spec_file>',
+            required=True,
+            help=_('The spec file used to create the policy')
+        )
+        parser.add_argument(
+            'name',
+            metavar='<name>',
+            help=_('Name of the policy to create')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        spec = senlin_utils.get_spec_content(parsed_args.spec_file)
+        attrs = {
+            'name': parsed_args.name,
+            'spec': spec,
+        }
+
+        policy = senlin_client.create_policy(**attrs)
+        return _show_policy(senlin_client, policy.id)
