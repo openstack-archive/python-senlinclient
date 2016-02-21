@@ -180,3 +180,36 @@ class CreatePolicy(show.ShowOne):
 
         policy = senlin_client.create_policy(**attrs)
         return _show_policy(senlin_client, policy.id)
+
+
+class UpdatePolicy(show.ShowOne):
+    """Update a policy."""
+
+    log = logging.getLogger(__name__ + ".UpdatePolicy")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdatePolicy, self).get_parser(prog_name)
+        parser.add_argument(
+            '--name',
+            metavar='<name>',
+            help=_('New name of the policy to be updated')
+        )
+        parser.add_argument(
+            'policy',
+            metavar='<policy>',
+            help=_('Name or ID of the policy to be updated')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        params = {
+            'name': parsed_args.name,
+        }
+
+        policy = senlin_client.get_policy(parsed_args.policy)
+        if policy is not None:
+            senlin_client.update_policy(policy.id, **params)
+            return _show_policy(senlin_client, policy_id=policy.id)

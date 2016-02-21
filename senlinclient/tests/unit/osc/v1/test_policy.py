@@ -238,3 +238,57 @@ class TestPolicyCreate(TestPolicy):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_policy.assert_called_with(**self.defaults)
+
+
+class TestPolicyUpdate(TestPolicy):
+    response = {"policy": {
+        "created_at": "2016-02-21T02:38:36",
+        "data": {},
+        "domain": 'null',
+        "id": "9f779ddf-744e-48bd-954c-acef7e11116c",
+        "name": "new_policy",
+        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+        "spec": {
+            "description": "A policy for choosing victim node(s) from a "
+                           "cluster for deletion.",
+            "properties": {
+                "criteria": "OLDEST_FIRST",
+                "destroy_after_deletion": True,
+                "grace_period": 60,
+                "reduce_desired_capacity": False
+            },
+            "type": "senlin.policy.deletion",
+            "version": 1.0
+        },
+        "type": "senlin.policy.deletion-1.0",
+        "updated_at": 'null',
+        "user": "2d7aca950f3e465d8ef0c81720faf6ff"
+    }}
+
+    defaults = {
+        "name": "new_policy"
+    }
+
+    def setUp(self):
+        super(TestPolicyUpdate, self).setUp()
+        self.cmd = osc_policy.UpdatePolicy(self.app, None)
+        self.mock_client.update_policy = mock.Mock(
+            return_value=sdk_policy.Policy(None, self.response))
+        self.mock_client.get_policy = mock.Mock(
+            return_value=sdk_policy.Policy(None, self.response))
+
+    def test_policy_update_defaults(self):
+        arglist = ['--name', 'new_policy', 'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.update_policy.assert_called_with(None,
+                                                          **self.defaults)
+
+    def test_policy_update_not_found(self):
+        arglist = ['--name', 'new_policy', 'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_policy.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(sdk_exc.ResourceNotFound,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
