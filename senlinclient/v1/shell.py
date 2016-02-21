@@ -1006,7 +1006,7 @@ def do_receiver_show(service, args):
 
 @utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
            help=_('Type of the receiver to create.'))
-@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>', required=True,
            help=_('Targeted cluster for this receiver.'))
 @utils.arg('-a', '--action', metavar='<ACTION>', required=True,
            help=_('Name or ID of the targeted action to be triggered.'))
