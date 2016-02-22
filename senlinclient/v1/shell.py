@@ -251,7 +251,11 @@ def do_policy_type_show(service, args):
 
 # POLICIES
 
-
+@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+           help=_('Filter parameters to apply on returned policies. '
+                  'This can be specified multiple times, or once with '
+                  'parameters separated by a semicolon.'),
+           action='append')
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of policies returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -275,6 +279,8 @@ def do_policy_list(service, args=None):
         'sort': args.sort,
         'global_project': args.global_project,
     }
+    if args.filters:
+        queries.update(utils.format_parameters(args.filters))
 
     sortby_index = None if args.sort else 1
     policies = service.policies(**queries)

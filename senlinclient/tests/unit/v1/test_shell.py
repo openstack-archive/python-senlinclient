@@ -470,7 +470,8 @@ class ShellTest(testtools.TestCase):
             'marker': 'fake_id',
             'sort': 'name',
             'global_project': False,
-            'full_id': True
+            'full_id': True,
+            'filters': ['name=stack_spec']
         }
         args = self._make_args(args)
         queries = {
@@ -478,6 +479,7 @@ class ShellTest(testtools.TestCase):
             'marker': 'fake_id',
             'sort': 'name',
             'global_project': False,
+            'name': 'stack_spec',
         }
         policies = mock.Mock()
         service.policies.return_value = policies
