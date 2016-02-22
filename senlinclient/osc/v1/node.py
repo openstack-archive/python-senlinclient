@@ -162,3 +162,57 @@ def _show_node(senlin_client, node_id, show_details=False):
     columns = list(six.iterkeys(node))
     return columns, utils.get_dict_properties(node.to_dict(), columns,
                                               formatters=formatters)
+
+
+class CreateNode(show.ShowOne):
+    """Create the node."""
+
+    log = logging.getLogger(__name__ + ".CreateNode")
+
+    def get_parser(self, prog_name):
+        parser = super(CreateNode, self).get_parser(prog_name)
+        parser.add_argument(
+            '--profile',
+            metavar='<profile>',
+            required=True,
+            help=_('Profile Id or Name used for this node')
+        )
+        parser.add_argument(
+            '--cluster',
+            metavar='<cluster>',
+            help=_('Cluster Id or Name for this node')
+        )
+        parser.add_argument(
+            '--role',
+            metavar='<role>',
+            help=_('Role for this node in the specific cluster')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('Metadata values to be attached to the node. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon'),
+            action='append'
+        )
+        parser.add_argument(
+            'name',
+            metavar='<node_name>',
+            help=_('Name of the node to create')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        attrs = {
+            'name': parsed_args.name,
+            'cluster_id': parsed_args.cluster,
+            'profile_id': parsed_args.profile,
+            'role': parsed_args.role,
+            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+        }
+
+        node = senlin_client.create_node(**attrs)
+        return _show_node(senlin_client, node.id)
