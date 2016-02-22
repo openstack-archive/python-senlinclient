@@ -13,8 +13,12 @@
 """Clustering v1 node action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -109,3 +113,52 @@ class ListNode(lister.Lister):
             (utils.get_item_properties(n, columns, formatters=formatters)
              for n in nodes)
         )
+
+
+class ShowNode(show.ShowOne):
+    """Show detailed info about the specified node."""
+
+    log = logging.getLogger(__name__ + ".ShowNode")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowNode, self).get_parser(prog_name)
+        parser.add_argument(
+            '--details',
+            default=False,
+            action="store_true",
+            help=_('Include physical object details')
+        )
+        parser.add_argument(
+            'node',
+            metavar='<node>',
+            help=_('Name or ID of the node to show the details for')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        return _show_node(senlin_client, parsed_args.node, parsed_args.details)
+
+
+def _show_node(senlin_client, node_id, show_details=False):
+    """Show detailed info about the specified node."""
+
+    args = {'show_details': True} if show_details else None
+    try:
+        node = senlin_client.get_node(node_id, args=args)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Node not found: %s') % node_id)
+
+    formatters = {
+        'metadata': senlin_utils.json_formatter,
+        'data': senlin_utils.json_formatter,
+    }
+    if show_details and node:
+        formatters['details'] = senlin_utils.nested_dict_formatter(
+            list(node['details'].keys()), ['property', 'value'])
+
+    columns = list(six.iterkeys(node))
+    return columns, utils.get_dict_properties(node.to_dict(), columns,
+                                              formatters=formatters)
