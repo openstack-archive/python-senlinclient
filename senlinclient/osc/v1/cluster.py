@@ -137,3 +137,76 @@ def _show_cluster(senlin_client, cluster_id):
     columns = list(six.iterkeys(cluster))
     return columns, utils.get_dict_properties(cluster.to_dict(), columns,
                                               formatters=formatters)
+
+
+class CreateCluster(show.ShowOne):
+    """Create the cluster."""
+
+    log = logging.getLogger(__name__ + ".CreateCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(CreateCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--profile',
+            metavar='<profile>',
+            required=True,
+            help=_('Profile Id used for this cluster')
+        )
+        parser.add_argument(
+            '--min-size',
+            metavar='<min-size>',
+            default=0,
+            help=_('Min size of the cluster. Default to 0')
+        )
+        parser.add_argument(
+            '--max-size',
+            metavar='<max-size>',
+            default=-1,
+            help=_('Max size of the cluster. Default to -1, means unlimited')
+        )
+        parser.add_argument(
+            '--desired-capacity',
+            metavar='<desired-capacity>',
+            default=0,
+            help=_('Desired capacity of the cluster. Default to min_size if '
+                   'min_size is specified else 0.')
+        )
+        parser.add_argument(
+            '--timeout',
+            metavar='<timeout>',
+            type=int,
+            help=_('Cluster creation timeout in seconds')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('Metadata values to be attached to the cluster. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon.'),
+            action='append'
+        )
+        parser.add_argument(
+            'name',
+            metavar='<cluster_name>',
+            help=_('Name of the cluster to create')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        if parsed_args.min_size and not parsed_args.desired_capacity:
+            parsed_args.desired_capacity = parsed_args.min_size
+        attrs = {
+            'name': parsed_args.name,
+            'profile_id': parsed_args.profile,
+            'min_size': parsed_args.min_size,
+            'max_size': parsed_args.max_size,
+            'desired_capacity': parsed_args.desired_capacity,
+            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+            'timeout': parsed_args.timeout
+        }
+
+        cluster = senlin_client.create_cluster(**attrs)
+        return _show_cluster(senlin_client, cluster.id)
