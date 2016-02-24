@@ -210,3 +210,55 @@ class CreateCluster(show.ShowOne):
 
         cluster = senlin_client.create_cluster(**attrs)
         return _show_cluster(senlin_client, cluster.id)
+
+
+class UpdateCluster(show.ShowOne):
+    """Update the cluster."""
+
+    log = logging.getLogger(__name__ + ".UpdateCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdateCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--profile',
+            metavar='<profile>',
+            help=_('ID or name of new profile to use')
+        )
+        parser.add_argument(
+            '--timeout',
+            metavar='<timeout>',
+            help=_('New timeout (in seconds) value for the cluster')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('Metadata values to be attached to the cluster. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon'),
+            action='append'
+        )
+        parser.add_argument(
+            '--name',
+            metavar='<name>',
+            help=_('New name for the cluster to update')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to be updated')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        cluster = senlin_client.get_cluster(parsed_args.cluster)
+        attrs = {
+            'name': parsed_args.name,
+            'profile_id': parsed_args.profile,
+            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+            'timeout': parsed_args.timeout,
+        }
+
+        senlin_client.update_cluster(cluster.id, **attrs)
+        return _show_cluster(senlin_client, cluster.id)
