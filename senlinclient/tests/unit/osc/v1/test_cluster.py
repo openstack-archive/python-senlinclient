@@ -12,6 +12,7 @@
 
 import copy
 import mock
+import six
 
 from openstack.cluster.v1 import cluster as sdk_cluster
 from openstack import exceptions as sdk_exc
@@ -320,3 +321,76 @@ class TestClusterUpdate(TestCluster):
                                   self.cmd.take_action,
                                   parsed_args)
         self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
+
+
+class TestClusterDelete(TestCluster):
+    def setUp(self):
+        super(TestClusterDelete, self).setUp()
+        self.cmd = osc_cluster.DeleteCluster(self.app, None)
+        self.mock_client.delete_cluster = mock.Mock()
+
+    def test_cluster_delete(self):
+        arglist = ['cluster1', 'cluster2', 'cluster3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_cluster.assert_has_calls(
+            [mock.call('cluster1', False), mock.call('cluster2', False),
+             mock.call('cluster3', False)]
+        )
+
+    def test_cluster_delete_force(self):
+        arglist = ['cluster1', 'cluster2', 'cluster3', '--force']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_cluster.assert_has_calls(
+            [mock.call('cluster1', False), mock.call('cluster2', False),
+             mock.call('cluster3', False)]
+        )
+
+    def test_cluster_delete_not_found(self):
+        arglist = ['my_cluster']
+        self.mock_client.delete_cluster.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Failed to delete 1 of the 1 specified cluster(s).',
+                      str(error))
+
+    def test_cluster_delete_one_found_one_not_found(self):
+        arglist = ['cluster1', 'cluster2']
+        self.mock_client.delete_cluster.side_effect = (
+            [None, sdk_exc.ResourceNotFound]
+        )
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action, parsed_args)
+        self.mock_client.delete_cluster.assert_has_calls(
+            [mock.call('cluster1', False), mock.call('cluster2', False)]
+        )
+        self.assertEqual('Failed to delete 1 of the 2 specified cluster(s).',
+                         str(error))
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_cluster_delete_prompt_yes(self, mock_stdin):
+        arglist = ['my_cluster']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'y'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_cluster.assert_called_with('my_cluster',
+                                                           False)
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_cluster_delete_prompt_no(self, mock_stdin):
+        arglist = ['my_cluster']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'n'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_cluster.assert_not_called()
