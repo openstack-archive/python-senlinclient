@@ -570,3 +570,22 @@ class TestClusterScaleOut(TestCluster):
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_scale_out.assert_called_with('my_cluster',
                                                               '2')
+
+
+class TestClusterPolicyAttach(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterPolicyAttach, self).setUp()
+        self.cmd = osc_cluster.ClusterPolicyAttach(self.app, None)
+        self.mock_client.cluster_attach_policy = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_policy_attach(self):
+        arglist = ['--policy', 'my_policy', '--enabled', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_attach_policy.assert_called_with(
+            'my_cluster',
+            'my_policy',
+            enabled=True)

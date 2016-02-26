@@ -515,3 +515,44 @@ class ScaleOutCluster(command.Command):
         resp = senlin_client.cluster_scale_out(parsed_args.cluster,
                                                parsed_args.count)
         print('Request accepted by action %s' % resp['action'])
+
+
+class ClusterPolicyAttach(command.Command):
+    """Attach policy to cluster."""
+
+    log = logging.getLogger(__name__ + ".ClusterPolicyAttach")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterPolicyAttach, self).get_parser(prog_name)
+        parser.add_argument(
+            '--policy',
+            metavar='<policy>',
+            required=True,
+            help=_('ID or name of policy to be attached')
+        )
+        parser.add_argument(
+            '--enabled',
+            default=True,
+            action="store_true",
+            help=_('Whether the policy should be enabled once attached. '
+                   'Default to True')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        kwargs = {
+            'enabled': parsed_args.enabled,
+        }
+
+        resp = senlin_client.cluster_attach_policy(parsed_args.cluster,
+                                                   parsed_args.policy,
+                                                   **kwargs)
+        print('Request accepted by action: %s' % resp['action'])
