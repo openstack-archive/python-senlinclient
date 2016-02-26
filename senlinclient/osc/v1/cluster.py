@@ -320,3 +320,142 @@ class DeleteCluster(command.Command):
                                    {'count': failure_count,
                                    'total': len(parsed_args.cluster)})
         print('Request accepted')
+
+
+class ResizeCluster(command.Command):
+    """Resize a cluster."""
+
+    log = logging.getLogger(__name__ + ".ResizeCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(ResizeCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--capacity',
+            metavar='<capacity>',
+            type=int,
+            help=_('The desired number of nodes of the cluster')
+        )
+        parser.add_argument(
+            '--adjustment',
+            metavar='<adjustment>',
+            type=int,
+            help=_('A positive integer meaning the number of nodes to add, '
+                   'or a negative integer indicating the number of nodes to '
+                   'remove')
+        )
+        parser.add_argument(
+            '--percentage',
+            metavar='<percentage>',
+            type=float,
+            help=_('A value that is interpreted as the percentage of size '
+                   'adjustment. This value can be positive or negative')
+        )
+        parser.add_argument(
+            '--min-step',
+            metavar='<min_step>',
+            type=int,
+            help=_('An integer specifying the number of nodes for adjustment '
+                   'when <PERCENTAGE> is specified')
+        )
+        parser.add_argument(
+            '--strict',
+            action='store_true',
+            default=False,
+            help=_('A boolean specifying whether the resize should be '
+                   'performed on a best-effort basis when the new capacity '
+                   'may go beyond size constraints')
+        )
+        parser.add_argument(
+            '--min-size',
+            metavar='min',
+            type=int,
+            help=_('New lower bound of cluster size')
+        )
+        parser.add_argument(
+            '--max-size',
+            metavar='max',
+            type=int,
+            help=_('New upper bound of cluster size. A value of -1 indicates '
+                   'no upper limit on cluster size')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        action_args = {}
+
+        capacity = parsed_args.capacity
+        adjustment = parsed_args.adjustment
+        percentage = parsed_args.percentage
+        min_size = parsed_args.min_size
+        max_size = parsed_args.max_size
+        min_step = parsed_args.min_step
+
+        if sum(v is not None for v in (capacity, adjustment, percentage)) > 1:
+            raise exc.CommandError(_("Only one of 'capacity', 'adjustment' and"
+                                     " 'percentage' can be specified."))
+
+        if sum(v is None for v in (capacity, adjustment, percentage)) == 3:
+            raise exc.CommandError(_("At least one of 'capacity', "
+                                     "'adjustment' and 'percentage' "
+                                     "should be specified."))
+
+        action_args['adjustment_type'] = None
+        action_args['number'] = None
+
+        if capacity is not None:
+            if capacity < 0:
+                raise exc.CommandError(_('Cluster capacity must be larger than'
+                                         ' or equal to zero.'))
+            action_args['adjustment_type'] = 'EXACT_CAPACITY'
+            action_args['number'] = capacity
+
+        if adjustment is not None:
+            if adjustment == 0:
+                raise exc.CommandError(_('Adjustment cannot be zero.'))
+            action_args['adjustment_type'] = 'CHANGE_IN_CAPACITY'
+            action_args['number'] = adjustment
+
+        if percentage is not None:
+            if (percentage == 0 or percentage == 0.0):
+                raise exc.CommandError(_('Percentage cannot be zero.'))
+            action_args['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
+            action_args['number'] = percentage
+
+        if min_step is not None:
+            if percentage is None:
+                raise exc.CommandError(_('Min step is only used with '
+                                         'percentage.'))
+
+        if min_size is not None:
+            if min_size < 0:
+                raise exc.CommandError(_('Min size cannot be less than zero.'))
+            if max_size is not None and max_size >= 0 and min_size > max_size:
+                raise exc.CommandError(_('Min size cannot be larger than '
+                                         'max size.'))
+            if capacity is not None and min_size > capacity:
+                raise exc.CommandError(_('Min size cannot be larger than the '
+                                         'specified capacity'))
+
+        if max_size is not None:
+            if capacity is not None and max_size > 0 and max_size < capacity:
+                raise exc.CommandError(_('Max size cannot be less than the '
+                                         'specified capacity.'))
+            # do a normalization
+            if max_size < 0:
+                max_size = -1
+
+        action_args['min_size'] = min_size
+        action_args['max_size'] = max_size
+        action_args['min_step'] = min_step
+        action_args['strict'] = parsed_args.strict
+
+        resp = senlin_client.cluster_resize(parsed_args.cluster, **action_args)
+        print('Request accepted by action: %s' % resp['action'])

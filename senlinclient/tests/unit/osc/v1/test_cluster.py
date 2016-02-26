@@ -394,3 +394,145 @@ class TestClusterDelete(TestCluster):
 
         mock_stdin.readline.assert_called_with()
         self.mock_client.delete_cluster.assert_not_called()
+
+
+class TestClusterResize(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+    defaults = {
+        "min_step": None,
+        "adjustment_type": "EXACT_CAPACITY",
+        "number": 2,
+        "min_size": 1,
+        "strict": True,
+        "max_size": 20}
+
+    def setUp(self):
+        super(TestClusterResize, self).setUp()
+        self.cmd = osc_cluster.ResizeCluster(self.app, None)
+        self.mock_client.cluster_resize = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_resize_multi_params(self):
+        arglist = ['--capacity', '2', '--percentage', '50.0', '--adjustment',
+                   '1', '--min-size', '1', '--max-size', '20', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual("Only one of 'capacity', 'adjustment' "
+                         "and 'percentage' can be specified.", str(error))
+
+    def test_cluster_resize_none_params(self):
+        arglist = ['--min-size', '1', '--max-size', '20', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual("At least one of 'capacity', 'adjustment' and "
+                         "'percentage' should be specified.", str(error))
+
+    def test_cluster_resize_capacity(self):
+        arglist = ['--capacity', '2', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+                                                           **self.defaults)
+
+    def test_cluster_resize_invalid_capacity(self):
+        arglist = ['--capacity', '-1', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Cluster capacity must be larger than or equal to'
+                         ' zero.', str(error))
+
+    def test_cluster_resize_adjustment(self):
+        arglist = ['--adjustment', '1', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['adjustment_type'] = 'CHANGE_IN_CAPACITY'
+        kwargs['number'] = 1
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+                                                           **kwargs)
+
+    def test_cluster_resize_invalid_adjustment(self):
+        arglist = ['--adjustment', '0', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Adjustment cannot be zero.', str(error))
+
+    def test_cluster_resize_percentage(self):
+        arglist = ['--percentage', '50.0', '--min-size', '1', '--max-size',
+                   '20', 'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
+        kwargs['number'] = 50.0
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+                                                           **kwargs)
+
+    def test_cluster_resize_invalid_percentage(self):
+        arglist = ['--percentage', '0', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Percentage cannot be zero.', str(error))
+
+    def test_cluster_resize_invalid_min_step_capacity(self):
+        arglist = ['--capacity', '2', '--min-size', '1', '--max-size', '20',
+                   'my_cluster', '--strict', '--min-step', '1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Min step is only used with percentage.', str(error))
+
+    def test_cluster_resize_invalid_min_size_capacity(self):
+        arglist = ['--capacity', '2', '--min-size', '-1', '--max-size', '20',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Min size cannot be less than zero.', str(error))
+
+    def test_cluster_resize_invalid_max_size_capacity(self):
+        arglist = ['--capacity', '2', '--min-size', '5', '--max-size', '3',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Min size cannot be larger than max size.',
+                         str(error))
+
+    def test_cluster_resize_min_size_larger_than_capacity(self):
+        arglist = ['--capacity', '3', '--min-size', '5', '--max-size', '10',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Min size cannot be larger than the specified '
+                         'capacity', str(error))
+
+    def test_cluster_resize_invalid_max_size_less_capacity(self):
+        arglist = ['--capacity', '15', '--min-size', '5', '--max-size', '10',
+                   'my_cluster', '--strict']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Max size cannot be less than the specified '
+                         'capacity.', str(error))
