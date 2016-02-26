@@ -553,3 +553,20 @@ class TestClusterScaleIn(TestCluster):
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_scale_in.assert_called_with('my_cluster',
                                                              '2')
+
+
+class TestClusterScaleOut(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterScaleOut, self).setUp()
+        self.cmd = osc_cluster.ScaleOutCluster(self.app, None)
+        self.mock_client.cluster_scale_out = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_scale_in(self):
+        arglist = ['--count', '2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_scale_out.assert_called_with('my_cluster',
+                                                              '2')
