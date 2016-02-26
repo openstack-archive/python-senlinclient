@@ -556,3 +556,31 @@ class ClusterPolicyAttach(command.Command):
                                                    parsed_args.policy,
                                                    **kwargs)
         print('Request accepted by action: %s' % resp['action'])
+
+
+class ClusterPolicyDetach(command.Command):
+    """Detach policy from cluster."""
+
+    log = logging.getLogger(__name__ + ".ClusterPolicyDetach")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterPolicyDetach, self).get_parser(prog_name)
+        parser.add_argument(
+            '--policy',
+            metavar='<policy>',
+            required=True,
+            help=_('ID or name of policy to be detached')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        resp = senlin_client.cluster_detach_policy(parsed_args.cluster,
+                                                   parsed_args.policy)
+        print('Request accepted by action: %s' % resp['action'])

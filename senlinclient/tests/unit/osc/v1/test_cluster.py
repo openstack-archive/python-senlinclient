@@ -589,3 +589,21 @@ class TestClusterPolicyAttach(TestCluster):
             'my_cluster',
             'my_policy',
             enabled=True)
+
+
+class TestClusterPolicyDetach(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterPolicyDetach, self).setUp()
+        self.cmd = osc_cluster.ClusterPolicyDetach(self.app, None)
+        self.mock_client.cluster_detach_policy = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_policy_detach(self):
+        arglist = ['--policy', 'my_policy', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_detach_policy.assert_called_with(
+            'my_cluster',
+            'my_policy')
