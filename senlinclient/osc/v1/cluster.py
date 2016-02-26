@@ -459,3 +459,31 @@ class ResizeCluster(command.Command):
 
         resp = senlin_client.cluster_resize(parsed_args.cluster, **action_args)
         print('Request accepted by action: %s' % resp['action'])
+
+
+class ScaleInCluster(command.Command):
+    """Scale in a cluster by the specified number of nodes."""
+
+    log = logging.getLogger(__name__ + ".ScaleInCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(ScaleInCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--count',
+            metavar='<count>',
+            help=_('Number of nodes to be deleted from the specified cluster')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        resp = senlin_client.cluster_scale_in(parsed_args.cluster,
+                                              parsed_args.count)
+        print('Request accepted by action %s' % resp['action'])

@@ -536,3 +536,20 @@ class TestClusterResize(TestCluster):
                                   parsed_args)
         self.assertEqual('Max size cannot be less than the specified '
                          'capacity.', str(error))
+
+
+class TestClusterScaleIn(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterScaleIn, self).setUp()
+        self.cmd = osc_cluster.ScaleInCluster(self.app, None)
+        self.mock_client.cluster_scale_in = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_scale_in(self):
+        arglist = ['--count', '2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_scale_in.assert_called_with('my_cluster',
+                                                             '2')
