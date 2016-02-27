@@ -12,6 +12,7 @@
 
 import mock
 
+from openstack.cluster.v1 import cluster_policy as sdk_cluster_policy
 
 from senlinclient.osc.v1 import cluster_policy as osc_cluster_policy
 from senlinclient.tests.unit.osc.v1 import fakes
@@ -72,3 +73,29 @@ class TestClusterPolicyList(TestClusterPolicy):
             name='my_policy',
             **self.args)
         self.assertEqual(self.columns, columns)
+
+
+class TestClusterPolicyShow(TestClusterPolicy):
+    get_response = {"cluster_policy": {
+        "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
+        "cluster_name": "my_cluster",
+        "enabled": True,
+        "id": "06be3a1f-b238-4a96-a737-ceec5714087e",
+        "policy_id": "714fe676-a08f-4196-b7af-61d52eeded15",
+        "policy_name": "my_policy",
+        "policy_type": "senlin.policy.deletion-1.0"
+    }}
+
+    def setUp(self):
+        super(TestClusterPolicyShow, self).setUp()
+        self.cmd = osc_cluster_policy.ClusterPolicyShow(self.app, None)
+        self.mock_client.get_cluster_policy = mock.Mock(
+            return_value=sdk_cluster_policy.ClusterPolicy(None,
+                                                          self.get_response))
+
+    def test_cluster_policy_show(self):
+        arglist = ['--policy', 'my_policy', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.get_cluster_policy.assert_called_with('my_policy',
+                                                               'my_cluster')

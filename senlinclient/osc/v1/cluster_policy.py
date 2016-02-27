@@ -13,8 +13,10 @@
 """Clustering v1 cluster policy action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -83,3 +85,32 @@ class ClusterPolicyList(lister.Lister):
             (utils.get_item_properties(p, columns, formatters=formatters)
              for p in policies)
         )
+
+
+class ClusterPolicyShow(show.ShowOne):
+    """Show a specific policy that is bound to the specified cluster."""
+
+    log = logging.getLogger(__name__ + ".ClusterPolicyShow")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterPolicyShow, self).get_parser(prog_name)
+        parser.add_argument(
+            '--policy',
+            metavar='<policy>',
+            required=True,
+            help=_('ID or name of the policy to query on')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('ID or name of the cluster to query on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        policy = senlin_client.get_cluster_policy(parsed_args.policy,
+                                                  parsed_args.cluster)
+        columns = list(six.iterkeys(policy))
+        return columns, utils.get_dict_properties(policy.to_dict(), columns)
