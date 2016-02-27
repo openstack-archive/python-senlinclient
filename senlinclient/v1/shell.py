@@ -952,7 +952,7 @@ def do_node_update(service, args):
            help=_('Limit the number of receivers returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return receivers that appear after the given ID.'))
-@utils.arg('-o', '--sort', metavar='<KEY[:DIR]>',
+@utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
                   'separated by commas. Each key can be optionally appened by '
                   'a sort direction (:asc or :desc)'))
@@ -962,7 +962,7 @@ def do_node_update(service, args):
                   'checking. Default is False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
-def do_receiver_list(service, args=None):
+def do_receiver_list(service, args):
     """List receivers that meet the criteria."""
     fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
     queries = {
