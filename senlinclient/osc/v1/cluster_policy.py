@@ -15,6 +15,7 @@
 import logging
 import six
 
+from cliff import command
 from cliff import lister
 from cliff import show
 from openstackclient.common import utils
@@ -114,3 +115,42 @@ class ClusterPolicyShow(show.ShowOne):
                                                   parsed_args.cluster)
         columns = list(six.iterkeys(policy))
         return columns, utils.get_dict_properties(policy.to_dict(), columns)
+
+
+class ClusterPolicyUpdate(command.Command):
+    """Update a policy's properties on a cluster."""
+
+    log = logging.getLogger(__name__ + ".ClusterPolicyUpdate")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterPolicyUpdate, self).get_parser(prog_name)
+        parser.add_argument(
+            '--policy',
+            metavar='<policy>',
+            required=True,
+            help=_('ID or name of policy to be updated')
+        )
+        parser.add_argument(
+            '--enabled',
+            metavar='<boolean>',
+            required=True,
+            help=_('Whether the policy should be enabled')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        kwargs = {
+            'enabled': parsed_args.enabled,
+        }
+
+        resp = senlin_client.cluster_update_policy(parsed_args.cluster,
+                                                   parsed_args.policy,
+                                                   **kwargs)
+        print('Request accepted by action: %s' % resp['action'])
