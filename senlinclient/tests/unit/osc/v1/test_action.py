@@ -15,6 +15,7 @@ import mock
 
 from openstack.cluster.v1 import action as sdk_action
 from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 
 from senlinclient.osc.v1 import action as osc_action
 from senlinclient.tests.unit.osc.v1 import fakes
@@ -155,3 +156,46 @@ class TestActionList(TestAction):
         columns, data = self.cmd.take_action(parsed_args)
         self.mock_client.actions.assert_called_with(**kwargs)
         self.assertEqual(self.columns, columns)
+
+
+class TestActionShow(TestAction):
+    get_response = {
+        "action": "CLUSTER_DELETE",
+        "cause": "RPC Request",
+        "context": {},
+        "created_at": "2015-06-27T05:09:43",
+        "depended_by": [],
+        "depends_on": [],
+        "end_time": 1423570000.0,
+        "id": "ffbb9175-d510-4bc1-b676-c6aba2a4ca81",
+        "inputs": {},
+        "interval": -1,
+        "name": "cluster_delete_fcc9b635",
+        "outputs": {},
+        "owner": 'null',
+        "start_time": 1423570000.0,
+        "status": "FAILED",
+        "status_reason": "Cluster action FAILED",
+        "target": "fcc9b635-52e3-490b-99f2-87b1640e4e89",
+        "timeout": 3600,
+        "updated_at": 'null'}
+
+    def setUp(self):
+        super(TestActionShow, self).setUp()
+        self.cmd = osc_action.ShowAction(self.app, None)
+        self.mock_client.get_action = mock.Mock(
+            return_value=sdk_action.Action(None, self.get_response))
+
+    def test_action_show(self):
+        arglist = ['my_action']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.get_action.assert_called_with('my_action')
+
+    def test_action_show_not_found(self):
+        arglist = ['my_action']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_action.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Action not found: my_action', str(error))

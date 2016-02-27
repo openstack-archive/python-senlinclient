@@ -13,8 +13,12 @@
 """Clustering v1 action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -103,3 +107,40 @@ class ListAction(lister.Lister):
             (utils.get_item_properties(a, columns, formatters=formatters)
              for a in actions)
         )
+
+
+class ShowAction(show.ShowOne):
+    """Show detailed info about the specified action."""
+
+    log = logging.getLogger(__name__ + ".ShowAction")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowAction, self).get_parser(prog_name)
+        parser.add_argument(
+            'action',
+            metavar='<action>',
+            help=_('Name or ID of the action to show the details for')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        try:
+            action = senlin_client.get_action(parsed_args.action)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Action not found: %s')
+                                   % parsed_args.action)
+
+        formatters = {
+            'inputs': senlin_utils.json_formatter,
+            'outputs': senlin_utils.json_formatter,
+            'metadata': senlin_utils.json_formatter,
+            'data': senlin_utils.json_formatter,
+            'depends_on': senlin_utils.list_formatter,
+            'depended_by': senlin_utils.list_formatter,
+        }
+        columns = list(six.iterkeys(action))
+        return columns, utils.get_dict_properties(action.to_dict(), columns,
+                                                  formatters=formatters)
