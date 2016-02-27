@@ -13,8 +13,12 @@
 """Clustering v1 receiver action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -101,3 +105,40 @@ class ListReceiver(lister.Lister):
             (utils.get_item_properties(r, columns, formatters=formatters)
              for r in receivers)
         )
+
+
+class ShowReceiver(show.ShowOne):
+    """Show the receiver details."""
+
+    log = logging.getLogger(__name__ + ".ShowReceiver")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowReceiver, self).get_parser(prog_name)
+        parser.add_argument(
+            'receiver',
+            metavar='<receiver>',
+            help=_('Name or ID of the receiver to show')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        return _show_receiver(senlin_client, parsed_args.receiver)
+
+
+def _show_receiver(senlin_client, receiver_id):
+    try:
+        receiver = senlin_client.get_receiver(receiver_id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Receiver not found: %s') % receiver_id)
+
+    formatters = {
+        'actor': senlin_utils.json_formatter,
+        'params': senlin_utils.json_formatter,
+        'channel': senlin_utils.json_formatter,
+    }
+    columns = list(six.iterkeys(receiver))
+    return columns, utils.get_dict_properties(receiver.to_dict(), columns,
+                                              formatters=formatters)
