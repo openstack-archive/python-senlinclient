@@ -13,8 +13,12 @@
 """Clustering v1 event action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -100,3 +104,30 @@ class ListEvent(lister.Lister):
             (utils.get_item_properties(e, columns, formatters=formatters)
              for e in events)
         )
+
+
+class ShowEvent(show.ShowOne):
+    """Describe the event."""
+
+    log = logging.getLogger(__name__ + ".ShowEvent")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowEvent, self).get_parser(prog_name)
+        parser.add_argument(
+            'event',
+            metavar='<event>',
+            help=_('ID of event to display details for')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        try:
+            event = senlin_client.get_event(parsed_args.event)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_("Event not found: %s")
+                                   % parsed_args.event)
+        columns = list(six.iterkeys(event))
+        return columns, utils.get_dict_properties(event.to_dict(), columns)
