@@ -607,3 +607,80 @@ class TestClusterPolicyDetach(TestCluster):
         self.mock_client.cluster_detach_policy.assert_called_with(
             'my_cluster',
             'my_policy')
+
+
+class TestClusterNodeList(TestCluster):
+    columns = ['id', 'name', 'index', 'status', 'physical_id', 'created_at']
+
+    response = {"nodes": [
+        {
+            "cluster_id": None,
+            "created_at": "2015-02-27T04:39:21",
+            "data": {},
+            "details": {},
+            "domain": None,
+            "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            "index": -1,
+            "init_at": "2015-02-27T04:39:18",
+            "metadata": {},
+            "name": "node00a",
+            "physical_id": "cc028275-d078-4729-bf3e-154b7359814b",
+            "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            "profile_name": "mystack",
+            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+            "role": None,
+            "status": "ACTIVE",
+            "status_reason": "Creation succeeded",
+            "updated_at": None,
+            "user": "5e5bf8027826429c96af157f68dc9072"
+        }
+    ]}
+
+    args = {
+        'cluster_id': 'my_cluster',
+        'marker': 'a9448bf6',
+        'limit': '3',
+        'sort': None,
+    }
+
+    def setUp(self):
+        super(TestClusterNodeList, self).setUp()
+        self.cmd = osc_cluster.ClusterNodeList(self.app, None)
+        self.mock_client.nodes = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_node_list(self):
+        arglist = ['--limit', '3', '--marker', 'a9448bf6', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.nodes.assert_called_with(**self.args)
+        self.assertEqual(self.columns, columns)
+
+    def test_cluster_node_list_full_id(self):
+        arglist = ['--limit', '3', '--marker', 'a9448bf6', 'my_cluster',
+                   '--full-id']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.nodes.assert_called_with(**self.args)
+        self.assertEqual(self.columns, columns)
+
+    def test_cluster_node_list_filter(self):
+        kwargs = copy.deepcopy(self.args)
+        kwargs['name'] = 'my_node'
+        arglist = ['--limit', '3', '--marker', 'a9448bf6', 'my_cluster',
+                   '--filter', 'name=my_node']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.nodes.assert_called_with(**kwargs)
+        self.assertEqual(self.columns, columns)
+
+    def test_cluster_node_list_sort(self):
+        kwargs = copy.deepcopy(self.args)
+        kwargs['name'] = 'my_node'
+        kwargs['sort'] = 'name:asc'
+        arglist = ['--limit', '3', '--marker', 'a9448bf6', 'my_cluster',
+                   '--filter', 'name=my_node', '--sort', 'name:asc']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.nodes.assert_called_with(**kwargs)
+        self.assertEqual(self.columns, columns)
