@@ -188,3 +188,74 @@ class TestClusterShow(TestCluster):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertEqual('Cluster not found: my_cluster', str(error))
+
+
+class TestClusterCreate(TestCluster):
+    response = {"cluster": {
+        "action": "bbf4558b-9fa3-482a-93c2-a4aa5cc85317",
+        "created_at": 'null',
+        "data": {},
+        "desired_capacity": 4,
+        "domain": 'null',
+        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
+        "init_at": "2015-02-10T14:16:10",
+        "max_size": -1,
+        "metadata": {},
+        "min_size": 0,
+        "name": "test_cluster",
+        "nodes": [],
+        "policies": [],
+        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+        "profile_name": "mystack",
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "status": "INIT",
+        "status_reason": "Initializing",
+        "timeout": 3600,
+        "updated_at": 'null',
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    defaults = {
+        "desired_capacity": 0,
+        "max_size": -1,
+        "metadata": {},
+        "min_size": 0,
+        "name": "test_cluster",
+        "profile_id": "mystack",
+        "timeout": None
+    }
+
+    def setUp(self):
+        super(TestClusterCreate, self).setUp()
+        self.cmd = osc_cluster.CreateCluster(self.app, None)
+        self.mock_client.create_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(None, self.response))
+        self.mock_client.get_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(None, self.response))
+
+    def test_cluster_create_defaults(self):
+        arglist = ['test_cluster', '--profile', 'mystack']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_cluster.assert_called_with(**self.defaults)
+
+    def test_cluster_create_with_metadata(self):
+        arglist = ['test_cluster', '--profile', 'mystack',
+                   '--metadata', 'key1=value1;key2=value2']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['metadata'] = {'key1': 'value1', 'key2': 'value2'}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_cluster.assert_called_with(**kwargs)
+
+    def test_cluster_create_with_size(self):
+        arglist = ['test_cluster', '--profile', 'mystack',
+                   '--min-size', '1', '--max-size', '10',
+                   '--desired-capacity', '2']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['min_size'] = '1'
+        kwargs['max_size'] = '10'
+        kwargs['desired_capacity'] = '2'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_cluster.assert_called_with(**kwargs)
