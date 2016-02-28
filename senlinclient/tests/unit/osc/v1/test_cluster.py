@@ -710,3 +710,29 @@ class TestClusterNodeAdd(TestCluster):
         self.mock_client.cluster_add_nodes.assert_called_with(
             'my_cluster',
             ['node1', 'node2'])
+
+
+class TestClusterNodeDel(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterNodeDel, self).setUp()
+        self.cmd = osc_cluster.ClusterNodeDel(self.app, None)
+        self.mock_client.cluster_del_nodes = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_node_delete(self):
+        arglist = ['--nodes', 'node1', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_del_nodes.assert_called_with(
+            'my_cluster',
+            ['node1'])
+
+    def test_cluster_node_delete_multi(self):
+        arglist = ['--nodes', 'node1,node2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_del_nodes.assert_called_with(
+            'my_cluster',
+            ['node1', 'node2'])
