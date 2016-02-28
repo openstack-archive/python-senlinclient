@@ -142,3 +142,58 @@ def _show_receiver(senlin_client, receiver_id):
     columns = list(six.iterkeys(receiver))
     return columns, utils.get_dict_properties(receiver.to_dict(), columns,
                                               formatters=formatters)
+
+
+class CreateReceiver(show.ShowOne):
+    """Create a receiver."""
+
+    log = logging.getLogger(__name__ + ".CreateReceiver")
+
+    def get_parser(self, prog_name):
+        parser = super(CreateReceiver, self).get_parser(prog_name)
+        parser.add_argument(
+            '--type',
+            metavar='<type>',
+            default='webhook',
+            help=_('Type of the receiver to create')
+        )
+        parser.add_argument(
+            '--cluster',
+            metavar='<cluster>',
+            required=True,
+            help=_('Targeted cluster for this receiver')
+        )
+        parser.add_argument(
+            '--action',
+            metavar='<action>',
+            required=True,
+            help=_('Name or ID of the targeted action to be triggered')
+        )
+        parser.add_argument(
+            '--params',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('A dictionary of parameters that will be passed to target '
+                   'action when the receiver is triggered'),
+            action='append'
+        )
+        parser.add_argument(
+            'name',
+            metavar='<name>',
+            help=_('Name of the receiver to create')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        params = {
+            'name': parsed_args.name,
+            'type': parsed_args.type,
+            'cluster_id': parsed_args.cluster,
+            'action': parsed_args.action,
+            'params': senlin_utils.format_parameters(parsed_args.params)
+        }
+
+        receiver = senlin_client.create_receiver(**params)
+        return _show_receiver(senlin_client, receiver.id)

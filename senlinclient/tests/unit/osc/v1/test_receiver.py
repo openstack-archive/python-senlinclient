@@ -187,3 +187,56 @@ class TestReceiverShow(TestReceiver):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertEqual('Receiver not found: my_receiver', str(error))
+
+
+class TestReceiverCreate(TestReceiver):
+    response = {"receiver": {
+        "action": "CLUSTER_SCALE_OUT",
+        "actor": {
+            "trust_id": [
+                "6dc6d336e3fc4c0a951b5698cd1236d9"
+            ]
+        },
+        "channel": {
+            "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec"
+                         "1-8c6a-74ba891e5422/trigger?V=1&count=1"
+        },
+        "cluster_id": "ae63a10b-4a90-452c-aef1-113a0b255ee3",
+        "created_at": "2015-06-27T05:09:43",
+        "domain": "Default",
+        "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+        "name": "cluster_inflate",
+        "params": {
+            "count": "1"
+        },
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "type": "webhook",
+        "updated_at": 'null',
+        "user": "b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
+    }}
+
+    args = {
+        "action": "CLUSTER_SCALE_OUT",
+        "cluster_id": "my_cluster",
+        "name": "my_receiver",
+        "params": {
+            "count": "1"
+        },
+        "type": "webhook"
+    }
+
+    def setUp(self):
+        super(TestReceiverCreate, self).setUp()
+        self.cmd = osc_receiver.CreateReceiver(self.app, None)
+        self.mock_client.create_receiver = mock.Mock(
+            return_value=sdk_receiver.Receiver(None, self.response))
+        self.mock_client.get_receiver = mock.Mock(
+            return_value=sdk_receiver.Receiver(None, self.response))
+
+    def test_receiver_create(self):
+        arglist = ['my_receiver', '--action', 'CLUSTER_SCALE_OUT',
+                   '--cluster', 'my_cluster', '--params', 'count=1',
+                   '--type', 'webhook']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_receiver.assert_called_with(**self.args)
