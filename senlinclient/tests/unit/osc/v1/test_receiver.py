@@ -12,6 +12,7 @@
 
 import copy
 import mock
+import six
 
 from openstack.cluster.v1 import receiver as sdk_receiver
 from openstack import exceptions as sdk_exc
@@ -240,3 +241,77 @@ class TestReceiverCreate(TestReceiver):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_receiver.assert_called_with(**self.args)
+
+
+class TestReceiverDelete(TestReceiver):
+    def setUp(self):
+        super(TestReceiverDelete, self).setUp()
+        self.cmd = osc_receiver.DeleteReceiver(self.app, None)
+        self.mock_client.delete_receiver = mock.Mock()
+
+    def test_receiver_delete(self):
+        arglist = ['receiver1', 'receiver2', 'receiver3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_receiver.assert_has_calls(
+            [mock.call('receiver1', False), mock.call('receiver2', False),
+             mock.call('receiver3', False)]
+        )
+
+    def test_receiver_delete_force(self):
+        arglist = ['receiver1', 'receiver2', 'receiver3', '--force']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_receiver.assert_has_calls(
+            [mock.call('receiver1', False), mock.call('receiver2', False),
+             mock.call('receiver3', False)]
+        )
+
+    def test_receiver_delete_not_found(self):
+        arglist = ['my_receiver']
+        self.mock_client.delete_receiver.side_effect = (
+            sdk_exc.ResourceNotFound)
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Failed to delete 1 of the 1 specified receiver(s).',
+                      str(error))
+
+    def test_receiver_delete_one_found_one_not_found(self):
+        arglist = ['receiver1', 'receiver2']
+        self.mock_client.delete_receiver.side_effect = (
+            [None, sdk_exc.ResourceNotFound]
+        )
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action, parsed_args)
+        self.mock_client.delete_receiver.assert_has_calls(
+            [mock.call('receiver1', False), mock.call('receiver2', False)]
+        )
+        self.assertEqual('Failed to delete 1 of the 2 specified receiver(s).',
+                         str(error))
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_receiver_delete_prompt_yes(self, mock_stdin):
+        arglist = ['my_receiver']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'y'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_receiver.assert_called_with('my_receiver',
+                                                            False)
+
+    @mock.patch('sys.stdin', spec=six.StringIO)
+    def test_receiver_delete_prompt_no(self, mock_stdin):
+        arglist = ['my_receiver']
+        mock_stdin.isatty.return_value = True
+        mock_stdin.readline.return_value = 'n'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        mock_stdin.readline.assert_called_with()
+        self.mock_client.delete_receiver.assert_not_called()
