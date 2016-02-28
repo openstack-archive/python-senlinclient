@@ -36,7 +36,7 @@ class ShowProfile(show.ShowOne):
         parser = super(ShowProfile, self).get_parser(prog_name)
         parser.add_argument(
             'profile',
-            metavar='<PROFILE>',
+            metavar='<profile>',
             help='Name or ID of profile to show',
         )
         return parser
@@ -85,21 +85,30 @@ class ListProfile(lister.Lister):
         parser = super(ListProfile, self).get_parser(prog_name)
         parser.add_argument(
             '--limit',
-            metavar='<LIMIT>',
-            help=_('Limit the number of profiles returned.')
+            metavar='<limit>',
+            help=_('Limit the number of profiles returned')
         )
         parser.add_argument(
             '--marker',
-            metavar='<ID>',
-            help=_('Only return profiles that appear after the given ID.')
+            metavar='<id>',
+            help=_('Only return profiles that appear after the given ID')
         )
         parser.add_argument(
             '--sort',
-            metavar='<KEY:DIR>',
+            metavar='<key:dir>',
             help=_("Sorting option which is a string containing a list of keys"
                    " separated by commas. Each key can be optionally appended "
                    "by a sort direction (:asc or :desc). The valid sort_keys "
                    "are:['type', 'name', 'created_at', 'updated_at']")
+        )
+        parser.add_argument(
+            '--filters',
+            metavar='<key1=value1;key2=value2...>',
+            help=_("Filter parameters to apply on returned profiles. "
+                   "This can be specified multiple times, or once with "
+                   "parameters separated by a semicolon. The valid filter "
+                   "keys are: ['type', 'name', 'metadata']"),
+            action='append'
         )
         parser.add_argument(
             '--global-project',
@@ -107,13 +116,13 @@ class ListProfile(lister.Lister):
             action="store_true",
             help=_('Indicate that the list should include profiles from'
                    ' all projects. This option is subject to access policy '
-                   'checking. Default is False.')
+                   'checking. Default is False')
         )
         parser.add_argument(
             '--full-id',
             default=False,
             action="store_true",
-            help=_('Print full IDs in list.')
+            help=_('Print full IDs in list')
         )
         return parser
 
@@ -129,6 +138,8 @@ class ListProfile(lister.Lister):
             'sort': parsed_args.sort,
             'global_project': parsed_args.global_project,
         }
+        if parsed_args.filters:
+            queries.update(senlin_utils.format_parameters(parsed_args.filters))
         data = senlin_client.profiles(**queries)
         formatters = {}
         if not parsed_args.full_id:
@@ -150,8 +161,8 @@ class DeleteProfile(command.Command):
     def get_parser(self, prog_name):
         parser = super(DeleteProfile, self).get_parser(prog_name)
         parser.add_argument(
-            'id',
-            metavar='<PROFILE>',
+            'profile',
+            metavar='<profile>',
             nargs='+',
             help=_('Name or ID of profile(s) to delete')
         )
@@ -182,7 +193,7 @@ class DeleteProfile(command.Command):
             return
 
         failure_count = 0
-        for pid in parsed_args.id:
+        for pid in parsed_args.profile:
             try:
                 senlin_client.delete_profile(pid, False)
             except Exception as ex:
@@ -192,8 +203,8 @@ class DeleteProfile(command.Command):
             raise exc.CommandError(_('Failed to delete %(count)s of the '
                                      '%(total)s specified profile(s).') %
                                    {'count': failure_count,
-                                   'total': len(parsed_args.id)})
-        print('Profile deleted: %s' % parsed_args.id)
+                                   'total': len(parsed_args.profile)})
+        print('Profile deleted: %s' % parsed_args.profile)
 
 
 class CreateProfile(show.ShowOne):
@@ -205,13 +216,13 @@ class CreateProfile(show.ShowOne):
         parser = super(CreateProfile, self).get_parser(prog_name)
         parser.add_argument(
             '--spec-file',
-            metavar='<SPEC FILE>',
+            metavar='<spec-file>',
             required=True,
             help=_('The spec file used to create the profile')
         )
         parser.add_argument(
             '--metadata',
-            metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+            metavar='<key1=value1;key2=value2...>',
             help=_('Metadata values to be attached to the profile. '
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),
@@ -219,7 +230,7 @@ class CreateProfile(show.ShowOne):
         )
         parser.add_argument(
             'name',
-            metavar='<PROFILE_NAME>',
+            metavar='<profile_name>',
             help=_('Name of the profile to create')
         )
         return parser
@@ -262,20 +273,20 @@ class UpdateProfile(show.ShowOne):
         parser = super(UpdateProfile, self).get_parser(prog_name)
         parser.add_argument(
             '--name',
-            metavar='<NAME>',
+            metavar='<name>',
             help=_('The new name for the profile')
         )
         parser.add_argument(
             '--metadata',
-            metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+            metavar='<key1=value1;key2=value2...>',
             help=_('Metadata values to be attached to the profile. '
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),
             action='append'
         )
         parser.add_argument(
-            'id',
-            metavar='<PROFILE_ID>',
+            'profile',
+            metavar='<profile>',
             help=_('Name or ID of the profile to update')
         )
         return parser
@@ -293,8 +304,9 @@ class UpdateProfile(show.ShowOne):
 
         # Find the profile first, we need its id
         try:
-            profile = senlin_client.get_profile(parsed_args.id)
+            profile = senlin_client.get_profile(parsed_args.profile)
         except sdk_exc.ResourceNotFound:
-            raise exc.CommandError(_('Profile not found: %s') % parsed_args.id)
+            raise exc.CommandError(_('Profile not found: %s') %
+                                   parsed_args.profile)
         senlin_client.update_profile(profile.id, **params)
         return _show_profile(senlin_client, profile_id=profile.id)

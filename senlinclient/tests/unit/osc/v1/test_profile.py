@@ -201,6 +201,15 @@ class TestProfileList(TestProfile):
         self.assertRaises(sdk_exc.HttpException,
                           self.cmd.take_action, parsed_args)
 
+    def test_profile_list_filter(self):
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['name'] = 'my_profile'
+        arglist = ['--filter', 'name=my_profile']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.profiles.assert_called_with(**kwargs)
+        self.assertEqual(self.columns, columns)
+
 
 class TestProfileDelete(TestProfile):
     def setUp(self):
