@@ -13,8 +13,12 @@
 """Clustering v1 cluster action implementations"""
 
 import logging
+import six
 
 from cliff import lister
+from cliff import show
+from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
 from senlinclient.common.i18n import _
@@ -97,3 +101,39 @@ class ListCluster(lister.Lister):
             (utils.get_item_properties(c, columns, formatters=formatters)
              for c in clusters)
         )
+
+
+class ShowCluster(show.ShowOne):
+    """Show details of the cluster."""
+
+    log = logging.getLogger(__name__ + ".ShowCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(ShowCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to show')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        return _show_cluster(senlin_client, parsed_args.cluster)
+
+
+def _show_cluster(senlin_client, cluster_id):
+    try:
+        cluster = senlin_client.get_cluster(cluster_id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
+
+    formatters = {
+        'metadata': senlin_utils.json_formatter,
+        'nodes': senlin_utils.list_formatter
+    }
+    columns = list(six.iterkeys(cluster))
+    return columns, utils.get_dict_properties(cluster.to_dict(), columns,
+                                              formatters=formatters)

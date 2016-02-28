@@ -15,6 +15,7 @@ import mock
 
 from openstack.cluster.v1 import cluster as sdk_cluster
 from openstack import exceptions as sdk_exc
+from openstackclient.common import exceptions as exc
 
 from senlinclient.osc.v1 import cluster as osc_cluster
 from senlinclient.tests.unit.osc.v1 import fakes
@@ -142,3 +143,48 @@ class TestClusterList(TestCluster):
         columns, data = self.cmd.take_action(parsed_args)
         self.mock_client.clusters.assert_called_with(**kwargs)
         self.assertEqual(self.columns, columns)
+
+
+class TestClusterShow(TestCluster):
+    get_response = {"cluster": {
+        "created_at": "2015-02-11T15:13:20",
+        "data": {},
+        "desired_capacity": 0,
+        "domain": 'null',
+        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
+        "init_time": "2015-02-10T14:26:10",
+        "max_size": -1,
+        "metadata": {},
+        "min_size": 0,
+        "name": "my_cluster",
+        "nodes": [],
+        "policies": [],
+        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+        "profile_name": "mystack",
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "status": "ACTIVE",
+        "status_reason": "Creation succeeded",
+        "timeout": 3600,
+        "updated_at": 'null',
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    def setUp(self):
+        super(TestClusterShow, self).setUp()
+        self.cmd = osc_cluster.ShowCluster(self.app, None)
+        self.mock_client.get_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(None, self.get_response))
+
+    def test_cluster_show(self):
+        arglist = ['my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.get_cluster.assert_called_with('my_cluster')
+
+    def test_cluster_show_not_found(self):
+        arglist = ['my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_cluster.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Cluster not found: my_cluster', str(error))
