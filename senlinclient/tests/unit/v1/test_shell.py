@@ -29,7 +29,6 @@ class ShellTest(testtools.TestCase):
         self.profile_args = {
             'spec_file': mock.Mock(),
             'name': 'stack_spec',
-            'permission': 'ok',
             'metadata': {'user': 'demo'}
         }
         self.profile_spec = {

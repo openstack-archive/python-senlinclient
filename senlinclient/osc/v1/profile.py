@@ -66,7 +66,6 @@ def _show_profile(senlin_client, profile_id):
             'id',
             'metadata',
             'name',
-            'permission',
             'project',
             'spec',
             'type',
