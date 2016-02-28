@@ -659,3 +659,31 @@ class ClusterNodeList(lister.Lister):
             (utils.get_item_properties(n, columns, formatters=formatters)
              for n in nodes)
         )
+
+
+class ClusterNodeAdd(command.Command):
+    """Add specified nodes to cluster."""
+    log = logging.getLogger(__name__ + ".ClusterNodeAdd")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterNodeAdd, self).get_parser(prog_name)
+        parser.add_argument(
+            '--nodes',
+            metavar='<nodes>',
+            required=True,
+            help=_('ID or name of nodes to be added; multiple nodes can be'
+                   ' separated with ","')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        node_ids = parsed_args.nodes.split(',')
+        resp = senlin_client.cluster_add_nodes(parsed_args.cluster, node_ids)
+        print('Request accepted by action: %s' % resp['action'])
