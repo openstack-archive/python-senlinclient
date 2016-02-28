@@ -259,3 +259,64 @@ class TestClusterCreate(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_cluster.assert_called_with(**kwargs)
+
+
+class TestClusterUpdate(TestCluster):
+    response = {"cluster": {
+        "created_at": "2015-02-11T15:13:20",
+        "data": {},
+        "desired_capacity": 0,
+        "domain": 'null',
+        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
+        "init_time": "2015-02-10T14:26:10",
+        "max_size": -1,
+        "metadata": {},
+        "min_size": 0,
+        "name": "test_cluster",
+        "nodes": [],
+        "policies": [],
+        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
+        "profile_name": "mystack",
+        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
+        "status": "INIT",
+        "status_reason": "Initializing",
+        "timeout": 3600,
+        "updated_at": 'null',
+        "user": "5e5bf8027826429c96af157f68dc9072"
+    }}
+
+    defaults = {
+        "metadata": {
+            "nk1": "nv1",
+            "nk2": "nv2",
+        },
+        "name": 'new_cluster',
+        "profile_id": 'new_profile',
+        "timeout": "30"
+    }
+
+    def setUp(self):
+        super(TestClusterUpdate, self).setUp()
+        self.cmd = osc_cluster.UpdateCluster(self.app, None)
+        self.mock_client.update_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(None, self.response))
+        self.mock_client.get_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(None, self.response))
+
+    def test_cluster_update_defaults(self):
+        arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', '--timeout', '30', 'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.update_cluster.assert_called_with(None,
+                                                           **self.defaults)
+
+    def test_cluster_update_not_found(self):
+        arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', 'c6b8b252']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.get_cluster.side_effect = sdk_exc.ResourceNotFound()
+        error = self.assertRaises(sdk_exc.ResourceNotFound,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
