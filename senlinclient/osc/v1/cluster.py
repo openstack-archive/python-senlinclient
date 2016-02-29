@@ -46,7 +46,7 @@ class ListCluster(lister.Lister):
         )
         parser.add_argument(
             '--sort',
-            metavar='<key:dir>',
+            metavar='<key>[:<direction>]',
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
@@ -190,7 +190,7 @@ class CreateCluster(show.ShowOne):
         )
         parser.add_argument(
             'name',
-            metavar='<cluster_name>',
+            metavar='<cluster-name>',
             help=_('Name of the cluster to create')
         )
         return parser
@@ -352,7 +352,7 @@ class ResizeCluster(command.Command):
         )
         parser.add_argument(
             '--min-step',
-            metavar='<min_step>',
+            metavar='<min-step>',
             type=int,
             help=_('An integer specifying the number of nodes for adjustment '
                    'when <PERCENTAGE> is specified')
@@ -603,7 +603,7 @@ class ClusterNodeList(lister.Lister):
         )
         parser.add_argument(
             '--sort',
-            metavar='<key:direction>',
+            metavar='<key>[:<direction>]',
             help=_('Sorting option which is a string containing a list of '
                    'keys separated by commas. Each key can be optionally '
                    'appended by a sort direction (:asc or :desc)')

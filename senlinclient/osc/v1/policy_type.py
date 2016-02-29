@@ -49,7 +49,7 @@ class PolicyTypeShow(format_utils.YamlFormat):
         parser = super(PolicyTypeShow, self).get_parser(prog_name)
         parser.add_argument(
             'type_name',
-            metavar='<type_name>',
+            metavar='<type-name>',
             help=_('Policy type to retrieve')
         )
         return parser

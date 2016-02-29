@@ -51,7 +51,7 @@ class ListNode(lister.Lister):
         )
         parser.add_argument(
             '--sort',
-            metavar='<key:direction>',
+            metavar='<key>[:<direction>]',
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
@@ -200,7 +200,7 @@ class CreateNode(show.ShowOne):
         )
         parser.add_argument(
             'name',
-            metavar='<node_name>',
+            metavar='<node-name>',
             help=_('Name of the node to create')
         )
         return parser
@@ -235,7 +235,7 @@ class UpdateNode(show.ShowOne):
         )
         parser.add_argument(
             '--profile',
-            metavar='<profile_id>',
+            metavar='<profile-id>',
             help=_('ID of new profile to use')
         )
         parser.add_argument(

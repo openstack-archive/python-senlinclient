@@ -95,7 +95,7 @@ class ListProfile(lister.Lister):
         )
         parser.add_argument(
             '--sort',
-            metavar='<key:dir>',
+            metavar='<key>[:<direction>]',
             help=_("Sorting option which is a string containing a list of keys"
                    " separated by commas. Each key can be optionally appended "
                    "by a sort direction (:asc or :desc). The valid sort_keys "
@@ -230,7 +230,7 @@ class CreateProfile(show.ShowOne):
         )
         parser.add_argument(
             'name',
-            metavar='<profile_name>',
+            metavar='<profile-name>',
             help=_('Name of the profile to create')
         )
         return parser

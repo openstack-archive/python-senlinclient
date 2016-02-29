@@ -46,7 +46,7 @@ class ListPolicy(lister.Lister):
         )
         parser.add_argument(
             '--sort',
-            metavar='<key:dir>',
+            metavar='<key>[:<direction>]',
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
@@ -160,7 +160,7 @@ class CreatePolicy(show.ShowOne):
         parser = super(CreatePolicy, self).get_parser(prog_name)
         parser.add_argument(
             '--spec-file',
-            metavar='<spec_file>',
+            metavar='<spec-file>',
             required=True,
             help=_('The spec file used to create the policy')
         )
