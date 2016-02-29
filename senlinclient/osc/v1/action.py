@@ -141,6 +141,6 @@ class ShowAction(show.ShowOne):
             'depends_on': senlin_utils.list_formatter,
             'depended_by': senlin_utils.list_formatter,
         }
-        columns = list(six.iterkeys(action))
+        columns = sorted(list(six.iterkeys(action)))
         return columns, utils.get_dict_properties(action.to_dict(), columns,
                                                   formatters=formatters)

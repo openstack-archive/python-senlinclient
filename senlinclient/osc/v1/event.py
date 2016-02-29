@@ -129,5 +129,5 @@ class ShowEvent(show.ShowOne):
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_("Event not found: %s")
                                    % parsed_args.event)
-        columns = list(six.iterkeys(event))
+        columns = sorted(list(six.iterkeys(event)))
         return columns, utils.get_dict_properties(event.to_dict(), columns)

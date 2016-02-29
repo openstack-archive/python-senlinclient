@@ -162,7 +162,7 @@ def _show_node(senlin_client, node_id, show_details=False):
         formatters['details'] = senlin_utils.nested_dict_formatter(
             list(node['details'].keys()), ['property', 'value'])
 
-    columns = list(six.iterkeys(node))
+    columns = sorted(list(six.iterkeys(node)))
     return columns, utils.get_dict_properties(node.to_dict(), columns,
                                               formatters=formatters)
 

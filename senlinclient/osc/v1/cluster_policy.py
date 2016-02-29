@@ -113,7 +113,7 @@ class ClusterPolicyShow(show.ShowOne):
         senlin_client = self.app.client_manager.clustering
         policy = senlin_client.get_cluster_policy(parsed_args.policy,
                                                   parsed_args.cluster)
-        columns = list(six.iterkeys(policy))
+        columns = sorted(list(six.iterkeys(policy)))
         return columns, utils.get_dict_properties(policy.to_dict(), columns)
 
 

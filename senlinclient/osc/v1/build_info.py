@@ -40,6 +40,6 @@ class BuildInfo(show.ShowOne):
             'api': senlin_utils.json_formatter,
             'engine': senlin_utils.json_formatter,
         }
-        columns = list(six.iterkeys(result))
+        columns = sorted(list(six.iterkeys(result)))
         return columns, utils.get_dict_properties(result.to_dict(), columns,
                                                   formatters=formatters)

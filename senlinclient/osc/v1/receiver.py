@@ -142,7 +142,7 @@ def _show_receiver(senlin_client, receiver_id):
         'params': senlin_utils.json_formatter,
         'channel': senlin_utils.json_formatter,
     }
-    columns = list(six.iterkeys(receiver))
+    columns = sorted(list(six.iterkeys(receiver)))
     return columns, utils.get_dict_properties(receiver.to_dict(), columns,
                                               formatters=formatters)
 
