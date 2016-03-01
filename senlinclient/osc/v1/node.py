@@ -264,9 +264,8 @@ class UpdateNode(show.ShowOne):
         senlin_client = self.app.client_manager.clustering
 
         # Find the node first, we need its UUID
-        try:
-            node = senlin_client.get_node(parsed_args.node)
-        except sdk_exc.ResourceNotFound:
+        node = senlin_client.find_node(parsed_args.node)
+        if node is None:
             raise exc.CommandError(_('Node not found: %s') % parsed_args.node)
 
         attrs = {
@@ -276,7 +275,7 @@ class UpdateNode(show.ShowOne):
             'metadata': senlin_utils.format_parameters(parsed_args.metadata),
         }
 
-        senlin_client.update_node(parsed_args.node, **attrs)
+        senlin_client.update_node(node.id, **attrs)
         return _show_node(senlin_client, node.id)
 
 

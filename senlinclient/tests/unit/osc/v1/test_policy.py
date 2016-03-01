@@ -65,7 +65,7 @@ class TestPolicyList(TestPolicy):
         super(TestPolicyList, self).setUp()
         self.cmd = osc_policy.ListPolicy(self.app, None)
         self.mock_client.policies = mock.Mock(
-            return_value=sdk_policy.Policy(None, {}))
+            return_value=self.response)
 
     def test_policy_list_defaults(self):
         arglist = []
@@ -170,7 +170,7 @@ class TestPolicyShow(TestPolicy):
         super(TestPolicyShow, self).setUp()
         self.cmd = osc_policy.ShowPolicy(self.app, None)
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(None, self.get_response))
+            return_value=sdk_policy.Policy(attrs=self.get_response['policy']))
 
     def test_policy_show(self):
         arglist = ['sp001']
@@ -230,9 +230,9 @@ class TestPolicyCreate(TestPolicy):
         super(TestPolicyCreate, self).setUp()
         self.cmd = osc_policy.CreatePolicy(self.app, None)
         self.mock_client.create_policy = mock.Mock(
-            return_value=sdk_policy.Policy(None, self.response))
+            return_value=sdk_policy.Policy(attrs=self.response['policy']))
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(None, self.response))
+            return_value=sdk_policy.Policy(attrs=self.response['policy']))
 
     def test_policy_create_defaults(self):
         arglist = ['my_policy', '--spec-file', self.spec_path]
@@ -274,25 +274,27 @@ class TestPolicyUpdate(TestPolicy):
         super(TestPolicyUpdate, self).setUp()
         self.cmd = osc_policy.UpdatePolicy(self.app, None)
         self.mock_client.update_policy = mock.Mock(
-            return_value=sdk_policy.Policy(None, self.response))
+            return_value=sdk_policy.Policy(attrs=self.response['policy']))
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(None, self.response))
+            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+        self.mock_client.find_policy = mock.Mock(
+            return_value=sdk_policy.Policy(attrs=self.response['policy']))
 
     def test_policy_update_defaults(self):
-        arglist = ['--name', 'new_policy', 'c6b8b252']
+        arglist = ['--name', 'new_policy', '9f779ddf']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.update_policy.assert_called_with(None,
-                                                          **self.defaults)
+        self.mock_client.update_policy.assert_called_with(
+            '9f779ddf-744e-48bd-954c-acef7e11116c', **self.defaults)
 
     def test_policy_update_not_found(self):
         arglist = ['--name', 'new_policy', 'c6b8b252']
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        self.mock_client.get_policy.side_effect = sdk_exc.ResourceNotFound()
-        error = self.assertRaises(sdk_exc.ResourceNotFound,
+        self.mock_client.find_policy.return_value = None
+        error = self.assertRaises(exc.CommandError,
                                   self.cmd.take_action,
                                   parsed_args)
-        self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
+        self.assertIn('Policy not found: c6b8b252', str(error))
 
 
 class TestPolicyDelete(TestPolicy):

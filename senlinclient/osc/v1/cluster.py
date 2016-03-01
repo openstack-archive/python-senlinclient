@@ -255,7 +255,10 @@ class UpdateCluster(show.ShowOne):
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
-        cluster = senlin_client.get_cluster(parsed_args.cluster)
+        cluster = senlin_client.find_cluster(parsed_args.cluster)
+        if cluster is None:
+            raise exc.CommandError(_('Cluster not found: %s') %
+                                   parsed_args.cluster)
         attrs = {
             'name': parsed_args.name,
             'profile_id': parsed_args.profile,

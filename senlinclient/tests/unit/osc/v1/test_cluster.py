@@ -71,7 +71,7 @@ class TestClusterList(TestCluster):
         super(TestClusterList, self).setUp()
         self.cmd = osc_cluster.ListCluster(self.app, None)
         self.mock_client.clusters = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, {}))
+            return_value=self.response)
 
     def test_cluster_list_defaults(self):
         arglist = []
@@ -174,7 +174,8 @@ class TestClusterShow(TestCluster):
         super(TestClusterShow, self).setUp()
         self.cmd = osc_cluster.ShowCluster(self.app, None)
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, self.get_response))
+            return_value=sdk_cluster.Cluster(
+                attrs=self.get_response['cluster']))
 
     def test_cluster_show(self):
         arglist = ['my_cluster']
@@ -230,9 +231,9 @@ class TestClusterCreate(TestCluster):
         super(TestClusterCreate, self).setUp()
         self.cmd = osc_cluster.CreateCluster(self.app, None)
         self.mock_client.create_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, self.response))
+            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, self.response))
+            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
 
     def test_cluster_create_defaults(self):
         arglist = ['test_cluster', '--profile', 'mystack']
@@ -300,27 +301,29 @@ class TestClusterUpdate(TestCluster):
         super(TestClusterUpdate, self).setUp()
         self.cmd = osc_cluster.UpdateCluster(self.app, None)
         self.mock_client.update_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, self.response))
+            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(None, self.response))
+            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+        self.mock_client.find_cluster = mock.Mock(
+            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
 
     def test_cluster_update_defaults(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
-                   '--profile', 'new_profile', '--timeout', '30', 'c6b8b252']
+                   '--profile', 'new_profile', '--timeout', '30', '45edadcb']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.update_cluster.assert_called_with(None,
-                                                           **self.defaults)
+        self.mock_client.update_cluster.assert_called_with(
+            '45edadcb-c73b-4920-87e1-518b2f29f54b', **self.defaults)
 
     def test_cluster_update_not_found(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
                    '--profile', 'new_profile', 'c6b8b252']
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        self.mock_client.get_cluster.side_effect = sdk_exc.ResourceNotFound()
-        error = self.assertRaises(sdk_exc.ResourceNotFound,
+        self.mock_client.find_cluster.return_value = None
+        error = self.assertRaises(exc.CommandError,
                                   self.cmd.take_action,
                                   parsed_args)
-        self.assertIn('ResourceNotFound: ResourceNotFound', str(error))
+        self.assertIn('Cluster not found: c6b8b252', str(error))
 
 
 class TestClusterDelete(TestCluster):
