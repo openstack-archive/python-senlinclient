@@ -211,11 +211,12 @@ class UpdatePolicy(show.ShowOne):
         params = {
             'name': parsed_args.name,
         }
-
-        policy = senlin_client.get_policy(parsed_args.policy)
-        if policy is not None:
-            senlin_client.update_policy(policy.id, **params)
-            return _show_policy(senlin_client, policy_id=policy.id)
+        policy = senlin_client.find_policy(parsed_args.policy)
+        if policy is None:
+            raise exc.CommandError(_('Policy not found: %s') %
+                                   parsed_args.policy)
+        senlin_client.update_policy(policy.id, **params)
+        return _show_policy(senlin_client, policy_id=policy.id)
 
 
 class DeletePolicy(command.Command):

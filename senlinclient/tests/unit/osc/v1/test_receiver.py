@@ -68,7 +68,7 @@ class TestReceiverList(TestReceiver):
         super(TestReceiverList, self).setUp()
         self.cmd = osc_receiver.ListReceiver(self.app, None)
         self.mock_client.receivers = mock.Mock(
-            return_value=sdk_receiver.Receiver(None, {}))
+            return_value=self.response)
 
     def test_receiver_list_defaults(self):
         arglist = []
@@ -173,7 +173,8 @@ class TestReceiverShow(TestReceiver):
         super(TestReceiverShow, self).setUp()
         self.cmd = osc_receiver.ShowReceiver(self.app, None)
         self.mock_client.get_receiver = mock.Mock(
-            return_value=sdk_receiver.Receiver(None, self.get_response))
+            return_value=sdk_receiver.Receiver(
+                attrs=self.get_response['receiver']))
 
     def test_receiver_show(self):
         arglist = ['my_receiver']
@@ -230,9 +231,11 @@ class TestReceiverCreate(TestReceiver):
         super(TestReceiverCreate, self).setUp()
         self.cmd = osc_receiver.CreateReceiver(self.app, None)
         self.mock_client.create_receiver = mock.Mock(
-            return_value=sdk_receiver.Receiver(None, self.response))
+            return_value=sdk_receiver.Receiver(
+                attrs=self.response['receiver']))
         self.mock_client.get_receiver = mock.Mock(
-            return_value=sdk_receiver.Receiver(None, self.response))
+            return_value=sdk_receiver.Receiver(
+                attrs=self.response['receiver']))
 
     def test_receiver_create(self):
         arglist = ['my_receiver', '--action', 'CLUSTER_SCALE_OUT',

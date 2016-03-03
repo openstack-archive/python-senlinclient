@@ -92,7 +92,8 @@ class TestProfileShow(TestProfile):
         super(TestProfileShow, self).setUp()
         self.cmd = osc_profile.ShowProfile(self.app, None)
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(None, self.get_response))
+            return_value=sdk_profile.Profile(
+                attrs=self.get_response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_show(self):
@@ -145,7 +146,7 @@ class TestProfileList(TestProfile):
         super(TestProfileList, self).setUp()
         self.cmd = osc_profile.ListProfile(self.app, None)
         self.mock_client.profiles = mock.Mock(
-            return_value=sdk_profile.Profile(None, {}))
+            return_value=self.data)
 
     def test_profile_list_defaults(self):
         arglist = []
@@ -320,9 +321,9 @@ class TestProfileCreate(TestProfile):
         super(TestProfileCreate, self).setUp()
         self.cmd = osc_profile.CreateProfile(self.app, None)
         self.mock_client.create_profile = mock.Mock(
-            return_value=sdk_profile.Profile(None, self.response))
+            return_value=sdk_profile.Profile(attrs=self.response['profile']))
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(None, self.response))
+            return_value=sdk_profile.Profile(attrs=self.response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_create_defaults(self):
@@ -375,24 +376,26 @@ class TestProfileUpdate(TestProfile):
         super(TestProfileUpdate, self).setUp()
         self.cmd = osc_profile.UpdateProfile(self.app, None)
         self.mock_client.update_profile = mock.Mock(
-            return_value=sdk_profile.Profile(None, self.response))
+            return_value=sdk_profile.Profile(attrs=self.response['profile']))
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(None, self.response))
+            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+        self.mock_client.find_profile = mock.Mock(
+            return_value=sdk_profile.Profile(attrs=self.response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_update_defaults(self):
         arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
-                   'c6b8b252']
+                   'e3057c77']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.update_profile.assert_called_with(None,
-                                                           **self.defaults)
+        self.mock_client.update_profile.assert_called_with(
+            'e3057c77-a178-4265-bafd-16b2fae50eea', **self.defaults)
 
     def test_profile_update_not_found(self):
         arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
                    'c6b8b252']
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        self.mock_client.get_profile.side_effect = sdk_exc.ResourceNotFound()
+        self.mock_client.find_profile.return_value = None
         error = self.assertRaises(
             exc.CommandError,
             self.cmd.take_action,

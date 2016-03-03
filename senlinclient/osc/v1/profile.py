@@ -303,9 +303,8 @@ class UpdateProfile(show.ShowOne):
                 parsed_args.metadata)
 
         # Find the profile first, we need its id
-        try:
-            profile = senlin_client.get_profile(parsed_args.profile)
-        except sdk_exc.ResourceNotFound:
+        profile = senlin_client.find_profile(parsed_args.profile)
+        if profile is None:
             raise exc.CommandError(_('Profile not found: %s') %
                                    parsed_args.profile)
         senlin_client.update_profile(profile.id, **params)

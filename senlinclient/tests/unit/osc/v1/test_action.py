@@ -83,7 +83,7 @@ class TestActionList(TestAction):
         super(TestActionList, self).setUp()
         self.cmd = osc_action.ListAction(self.app, None)
         self.mock_client.actions = mock.Mock(
-            return_value=sdk_action.Action(None, {}))
+            return_value=self.response)
 
     def test_action_list_defaults(self):
         arglist = []
@@ -184,7 +184,7 @@ class TestActionShow(TestAction):
         super(TestActionShow, self).setUp()
         self.cmd = osc_action.ShowAction(self.app, None)
         self.mock_client.get_action = mock.Mock(
-            return_value=sdk_action.Action(None, self.get_response))
+            return_value=sdk_action.Action(attrs=self.get_response))
 
     def test_action_show(self):
         arglist = ['my_action']

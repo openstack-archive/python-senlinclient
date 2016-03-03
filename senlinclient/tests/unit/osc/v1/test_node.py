@@ -68,8 +68,7 @@ class TestNodeList(TestNode):
     def setUp(self):
         super(TestNodeList, self).setUp()
         self.cmd = osc_node.ListNode(self.app, None)
-        self.mock_client.nodes = mock.Mock(
-            return_value=sdk_node.Node(None, {}))
+        self.mock_client.nodes = mock.Mock(return_value=self.response)
 
     def test_node_list_defaults(self):
         arglist = []
@@ -172,7 +171,7 @@ class TestNodeShow(TestNode):
         super(TestNodeShow, self).setUp()
         self.cmd = osc_node.ShowNode(self.app, None)
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(None, self.get_response))
+            return_value=sdk_node.Node(attrs=self.get_response['node']))
 
     def test_node_show(self):
         arglist = ['my_node']
@@ -231,9 +230,9 @@ class TestNodeCreate(TestNode):
         super(TestNodeCreate, self).setUp()
         self.cmd = osc_node.CreateNode(self.app, None)
         self.mock_client.create_node = mock.Mock(
-            return_value=sdk_node.Node(None, self.response))
+            return_value=sdk_node.Node(attrs=self.response['node']))
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(None, self.response))
+            return_value=sdk_node.Node(attrs=self.response['node']))
 
     def test_node_create_defaults(self):
         arglist = ['my_node', '--profile', 'mystack']
@@ -306,25 +305,27 @@ class TestNodeUpdate(TestNode):
         super(TestNodeUpdate, self).setUp()
         self.cmd = osc_node.UpdateNode(self.app, None)
         self.mock_client.update_node = mock.Mock(
-            return_value=sdk_node.Node(None, self.response))
+            return_value=sdk_node.Node(attrs=self.response['node']))
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(None, self.response))
+            return_value=sdk_node.Node(attrs=self.response['node']))
+        self.mock_client.find_node = mock.Mock(
+            return_value=sdk_node.Node(attrs=self.response['node']))
 
     def test_node_update_defaults(self):
         arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
                    '--profile', 'new_profile', '--role', 'new_role',
-                   'c6b8b252']
+                   '0df0931b']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.update_node.assert_called_with('c6b8b252',
-                                                        **self.defaults)
+        self.mock_client.update_node.assert_called_with(
+            '0df0931b-e251-4f2e-8719-4ebfda3627ba', **self.defaults)
 
     def test_node_update_not_found(self):
         arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
                    '--profile', 'new_profile', '--role', 'new_role',
                    'c6b8b252']
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        self.mock_client.get_node.side_effect = sdk_exc.ResourceNotFound()
+        self.mock_client.find_node.return_value = None
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Node not found: c6b8b252', str(error))
