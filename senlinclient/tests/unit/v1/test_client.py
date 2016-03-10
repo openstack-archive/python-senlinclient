@@ -356,6 +356,23 @@ class ClientTest(testtools.TestCase):
         self.service.delete_node.assert_called_once_with(
             'FAKE_ID', True)
 
+    def test_check_node(self, mock_conn):
+        mock_conn.return_value = self.conn
+        sc = client.Client()
+
+        res = sc.check_node('FAKE_ID')
+        self.assertEqual(self.service.check_node.return_value, res)
+        self.service.check_node.assert_called_once_with('FAKE_ID')
+
+    def test_recover_node(self, mock_conn):
+        mock_conn.return_value = self.conn
+        sc = client.Client()
+
+        res = sc.recover_node('FAKE_ID')
+        self.assertEqual(self.service.recover_node.return_value, res)
+        self.service.recover_node.assert_called_once_with(
+            'FAKE_ID')
+
     def test_delete_node_ignore_missing(self, mock_conn):
         mock_conn.return_value = self.conn
         sc = client.Client()
