@@ -776,6 +776,22 @@ def do_cluster_policy_update(service, args):
     print('Request accepted by action: %s' % resp['action'])
 
 
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('ID or name of cluster to operate on.'))
+def do_cluster_check(service, args):
+    """Check the cluster(s)."""
+    resp = service.check_cluster(args.id)
+    print('Request accepted by action: %s' % resp['action'])
+
+
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('ID or name of cluster to operate on.'))
+def do_cluster_recover(service, args):
+    """Recover the cluster(s)."""
+    resp = service.recover_cluster(args.id)
+    print('Request accepted by action: %s' % resp['action'])
+
+
 # NODES
 
 
