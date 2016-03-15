@@ -1036,7 +1036,7 @@ class ShellTest(testtools.TestCase):
         service.check_cluster.return_value = {'action': 'action_id'}
         sh.do_cluster_check(service, args)
 
-        service.check_cluster.assert_called_once_with(['cluster1'])
+        service.check_cluster.assert_called_once_with('cluster1')
 
     def test_do_cluster_recover(self):
         service = mock.Mock()
@@ -1046,7 +1046,7 @@ class ShellTest(testtools.TestCase):
 
         sh.do_cluster_recover(service, args)
 
-        service.recover_cluster.assert_called_once_with(['cluster1'])
+        service.recover_cluster.assert_called_once_with('cluster1')
 
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):

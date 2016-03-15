@@ -739,3 +739,57 @@ class TestClusterNodeDel(TestCluster):
         self.mock_client.cluster_del_nodes.assert_called_with(
             'my_cluster',
             ['node1', 'node2'])
+
+
+class TestClusterCheck(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterCheck, self).setUp()
+        self.cmd = osc_cluster.CheckCluster(self.app, None)
+        self.mock_client.check_cluster = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_check(self):
+        arglist = ['cluster1', 'cluster2', 'cluster3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.check_cluster.assert_has_calls(
+            [mock.call('cluster1'), mock.call('cluster2'),
+             mock.call('cluster3')]
+        )
+
+    def test_cluster_check_not_found(self):
+        arglist = ['cluster1']
+        self.mock_client.check_cluster.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Cluster not found: cluster1', str(error))
+
+
+class TestClusterRecover(TestCluster):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestClusterRecover, self).setUp()
+        self.cmd = osc_cluster.RecoverCluster(self.app, None)
+        self.mock_client.recover_cluster = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_recoverk(self):
+        arglist = ['cluster1', 'cluster2', 'cluster3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.recover_cluster.assert_has_calls(
+            [mock.call('cluster1'), mock.call('cluster2'),
+             mock.call('cluster3')]
+        )
+
+    def test_cluster_recover_not_found(self):
+        arglist = ['cluster1']
+        self.mock_client.recover_cluster.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Cluster not found: cluster1', str(error))

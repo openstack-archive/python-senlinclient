@@ -718,3 +718,57 @@ class ClusterNodeDel(command.Command):
         node_ids = parsed_args.nodes.split(',')
         resp = senlin_client.cluster_del_nodes(parsed_args.cluster, node_ids)
         print('Request accepted by action: %s' % resp['action'])
+
+
+class CheckCluster(command.Command):
+    """Check the cluster(s)."""
+    log = logging.getLogger(__name__ + ".CheckCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(CheckCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            nargs='+',
+            help=_('ID or name of cluster(s) to operate on.')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        for cid in parsed_args.cluster:
+            try:
+                resp = senlin_client.check_cluster(cid)
+            except sdk_exc.ResourceNotFound:
+                raise exc.CommandError(_('Cluster not found: %s') % cid)
+            print('Cluster check request on cluster %(cid)s is accepted by '
+                  'action %(action)s.'
+                  % {'cid': cid, 'action': resp['action']})
+
+
+class RecoverCluster(command.Command):
+    """Recover the cluster(s)."""
+    log = logging.getLogger(__name__ + ".RecoverCluster")
+
+    def get_parser(self, prog_name):
+        parser = super(RecoverCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            nargs='+',
+            help=_('ID or name of cluster(s) to operate on.')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        for cid in parsed_args.cluster:
+            try:
+                resp = senlin_client.recover_cluster(cid)
+            except sdk_exc.ResourceNotFound:
+                raise exc.CommandError(_('Cluster not found: %s') % cid)
+            print('Cluster recover request on cluster %(cid)s is accepted by '
+                  'action %(action)s.'
+                  % {'cid': cid, 'action': resp['action']})
