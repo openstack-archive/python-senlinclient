@@ -83,8 +83,8 @@ def do_profile_type_show(service, args):
            help=_('Only return profiles that appear after the given ID.'))
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Indicate that the list should include profiles from'
                   ' all projects. This option is subject to access policy '
@@ -262,8 +262,8 @@ def do_policy_type_show(service, args):
            help=_('Only return policies that appear after the given ID.'))
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Indicate that the list should include policies from'
                   ' all projects. This option is subject to access policy '
@@ -373,8 +373,8 @@ def do_policy_delete(service, args):
            action='append')
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of clusters returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -693,8 +693,8 @@ def do_cluster_scale_in(service, args):
            action='append')
 @utils.arg('-o', '--sort', metavar='<SORT_STRING>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 @utils.arg('id', metavar='<CLUSTER>',
@@ -808,8 +808,8 @@ def do_cluster_recover(service, args):
            action='append')
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of nodes returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
@@ -1010,8 +1010,8 @@ def do_node_recover(service, args):
            help=_('Only return receivers that appear after the given ID.'))
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Indicate that the list should include receivers from'
                   ' all projects. This option is subject to access policy '
@@ -1125,8 +1125,8 @@ def do_receiver_delete(service, args):
            help=_('Only return events that appear after the given event ID.'))
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-g', '--global-project', default=False, action="store_true",
            help=_('Whether events from all projects should be listed. '
                   ' Default to False. Setting this to True may demand '
@@ -1179,8 +1179,8 @@ def do_event_show(service, args):
            action='append')
 @utils.arg('-o', '--sort', metavar='<KEY:DIR>',
            help=_('Sorting option which is a string containing a list of keys '
-                  'separated by commas. Each key can be optionally appened by '
-                  'a sort direction (:asc or :desc)'))
+                  'separated by commas. Each key can be optionally appended '
+                  'by a sort direction (:asc or :desc)'))
 @utils.arg('-l', '--limit', metavar='<LIMIT>',
            help=_('Limit the number of actions returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
