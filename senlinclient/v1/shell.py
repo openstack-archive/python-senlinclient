@@ -15,9 +15,18 @@ import logging
 from openstack import exceptions as sdk_exc
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
+from senlinclient.common.i18n import _LW
 from senlinclient.common import utils
 
 logger = logging.getLogger(__name__)
+
+
+def show_deprecated(deprecated, recommended):
+    logger.warning(_LW('"%(old)s" is deprecated, '
+                       'please use "%(new)s" instead.'),
+                   {'old': deprecated,
+                    'new': recommended}
+                   )
 
 
 def do_build_info(service, args=None):
@@ -26,6 +35,7 @@ def do_build_info(service, args=None):
     :param sc: Instance of senlinclient.
     :param args: Additional command line arguments, if any.
     """
+    show_deprecated('senlin build-info', 'openstack cluster build info')
     result = service.get_build_info()
 
     formatters = {
@@ -44,6 +54,8 @@ def do_profile_type_list(service, args=None):
     :param sc: Instance of senlinclient.
     :param args: Additional command line arguments, if any.
     """
+    show_deprecated('senlin profile-type-list',
+                    'openstack cluster profile type list')
     types = service.profile_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
@@ -56,6 +68,8 @@ def do_profile_type_list(service, args=None):
                  % ', '.join(utils.supported_formats.keys()))
 def do_profile_type_show(service, args):
     """Get the details about a profile type."""
+    show_deprecated('senlin profile-type-show',
+                    'openstack cluster profile type show')
     try:
         res = service.get_profile_type(args.type_name)
     except sdk_exc.ResourceNotFound:
@@ -93,6 +107,7 @@ def do_profile_type_show(service, args):
            help=_('Print full IDs in list.'))
 def do_profile_list(service, args=None):
     """List profiles that meet the criteria."""
+    show_deprecated('senlin profile-list', 'openstack cluster profile list')
     fields = ['id', 'name', 'type', 'created_at']
     queries = {
         'limit': args.limit,
@@ -143,7 +158,8 @@ def _show_profile(service, profile_id):
            help=_('Name of the profile to create.'))
 def do_profile_create(service, args):
     """Create a profile."""
-
+    show_deprecated('senlin profile-create',
+                    'openstack cluster profile create')
     spec = utils.get_spec_content(args.spec_file)
     type_name = spec.get('type', None)
     type_version = spec.get('version', None)
@@ -173,6 +189,7 @@ def do_profile_create(service, args):
            help=_('Name or ID of profile to show.'))
 def do_profile_show(service, args):
     """Show the profile details."""
+    show_deprecated('senlin profile-show', 'openstack cluster profile show')
     _show_profile(service, args.id)
 
 
@@ -187,6 +204,8 @@ def do_profile_show(service, args):
            help=_('Name or ID of the profile to update.'))
 def do_profile_update(service, args):
     """Update a profile."""
+    show_deprecated('senlin profile-update',
+                    'openstack cluster profile update')
     params = {
         'name': args.name,
     }
@@ -206,6 +225,8 @@ def do_profile_update(service, args):
            help=_('Name or ID of profile(s) to delete.'))
 def do_profile_delete(service, args):
     """Delete profile(s)."""
+    show_deprecated('senlin profile-delete',
+                    'openstack cluster profile delete')
     failure_count = 0
 
     for pid in args.id:
@@ -225,6 +246,8 @@ def do_profile_delete(service, args):
 
 def do_policy_type_list(service, args):
     """List the available policy types."""
+    show_deprecated('senlin policy-type-list',
+                    'openstack cluster policy type list')
     types = service.policy_types()
     utils.print_list(types, ['name'], sortby_index=0)
 
@@ -237,6 +260,8 @@ def do_policy_type_list(service, args):
                  % ', '.join(utils.supported_formats.keys()))
 def do_policy_type_show(service, args):
     """Get the details about a policy type."""
+    show_deprecated('senlin policy-type-show',
+                    'openstack cluster policy type show')
     try:
         res = service.get_policy_type(args.type_name)
     except sdk_exc.ResourceNotFound:
@@ -272,6 +297,7 @@ def do_policy_type_show(service, args):
            help=_('Print full IDs in list.'))
 def do_policy_list(service, args=None):
     """List policies that meet the criteria."""
+    show_deprecated('senlin policy-list', 'openstack cluster policy list')
     fields = ['id', 'name', 'type', 'created_at']
     queries = {
         'limit': args.limit,
@@ -312,6 +338,7 @@ def _show_policy(service, policy_id):
            help=_('Name of the policy to create.'))
 def do_policy_create(service, args):
     """Create a policy."""
+    show_deprecated('senlin policy-create', 'openstack cluster policy create')
     spec = utils.get_spec_content(args.spec_file)
     attrs = {
         'name': args.name,
@@ -326,6 +353,7 @@ def do_policy_create(service, args):
            help=_('Name of the policy to be updated.'))
 def do_policy_show(service, args):
     """Show the policy details."""
+    show_deprecated('senlin policy-show', 'openstack cluster policy show')
     _show_policy(service, policy_id=args.id)
 
 
@@ -335,6 +363,7 @@ def do_policy_show(service, args):
            help=_('Name of the policy to be updated.'))
 def do_policy_update(service, args):
     """Update a policy."""
+    show_deprecated('senlin policy-update', 'openstack cluster policy update')
     params = {
         'name': args.name,
     }
@@ -349,6 +378,7 @@ def do_policy_update(service, args):
            help=_('Name or ID of policy(s) to delete.'))
 def do_policy_delete(service, args):
     """Delete policy(s)."""
+    show_deprecated('senlin policy-delete', 'openstack cluster policy delete')
     failure_count = 0
 
     for pid in args.id:
@@ -388,6 +418,7 @@ def do_policy_delete(service, args):
            help=_('Print full IDs in list.'))
 def do_cluster_list(service, args=None):
     """List the user's clusters."""
+    show_deprecated('senlin cluster-list', 'openstack cluster list')
     fields = ['id', 'name', 'status', 'created_at', 'updated_at']
     queries = {
         'limit': args.limit,
@@ -443,6 +474,7 @@ def _show_cluster(service, cluster_id):
            help=_('Name of the cluster to create.'))
 def do_cluster_create(service, args):
     """Create the cluster."""
+    show_deprecated('senlin cluster-create', 'openstack cluster create')
     if args.min_size and not args.desired_capacity:
         args.desired_capacity = args.min_size
     attrs = {
@@ -463,6 +495,7 @@ def do_cluster_create(service, args):
            help=_('Name or ID of cluster(s) to delete.'))
 def do_cluster_delete(service, args):
     """Delete the cluster(s)."""
+    show_deprecated('senlin cluster-delete', 'openstack cluster delete')
     failure_count = 0
 
     for cid in args.id:
@@ -492,6 +525,7 @@ def do_cluster_delete(service, args):
            help=_('Name or ID of cluster to be updated.'))
 def do_cluster_update(service, args):
     """Update the cluster."""
+    show_deprecated('senlin cluster-update', 'openstack cluster update')
     cluster = service.get_cluster(args.id)
     attrs = {
         'name': args.name,
@@ -508,6 +542,7 @@ def do_cluster_update(service, args):
            help=_('Name or ID of cluster to show.'))
 def do_cluster_show(service, args):
     """Show details of the cluster."""
+    show_deprecated('senlin cluster-show', 'openstack cluster show')
     _show_cluster(service, args.id)
 
 
@@ -526,7 +561,8 @@ def do_cluster_show(service, args):
            help=_('Name or ID of cluster to nodes from.'))
 def do_cluster_node_list(service, args):
     """List nodes from cluster."""
-
+    show_deprecated('senlin cluster-node-list',
+                    'openstack cluster node members list')
     queries = {
         'cluster_id': args.id,
         'limit': args.limit,
@@ -555,6 +591,8 @@ def do_cluster_node_list(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_add(service, args):
     """Add specified nodes to cluster."""
+    show_deprecated('senlin cluster-node-add',
+                    'openstack cluster node members add')
     node_ids = args.nodes.split(',')
     resp = service.cluster_add_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
@@ -567,6 +605,8 @@ def do_cluster_node_add(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_del(service, args):
     """Delete specified nodes from cluster."""
+    show_deprecated('senlin cluster-node-del',
+                    'openstack cluster node members del')
     node_ids = args.nodes.split(',')
     resp = service.cluster_del_nodes(args.id, node_ids)
     print('Request accepted by action: %s' % resp['action'])
@@ -599,7 +639,7 @@ def do_cluster_resize(service, args):
     """Resize a cluster."""
     # validate parameters
     # NOTE: this will be much simpler if cliutils supports exclusive groups
-
+    show_deprecated('senlin cluster-resize', 'openstack cluster resize')
     action_args = {}
 
     capacity = args.capacity
@@ -672,6 +712,7 @@ def do_cluster_resize(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(service, args):
     """Scale out a cluster by the specified number of nodes."""
+    show_deprecated('senlin cluster-scale-out', 'openstack cluster scale out')
     resp = service.cluster_scale_out(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
@@ -682,6 +723,7 @@ def do_cluster_scale_out(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(service, args):
     """Scale in a cluster by the specified number of nodes."""
+    show_deprecated('senlin cluster-scale-in', 'openstack cluster scale in')
     resp = service.cluster_scale_in(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
@@ -701,6 +743,8 @@ def do_cluster_scale_in(service, args):
            help=_('Name or ID of cluster to query on.'))
 def do_cluster_policy_list(service, args):
     """List policies from cluster."""
+    show_deprecated('senlin cluster-policy-list',
+                    'openstack cluster policy binding list')
     fields = ['policy_id', 'policy_name', 'policy_type', 'enabled']
 
     cluster = service.get_cluster(args.id)
@@ -729,6 +773,8 @@ def do_cluster_policy_list(service, args):
            help=_('ID or name of the cluster to query on.'))
 def do_cluster_policy_show(service, args):
     """Show a specific policy that is bound to the specified cluster."""
+    show_deprecated('senlin cluster-policy-show',
+                    'openstack cluster policy binding show')
     binding = service.get_cluster_policy(args.policy, args.id)
     utils.print_dict(binding.to_dict())
 
@@ -742,6 +788,8 @@ def do_cluster_policy_show(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_attach(service, args):
     """Attach policy to cluster."""
+    show_deprecated('senlin cluster-policy-attach',
+                    'openstack cluster policy attach')
     kwargs = {
         'enabled': args.enabled,
     }
@@ -756,6 +804,8 @@ def do_cluster_policy_attach(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_detach(service, args):
     """Detach policy from cluster."""
+    show_deprecated('senlin cluster-policy-detach',
+                    'openstack cluster policy detach')
     resp = service.cluster_detach_policy(args.id, args.policy)
     print('Request accepted by action %s' % resp['action'])
 
@@ -768,6 +818,8 @@ def do_cluster_policy_detach(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_policy_update(service, args):
     """Update a policy's properties on a cluster."""
+    show_deprecated('senlin cluster-policy-update',
+                    'openstack cluster policy binding update')
     kwargs = {
         'enabled': args.enabled,
     }
@@ -780,6 +832,7 @@ def do_cluster_policy_update(service, args):
            help=_('ID or name of cluster(s) to operate on.'))
 def do_cluster_check(service, args):
     """Check the cluster(s)."""
+    show_deprecated('senlin cluster-check', 'openstack cluster check')
     for cid in args.id:
         resp = service.check_cluster(cid)
         print('Cluster check request on cluster %(cid)s is accepted by '
@@ -790,6 +843,7 @@ def do_cluster_check(service, args):
            help=_('ID or name of cluster(s) to operate on.'))
 def do_cluster_recover(service, args):
     """Recover the cluster(s)."""
+    show_deprecated('senlin cluster-recover', 'openstack cluster recover')
     for cid in args.id:
         resp = service.recover_cluster(cid)
         print('Cluster recover request on cluster %(cid)s is accepted by '
@@ -822,6 +876,7 @@ def do_cluster_recover(service, args):
            help=_('Print full IDs in list.'))
 def do_node_list(service, args):
     """Show list of nodes."""
+    show_deprecated('senlin node-list', 'openstack cluster node list')
 
     fields = ['id', 'name', 'index', 'status', 'cluster_id', 'physical_id',
               'profile_name', 'created_at', 'updated_at']
@@ -855,7 +910,6 @@ def do_node_list(service, args):
 
 def _show_node(service, node_id, show_details=False):
     """Show detailed info about the specified node."""
-
     args = {'show_details': True} if show_details else None
     try:
         node = service.get_node(node_id, args=args)
@@ -889,6 +943,7 @@ def _show_node(service, node_id, show_details=False):
            help=_('Name of the node to create.'))
 def do_node_create(service, args):
     """Create the node."""
+    show_deprecated('senlin node-create', 'openstack cluster node create')
     attrs = {
         'name': args.name,
         'cluster_id': args.cluster,
@@ -907,6 +962,7 @@ def do_node_create(service, args):
            help=_('Name or ID of the node to show the details for.'))
 def do_node_show(service, args):
     """Show detailed info about the specified node."""
+    show_deprecated('senlin node-show', 'openstack cluster node show')
     _show_node(service, args.id, args.details)
 
 
@@ -914,6 +970,7 @@ def do_node_show(service, args):
            help=_('Name or ID of node(s) to delete.'))
 def do_node_delete(service, args):
     """Delete the node(s)."""
+    show_deprecated('senlin node-delete', 'openstack cluster node delete')
     failure_count = 0
 
     for nid in args.id:
@@ -943,6 +1000,7 @@ def do_node_delete(service, args):
            help=_('Name or ID of node to update.'))
 def do_node_update(service, args):
     """Update the node."""
+    show_deprecated('senlin node-update', 'openstack cluster node update')
     # Find the node first, we need its UUID
     try:
         node = service.get_node(args.id)
@@ -964,6 +1022,7 @@ def do_node_update(service, args):
            help=_('ID of node(s) to check.'))
 def do_node_check(service, args):
     """Check the node(s)."""
+    show_deprecated('senlin node-check', 'openstack cluster node check')
     failure_count = 0
 
     for nid in args.id:
@@ -982,6 +1041,7 @@ def do_node_check(service, args):
            help=_('ID of node(s) to recover.'))
 def do_node_recover(service, args):
     """Recover the node(s)."""
+    show_deprecated('senlin node-recover', 'openstack cluster node recover')
     failure_count = 0
 
     for nid in args.id:
@@ -1020,6 +1080,7 @@ def do_node_recover(service, args):
            help=_('Print full IDs in list.'))
 def do_receiver_list(service, args):
     """List receivers that meet the criteria."""
+    show_deprecated('senlin receiver-list', 'openstack cluster receiver list')
     fields = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
     queries = {
         'limit': args.limit,
@@ -1063,6 +1124,7 @@ def _show_receiver(service, receiver_id):
            help=_('Name or ID of the receiver to show.'))
 def do_receiver_show(service, args):
     """Show the receiver details."""
+    show_deprecated('senlin receiver-show', 'openstack cluster receiver show')
     _show_receiver(service, receiver_id=args.id)
 
 
@@ -1080,6 +1142,8 @@ def do_receiver_show(service, args):
            help=_('Name of the receiver to create.'))
 def do_receiver_create(service, args):
     """Create a receiver."""
+    show_deprecated('senlin receiver-create',
+                    'openstack cluster receiver create')
 
     params = {
         'name': args.name,
@@ -1097,6 +1161,8 @@ def do_receiver_create(service, args):
            help=_('Name or ID of receiver(s) to delete.'))
 def do_receiver_delete(service, args):
     """Delete receiver(s)."""
+    show_deprecated('senlin receiver-delete',
+                    'openstack cluster receiver delete')
     failure_count = 0
 
     for wid in args.id:
@@ -1135,7 +1201,7 @@ def do_receiver_delete(service, args):
            help=_('Print full IDs in list.'))
 def do_event_list(service, args):
     """List events."""
-
+    show_deprecated('senlin event-list', 'openstack cluster event list')
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
               'status', 'status_reason', 'level']
     queries = {
@@ -1161,6 +1227,7 @@ def do_event_list(service, args):
            help=_('ID of event to display details for.'))
 def do_event_show(service, args):
     """Describe the event."""
+    show_deprecated('senlin event-show', 'openstack cluster event show')
     try:
         event = service.get_event(args.id)
     except sdk_exc.ResourceNotFound:
@@ -1189,7 +1256,7 @@ def do_event_show(service, args):
            help=_('Print full IDs in list.'))
 def do_action_list(service, args):
     """List actions."""
-
+    show_deprecated('senlin action-list', 'openstack cluster action list')
     fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
               'depended_by', 'created_at']
 
@@ -1229,6 +1296,7 @@ def do_action_list(service, args):
            help=_('Name or ID of the action to show the details for.'))
 def do_action_show(service, args):
     """Show detailed info about the specified action."""
+    show_deprecated('senlin action-show', 'openstack cluster action show')
     try:
         action = service.get_action(args.id)
     except sdk_exc.ResourceNotFound:
