@@ -402,3 +402,57 @@ class TestNodeDelete(TestNode):
 
         mock_stdin.readline.assert_called_with()
         self.mock_client.delete_node.assert_not_called()
+
+
+class TestNodeCheck(TestNode):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestNodeCheck, self).setUp()
+        self.cmd = osc_node.CheckNode(self.app, None)
+        self.mock_client.check_node = mock.Mock(
+            return_value=self.response)
+
+    def test_node_check(self):
+        arglist = ['node1', 'node2', 'node3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.check_node.assert_has_calls(
+            [mock.call('node1'), mock.call('node2'),
+             mock.call('node3')]
+        )
+
+    def test_node_check_not_found(self):
+        arglist = ['node1']
+        self.mock_client.check_node.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Node not found: node1', str(error))
+
+
+class TestNodeRecover(TestNode):
+    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    def setUp(self):
+        super(TestNodeRecover, self).setUp()
+        self.cmd = osc_node.RecoverNode(self.app, None)
+        self.mock_client.recover_node = mock.Mock(
+            return_value=self.response)
+
+    def test_node_recover(self):
+        arglist = ['node1', 'node2', 'node3']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.recover_node.assert_has_calls(
+            [mock.call('node1'), mock.call('node2'),
+             mock.call('node3')]
+        )
+
+    def test_node_recover_not_found(self):
+        arglist = ['node1']
+        self.mock_client.recover_node.side_effect = sdk_exc.ResourceNotFound
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Node not found: node1', str(error))
