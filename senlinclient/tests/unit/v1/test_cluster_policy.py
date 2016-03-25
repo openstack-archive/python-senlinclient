@@ -14,8 +14,8 @@ import mock
 
 from openstack.cluster.v1 import cluster_policy as sdk_cluster_policy
 
-from senlinclient.osc.v1 import cluster_policy as osc_cluster_policy
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import cluster_policy as osc_cluster_policy
 
 
 class TestClusterPolicy(fakes.TestClusteringv1):

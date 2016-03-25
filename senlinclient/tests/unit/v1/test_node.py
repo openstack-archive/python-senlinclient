@@ -18,8 +18,8 @@ from openstack.cluster.v1 import node as sdk_node
 from openstack import exceptions as sdk_exc
 from openstackclient.common import exceptions as exc
 
-from senlinclient.osc.v1 import node as osc_node
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import node as osc_node
 
 
 class TestNode(fakes.TestClusteringv1):

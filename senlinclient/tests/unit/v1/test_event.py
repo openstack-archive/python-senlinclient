@@ -17,8 +17,8 @@ from openstack.cluster.v1 import event as sdk_event
 from openstack import exceptions as sdk_exc
 from openstackclient.common import exceptions as exc
 
-from senlinclient.osc.v1 import event as osc_event
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import event as osc_event
 
 
 class TestEvent(fakes.TestClusteringv1):

@@ -11,9 +11,12 @@
 # under the License.
 
 import json
+import mock
 import requests
 import six
 import sys
+
+from openstackclient.tests import utils
 
 
 AUTH_TOKEN = "foobar"
@@ -158,3 +161,19 @@ class FakeResponse(requests.Response):
         self._content = json.dumps(data)
         if not isinstance(self._content, six.binary_type):
             self._content = self._content.encode()
+
+
+class FakeClusteringv1Client(object):
+    def __init__(self, **kwargs):
+        self.http_client = mock.Mock()
+        self.http_client.auth_token = kwargs['token']
+        self.profiles = FakeResource(None, {})
+
+
+class TestClusteringv1(utils.TestCommand):
+    def setUp(self):
+        super(TestClusteringv1, self).setUp()
+
+        self.app.client_manager.clustering = FakeClusteringv1Client(
+            token=AUTH_TOKEN, auth_url=AUTH_URL
+        )

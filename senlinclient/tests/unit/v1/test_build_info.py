@@ -14,8 +14,8 @@ import mock
 
 from openstack.cluster.v1 import build_info as sdk_build_info
 
-from senlinclient.osc.v1 import build_info as osc_build_info
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import build_info as osc_build_info
 
 
 class TestBuildInfo(fakes.TestClusteringv1):

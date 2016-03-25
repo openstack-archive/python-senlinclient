@@ -19,8 +19,8 @@ from openstack import exceptions as sdk_exc
 from openstackclient.common import exceptions as exc
 from openstackclient.common import utils
 
-from senlinclient.osc.v1 import profile as osc_profile
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import profile as osc_profile
 
 
 class TestProfile(fakes.TestClusteringv1):

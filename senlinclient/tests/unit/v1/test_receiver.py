@@ -18,8 +18,8 @@ from openstack.cluster.v1 import receiver as sdk_receiver
 from openstack import exceptions as sdk_exc
 from openstackclient.common import exceptions as exc
 
-from senlinclient.osc.v1 import receiver as osc_receiver
-from senlinclient.tests.unit.osc.v1 import fakes
+from senlinclient.tests.unit.v1 import fakes
+from senlinclient.v1 import receiver as osc_receiver
 
 
 class TestReceiver(fakes.TestClusteringv1):
