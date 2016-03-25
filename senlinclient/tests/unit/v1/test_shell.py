@@ -16,6 +16,7 @@ import six
 import testtools
 
 from openstack import exceptions as oexc
+from oslotest import mockpatch
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
@@ -39,6 +40,13 @@ class ShellTest(testtools.TestCase):
                 'template': {"Template": "data"}
             }
         }
+        self.patch('senlinclient.v1.shell.show_deprecated')
+
+    # NOTE(pshchelo): this overrides the testtools.TestCase.patch method
+    # that does simple monkey-patching in favor of mock's patching
+    def patch(self, target, **kwargs):
+        mockfixture = self.useFixture(mockpatch.Patch(target, **kwargs))
+        return mockfixture.mock
 
     def _make_args(self, args):
         """Convert a dict to an object."""
