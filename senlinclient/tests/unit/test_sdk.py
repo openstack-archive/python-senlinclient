@@ -14,6 +14,9 @@ import mock
 import os
 import testtools
 
+from openstack import connection as sdk_connection
+from openstack import profile as sdk_profile
+
 from senlinclient.common import sdk
 
 
@@ -54,3 +57,47 @@ class TestSdk(testtools.TestCase):
         mock_prof.ALL = 'mock_prof.ALL'
         sdk.ProfileAction.set_option('interface', 'test=val1')
         mock_prof.set_interface.assert_called_once_with('test', 'val1')
+
+    @mock.patch.object(sdk_connection, 'Connection')
+    def test_create_connection_with_profile(self, mock_connection):
+        mock_prof = mock.Mock()
+        mock_conn = mock.Mock()
+        mock_connection.return_value = mock_conn
+        kwargs = {
+            'user_id': '123',
+            'password': 'abc',
+            'auth_url': 'test_url'
+        }
+        res = sdk.create_connection(mock_prof, **kwargs)
+        mock_connection.assert_called_once_with(profile=mock_prof,
+                                                user_agent=None,
+                                                user_id='123',
+                                                password='abc',
+                                                auth_url='test_url')
+        self.assertEqual(mock_conn, res)
+
+    @mock.patch.object(sdk_connection, 'Connection')
+    @mock.patch.object(sdk_profile, 'Profile')
+    def test_create_connection_without_profile(self, mock_profile,
+                                               mock_connection):
+        mock_prof = mock.Mock()
+        mock_conn = mock.Mock()
+        mock_profile.return_value = mock_prof
+        mock_connection.return_value = mock_conn
+        kwargs = {
+            'interface': 'public',
+            'region_name': 'RegionOne',
+            'user_id': '123',
+            'password': 'abc',
+            'auth_url': 'test_url'
+        }
+        res = sdk.create_connection(**kwargs)
+
+        mock_prof.set_interface.assert_called_once_with('clustering', 'public')
+        mock_prof.set_region.assert_called_once_with('clustering', 'RegionOne')
+        mock_connection.assert_called_once_with(profile=mock_prof,
+                                                user_agent=None,
+                                                user_id='123',
+                                                password='abc',
+                                                auth_url='test_url')
+        self.assertEqual(mock_conn, res)

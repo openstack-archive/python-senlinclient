@@ -124,6 +124,15 @@ class Resource(base.Resource):
 
 
 def create_connection(prof=None, user_agent=None, **kwargs):
+        if not prof:
+            prof = profile.Profile()
+        interface = kwargs.pop('interface', None)
+        region_name = kwargs.pop('region_name', None)
+        if interface:
+            prof.set_interface('clustering', interface)
+        if region_name:
+            prof.set_region('clustering', region_name)
+
         try:
             conn = connection.Connection(profile=prof, user_agent=user_agent,
                                          **kwargs)
