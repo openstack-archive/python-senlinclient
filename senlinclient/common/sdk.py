@@ -27,9 +27,9 @@ prop = base.prop
 
 
 class ProfileAction(argparse.Action):
-    """A custom action to parse user proferences as key=value pairs
+    """A custom action to parse user preferences as key=value pairs
 
-    Stores results in users proferences object.
+    Stores results in users preferences object.
     """
     prof = profile.Profile()
 

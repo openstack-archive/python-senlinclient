@@ -222,7 +222,7 @@ class Client(object):
         return self.service.cluster_scale_in(cluster, count)
 
     def cluster_policies(self, cluster, **queries):
-        """List all policies attached to clusdter
+        """List all policies attached to cluster
 
         Doc link:
         http://developer.openstack.org/api-ref-clustering-v1.html
