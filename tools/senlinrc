@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# IMPORTANT: Cleanse existing environment varible first
+# IMPORTANT: Cleanse existing environment variable first
 unset OS_USERNAME
 unset OS_PASSWORD
 unset OS_REGION_NAME
