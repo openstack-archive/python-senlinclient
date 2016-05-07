@@ -7,4 +7,4 @@ provides a Python API (the ``senlinclient`` module) and a command-line tool
 
 Development takes place via the usual OpenStack processes as outlined in the
 `developer guide <http://docs.openstack.org/infra/manual/developers.html>`_.
-The master repository is in `Git <http://github.com/tengqm/python-senlinclient>`_.
+The master repository is in `Git <https://git.openstack.org/cgit/openstack/python-senlinclient>`_.
