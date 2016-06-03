@@ -1,0 +1,5 @@
+---
+upgrade:
+  - OSC commands for cluster scaling are changed from 'cluster scale in'
+    and 'cluster scale out' to 'cluster shrink' and 'cluster expand'
+    respectively.
