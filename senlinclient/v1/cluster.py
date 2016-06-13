@@ -405,11 +405,6 @@ class ResizeCluster(command.Command):
             raise exc.CommandError(_("Only one of 'capacity', 'adjustment' and"
                                      " 'percentage' can be specified."))
 
-        if sum(v is None for v in (capacity, adjustment, percentage)) == 3:
-            raise exc.CommandError(_("At least one of 'capacity', "
-                                     "'adjustment' and 'percentage' "
-                                     "should be specified."))
-
         action_args['adjustment_type'] = None
         action_args['number'] = None
 
