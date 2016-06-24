@@ -18,7 +18,7 @@ import six
 from cliff import command
 from cliff import lister
 from cliff import show
-from openstackclient.common import utils
+from osc_lib import utils
 
 from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils

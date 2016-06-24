@@ -16,7 +16,7 @@ import logging
 import six
 
 from cliff import show
-from openstackclient.common import utils
+from osc_lib import utils
 
 from senlinclient.common import utils as senlin_utils
 

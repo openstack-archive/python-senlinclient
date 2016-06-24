@@ -16,7 +16,7 @@ import requests
 import six
 import sys
 
-from openstackclient.tests import utils
+from osc_lib.tests import utils
 
 
 AUTH_TOKEN = "foobar"

@@ -13,7 +13,7 @@
 import json
 import yaml
 
-from openstackclient.tests import utils
+from osc_lib.tests import utils
 from senlinclient.common import format_utils
 
 

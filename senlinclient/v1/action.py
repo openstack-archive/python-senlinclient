@@ -18,8 +18,8 @@ import six
 from cliff import lister
 from cliff import show
 from openstack import exceptions as sdk_exc
-from openstackclient.common import exceptions as exc
-from openstackclient.common import utils
+from osc_lib import exceptions as exc
+from osc_lib import utils
 
 from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
