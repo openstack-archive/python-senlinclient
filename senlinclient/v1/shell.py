@@ -659,7 +659,7 @@ def do_cluster_resize(service, args):
     if capacity is not None:
         if capacity < 0:
             raise exc.CommandError(_('Cluster capacity must be larger than '
-                                     ' or equal to zero.'))
+                                     'or equal to zero.'))
         action_args['adjustment_type'] = 'EXACT_CAPACITY'
         action_args['number'] = capacity
 
