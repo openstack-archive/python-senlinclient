@@ -16,10 +16,8 @@ import logging
 import six
 import sys
 
-from cliff import command
-from cliff import lister
-from cliff import show
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
@@ -28,7 +26,7 @@ from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
-class ListReceiver(lister.Lister):
+class ListReceiver(command.Lister):
     """List receivers that meet the criteria."""
 
     log = logging.getLogger(__name__ + ".ListReceiver")
@@ -110,7 +108,7 @@ class ListReceiver(lister.Lister):
         )
 
 
-class ShowReceiver(show.ShowOne):
+class ShowReceiver(command.ShowOne):
     """Show the receiver details."""
 
     log = logging.getLogger(__name__ + ".ShowReceiver")
@@ -147,7 +145,7 @@ def _show_receiver(senlin_client, receiver_id):
                                               formatters=formatters)
 
 
-class CreateReceiver(show.ShowOne):
+class CreateReceiver(command.ShowOne):
     """Create a receiver."""
 
     log = logging.getLogger(__name__ + ".CreateReceiver")

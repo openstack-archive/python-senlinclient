@@ -16,10 +16,8 @@ import logging
 import six
 import sys
 
-from cliff import command
-from cliff import lister
-from cliff import show
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
@@ -28,7 +26,7 @@ from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
-class ListCluster(lister.Lister):
+class ListCluster(command.Lister):
     """List the user's clusters."""
 
     log = logging.getLogger(__name__ + ".ListCluster")
@@ -106,7 +104,7 @@ class ListCluster(lister.Lister):
         )
 
 
-class ShowCluster(show.ShowOne):
+class ShowCluster(command.ShowOne):
     """Show details of the cluster."""
 
     log = logging.getLogger(__name__ + ".ShowCluster")
@@ -142,7 +140,7 @@ def _show_cluster(senlin_client, cluster_id):
                                               formatters=formatters)
 
 
-class CreateCluster(show.ShowOne):
+class CreateCluster(command.ShowOne):
     """Create the cluster."""
 
     log = logging.getLogger(__name__ + ".CreateCluster")
@@ -215,7 +213,7 @@ class CreateCluster(show.ShowOne):
         return _show_cluster(senlin_client, cluster.id)
 
 
-class UpdateCluster(show.ShowOne):
+class UpdateCluster(command.ShowOne):
     """Update the cluster."""
 
     log = logging.getLogger(__name__ + ".UpdateCluster")
@@ -584,7 +582,7 @@ class ClusterPolicyDetach(command.Command):
         print('Request accepted by action: %s' % resp['action'])
 
 
-class ClusterNodeList(lister.Lister):
+class ClusterNodeList(command.Lister):
     """List nodes from cluster."""
 
     log = logging.getLogger(__name__ + ".ClusterNodeList")

@@ -10,10 +10,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from cliff import show
+from osc_lib.command import command
 
 
-class RawFormat(show.ShowOne):
+class RawFormat(command.ShowOne):
 
     def produce_output(self, parsed_args, column_names, data):
         if data is None:
