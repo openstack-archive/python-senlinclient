@@ -332,9 +332,9 @@ class ShellTest(testtools.TestCase):
         args.project_domain_name = None
         msg = _('Either project domain ID (--project-domain-id / '
                 'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
-                '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
-                'must be specified, because project/tenant name may '
-                'not be unique.')
+                '(--project-domain-name / '
+                'env[OS_PROJECT_DOMAIN_NAME]) must be specified, '
+                'because project/tenant name may not be unique.')
         ex = self.assertRaises(exc.CommandError,
                                sh._check_identity_arguments, args)
         self.assertEqual(msg, six.text_type(ex))

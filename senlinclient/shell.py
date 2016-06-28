@@ -209,9 +209,9 @@ class SenlinShell(object):
                     not (args.project_domain_id or args.project_domain_name)):
                 msg = _('Either project domain ID (--project-domain-id / '
                         'env[OS_PROJECT_DOMAIN_ID]) orr project domain name '
-                        '(--project-domain-name / env[OS_PROJECT_DOMAIN_NAME '
-                        'must be specified, because project/tenant name may '
-                        'not be unique.')
+                        '(--project-domain-name / '
+                        'env[OS_PROJECT_DOMAIN_NAME]) must be specified, '
+                        'because project/tenant name may not be unique.')
                 raise exc.CommandError(msg)
 
     def _setup_senlin_client(self, api_ver, args):
