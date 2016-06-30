@@ -819,7 +819,7 @@ class ShellTest(testtools.TestCase):
                                sh.do_cluster_resize,
                                service, args)
         msg = _('Cluster capacity must be larger than '
-                ' or equal to zero.')
+                'or equal to zero.')
         self.assertEqual(msg, six.text_type(ex))
 
         # adjustment
