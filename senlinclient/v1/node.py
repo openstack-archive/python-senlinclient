@@ -16,10 +16,8 @@ import logging
 import six
 import sys
 
-from cliff import command
-from cliff import lister
-from cliff import show
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
@@ -28,7 +26,7 @@ from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
-class ListNode(lister.Lister):
+class ListNode(command.Lister):
     """Show list of nodes."""
 
     log = logging.getLogger(__name__ + ".ListNode")
@@ -118,7 +116,7 @@ class ListNode(lister.Lister):
         )
 
 
-class ShowNode(show.ShowOne):
+class ShowNode(command.ShowOne):
     """Show detailed info about the specified node."""
 
     log = logging.getLogger(__name__ + ".ShowNode")
@@ -167,7 +165,7 @@ def _show_node(senlin_client, node_id, show_details=False):
                                               formatters=formatters)
 
 
-class CreateNode(show.ShowOne):
+class CreateNode(command.ShowOne):
     """Create the node."""
 
     log = logging.getLogger(__name__ + ".CreateNode")
@@ -221,7 +219,7 @@ class CreateNode(show.ShowOne):
         return _show_node(senlin_client, node.id)
 
 
-class UpdateNode(show.ShowOne):
+class UpdateNode(command.ShowOne):
     """Update the node."""
 
     log = logging.getLogger(__name__ + ".UpdateNode")

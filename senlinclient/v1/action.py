@@ -15,9 +15,8 @@
 import logging
 import six
 
-from cliff import lister
-from cliff import show
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
@@ -25,7 +24,7 @@ from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
 
 
-class ListAction(lister.Lister):
+class ListAction(command.Lister):
     """List actions."""
 
     log = logging.getLogger(__name__ + ".ListAction")
@@ -109,7 +108,7 @@ class ListAction(lister.Lister):
         )
 
 
-class ShowAction(show.ShowOne):
+class ShowAction(command.ShowOne):
     """Show detailed info about the specified action."""
 
     log = logging.getLogger(__name__ + ".ShowAction")

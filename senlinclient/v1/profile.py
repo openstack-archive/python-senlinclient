@@ -15,10 +15,8 @@
 import logging
 import sys
 
-from cliff import command
-from cliff import lister
-from cliff import show
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
@@ -27,7 +25,7 @@ from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
-class ShowProfile(show.ShowOne):
+class ShowProfile(command.ShowOne):
     """Show profile details."""
 
     log = logging.getLogger(__name__ + ".ShowProfile")
@@ -76,7 +74,7 @@ def _show_profile(senlin_client, profile_id):
                                                   formatters=formatters)
 
 
-class ListProfile(lister.Lister):
+class ListProfile(command.Lister):
     """List profiles that meet the criteria."""
 
     log = logging.getLogger(__name__ + ".ListProfile")
@@ -207,7 +205,7 @@ class DeleteProfile(command.Command):
         print('Profile deleted: %s' % parsed_args.profile)
 
 
-class CreateProfile(show.ShowOne):
+class CreateProfile(command.ShowOne):
     """Create a profile."""
 
     log = logging.getLogger(__name__ + ".CreateProfile")
@@ -264,7 +262,7 @@ class CreateProfile(show.ShowOne):
         return _show_profile(senlin_client, profile_id=profile.id)
 
 
-class UpdateProfile(show.ShowOne):
+class UpdateProfile(command.ShowOne):
     """Update a profile."""
 
     log = logging.getLogger(__name__ + ".UpdateProfile")

@@ -15,14 +15,14 @@
 import logging
 import six
 
-from cliff import lister
 from openstack import exceptions as sdk_exc
+from osc_lib.command import command
 from osc_lib import exceptions as exc
 from senlinclient.common import format_utils
 from senlinclient.common.i18n import _
 
 
-class ProfileTypeList(lister.Lister):
+class ProfileTypeList(command.Lister):
     """List the available profile types."""
 
     log = logging.getLogger(__name__ + ".ProfileTypeList")

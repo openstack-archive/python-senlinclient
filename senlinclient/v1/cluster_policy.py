@@ -15,16 +15,14 @@
 import logging
 import six
 
-from cliff import command
-from cliff import lister
-from cliff import show
+from osc_lib.command import command
 from osc_lib import utils
 
 from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
 
 
-class ClusterPolicyList(lister.Lister):
+class ClusterPolicyList(command.Lister):
     """List policies from cluster."""
 
     log = logging.getLogger(__name__ + ".ClusterPolicyList")
@@ -88,7 +86,7 @@ class ClusterPolicyList(lister.Lister):
         )
 
 
-class ClusterPolicyShow(show.ShowOne):
+class ClusterPolicyShow(command.ShowOne):
     """Show a specific policy that is bound to the specified cluster."""
 
     log = logging.getLogger(__name__ + ".ClusterPolicyShow")
