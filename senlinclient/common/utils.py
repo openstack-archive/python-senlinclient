@@ -80,6 +80,8 @@ def format_nested_dict(d, fields, column_names):
         value = d[field]
         if not isinstance(value, six.string_types):
             value = jsonutils.dumps(value, indent=2, ensure_ascii=False)
+        if value is None:
+            value = '-'
         pt.add_row([field, value.strip('"')])
 
     return pt.get_string()
@@ -129,14 +131,16 @@ def _print_list(objs, fields, formatters=None, sortby_index=0,
         row = []
         for field in fields:
             if field in formatters:
-                row.append(formatters[field](o))
+                data = formatters[field](o)
             else:
                 if field in mixed_case_fields:
                     field_name = field.replace(' ', '_')
                 else:
                     field_name = field.lower().replace(' ', '_')
                 data = getattr(o, field_name, '')
-                row.append(data)
+            if data is None:
+                data = '-'
+            row.append(data)
         pt.add_row(row)
 
     if six.PY3:
@@ -169,9 +173,12 @@ def print_dict(d, formatters=None):
 
     for field in d.keys():
         if field in formatters:
-            pt.add_row([field, formatters[field](d[field])])
+            data = formatters[field](d[field])
         else:
-            pt.add_row([field, d[field]])
+            data = d[field]
+        if data is None:
+            data = '-'
+        pt.add_row([field, data])
 
     content = pt.get_string(sortby='Property')
     if six.PY3:
