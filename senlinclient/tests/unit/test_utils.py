@@ -130,7 +130,7 @@ class PrintListTestCase(testtools.TestCase):
 +-----------+-----------+
 """, cso.read())
 
-    def test_print_list_with_None_data(self):
+    def test_print_list_with_None_string(self):
         Row = collections.namedtuple('Row', ['foo', 'bar'])
         to_print = [Row(foo='fake_foo1', bar='None'),
                     Row(foo='fake_foo2', bar='fake_bar1')]
@@ -142,6 +142,22 @@ class PrintListTestCase(testtools.TestCase):
 | foo       | bar       |
 +-----------+-----------+
 | fake_foo1 | None      |
+| fake_foo2 | fake_bar1 |
++-----------+-----------+
+""", cso.read())
+
+    def test_print_list_with_None_data(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo1', bar=None),
+                    Row(foo='fake_foo2', bar='fake_bar1')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'])
+        # Output should be sorted by the first key (foo)
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo1 | -         |
 | fake_foo2 | fake_bar1 |
 +-----------+-----------+
 """, cso.read())
@@ -211,4 +227,20 @@ class PrintDictTestCase(testtools.TestCase):
 | bar      | fake_bar |
 | foo      | fake_foo |
 +----------+----------+
+""", cso.read())
+
+    def test_print_dict_with_None_data(self):
+        Row = collections.namedtuple('Row', ['foo', 'bar'])
+        to_print = [Row(foo='fake_foo1', bar=None),
+                    Row(foo='fake_foo2', bar='fake_bar1')]
+        with CaptureStdout() as cso:
+            utils.print_list(to_print, ['foo', 'bar'])
+        # Output should be sorted by the first key (foo)
+        self.assertEqual("""\
++-----------+-----------+
+| foo       | bar       |
++-----------+-----------+
+| fake_foo1 | -         |
+| fake_foo2 | fake_bar1 |
++-----------+-----------+
 """, cso.read())
