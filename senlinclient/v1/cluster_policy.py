@@ -83,7 +83,8 @@ class ClusterPolicyList(lister.Lister):
             }
         return (
             columns,
-            (utils.get_item_properties(p, columns, formatters=formatters)
+            (utils.get_item_properties(p.to_dict(), columns,
+                                       formatters=formatters)
              for p in policies)
         )
 
@@ -113,8 +114,9 @@ class ClusterPolicyShow(show.ShowOne):
         senlin_client = self.app.client_manager.clustering
         policy = senlin_client.get_cluster_policy(parsed_args.policy,
                                                   parsed_args.cluster)
-        columns = sorted(list(six.iterkeys(policy)))
-        return columns, utils.get_dict_properties(policy.to_dict(), columns)
+        data = policy.to_dict()
+        columns = sorted(list(six.iterkeys(data)))
+        return columns, utils.get_dict_properties(data, columns)
 
 
 class ClusterPolicyUpdate(command.Command):

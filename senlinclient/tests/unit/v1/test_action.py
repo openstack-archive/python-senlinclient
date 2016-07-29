@@ -159,7 +159,7 @@ class TestActionList(TestAction):
 
 
 class TestActionShow(TestAction):
-    get_response = {
+    response = {
         "action": "CLUSTER_DELETE",
         "cause": "RPC Request",
         "context": {},
@@ -184,7 +184,7 @@ class TestActionShow(TestAction):
         super(TestActionShow, self).setUp()
         self.cmd = osc_action.ShowAction(self.app, None)
         self.mock_client.get_action = mock.Mock(
-            return_value=sdk_action.Action(attrs=self.get_response))
+            return_value=sdk_action.Action(**self.response))
 
     def test_action_show(self):
         arglist = ['my_action']

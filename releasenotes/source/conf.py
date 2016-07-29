@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pbr.version
+
 # Senlin Release Notes documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov  3 17:40:50 2015.
 #
@@ -63,7 +65,7 @@ copyright = u'2015, Senlin Developers'
 # built documents.
 #
 # The short X.Y version.
-import pbr.version
+
 senlin_version = pbr.version.VersionInfo('python-muranoclient')
 # The full version, including alpha/beta/rc tags.
 release = senlin_version.version_string_with_vcs()

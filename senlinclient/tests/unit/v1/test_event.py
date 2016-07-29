@@ -60,7 +60,7 @@ class TestEventList(TestEvent):
         super(TestEventList, self).setUp()
         self.cmd = osc_event.ListEvent(self.app, None)
         self.mock_client.events = mock.Mock(
-            return_value=sdk_event.Event(None, {}))
+            return_value=[sdk_event.Event(**self.response['events'][0])])
 
     def test_event_list_defaults(self):
         arglist = []
@@ -95,8 +95,7 @@ class TestEventList(TestEvent):
         self.assertEqual(self.columns, columns)
 
     def test_event_list_sort_invalid_key(self):
-        self.mock_client.events = mock.Mock(
-            return_value=self.response)
+        self.mock_client.events = mock.Mock(return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -106,8 +105,7 @@ class TestEventList(TestEvent):
                           self.cmd.take_action, parsed_args)
 
     def test_event_list_sort_invalid_direction(self):
-        self.mock_client.events = mock.Mock(
-            return_value=self.response)
+        self.mock_client.events = mock.Mock(return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -136,7 +134,7 @@ class TestEventList(TestEvent):
 
 
 class TestEventShow(TestEvent):
-    get_response = {"event": {
+    response = {"event": {
         "action": "create",
         "cluster_id": 'null',
         "id": "2d255b9c-8f36-41a2-a137-c0175ccc29c3",
@@ -155,7 +153,7 @@ class TestEventShow(TestEvent):
         super(TestEventShow, self).setUp()
         self.cmd = osc_event.ShowEvent(self.app, None)
         self.mock_client.get_event = mock.Mock(
-            return_value=sdk_event.Event(None, self.get_response))
+            return_value=sdk_event.Event(**self.response['event']))
 
     def test_event_show(self):
         arglist = ['my_event']

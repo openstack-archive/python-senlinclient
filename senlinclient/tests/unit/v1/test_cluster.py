@@ -147,7 +147,7 @@ class TestClusterList(TestCluster):
 
 
 class TestClusterShow(TestCluster):
-    get_response = {"cluster": {
+    response = {"cluster": {
         "created_at": "2015-02-11T15:13:20",
         "data": {},
         "desired_capacity": 0,
@@ -174,8 +174,7 @@ class TestClusterShow(TestCluster):
         super(TestClusterShow, self).setUp()
         self.cmd = osc_cluster.ShowCluster(self.app, None)
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(
-                attrs=self.get_response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
 
     def test_cluster_show(self):
         arglist = ['my_cluster']
@@ -231,9 +230,9 @@ class TestClusterCreate(TestCluster):
         super(TestClusterCreate, self).setUp()
         self.cmd = osc_cluster.CreateCluster(self.app, None)
         self.mock_client.create_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
 
     def test_cluster_create_defaults(self):
         arglist = ['test_cluster', '--profile', 'mystack']
@@ -301,11 +300,11 @@ class TestClusterUpdate(TestCluster):
         super(TestClusterUpdate, self).setUp()
         self.cmd = osc_cluster.UpdateCluster(self.app, None)
         self.mock_client.update_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
         self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
         self.mock_client.find_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(attrs=self.response['cluster']))
+            return_value=sdk_cluster.Cluster(**self.response['cluster']))
 
     def test_cluster_update_defaults(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',

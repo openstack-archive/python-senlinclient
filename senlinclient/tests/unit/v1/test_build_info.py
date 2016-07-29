@@ -12,7 +12,7 @@
 
 import mock
 
-from openstack.cluster.v1 import build_info as sdk_build_info
+from openstack.cluster.v1 import build_info as sbi
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import build_info as osc_build_info
@@ -33,7 +33,7 @@ class TestBuildInfo(fakes.TestClusteringv1):
         self.cmd = osc_build_info.BuildInfo(self.app, None)
         self.mock_client = self.app.client_manager.clustering
         self.mock_client.get_build_info = mock.Mock(
-            return_value=sdk_build_info.BuildInfo(None, self.response))
+            return_value=sbi.BuildInfo(**self.response['build_info']))
 
     def test_build_info(self):
         arglist = []

@@ -141,7 +141,7 @@ class TestPolicyList(TestPolicy):
 
 
 class TestPolicyShow(TestPolicy):
-    get_response = {"policy": {
+    response = {"policy": {
         "created_at": "2015-03-02T07:40:31",
         "data": {},
         "domain": 'null',
@@ -170,7 +170,7 @@ class TestPolicyShow(TestPolicy):
         super(TestPolicyShow, self).setUp()
         self.cmd = osc_policy.ShowPolicy(self.app, None)
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.get_response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
 
     def test_policy_show(self):
         arglist = ['sp001']
@@ -230,9 +230,9 @@ class TestPolicyCreate(TestPolicy):
         super(TestPolicyCreate, self).setUp()
         self.cmd = osc_policy.CreatePolicy(self.app, None)
         self.mock_client.create_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
 
     def test_policy_create_defaults(self):
         arglist = ['my_policy', '--spec-file', self.spec_path]
@@ -274,11 +274,11 @@ class TestPolicyUpdate(TestPolicy):
         super(TestPolicyUpdate, self).setUp()
         self.cmd = osc_policy.UpdatePolicy(self.app, None)
         self.mock_client.update_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
         self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
         self.mock_client.find_policy = mock.Mock(
-            return_value=sdk_policy.Policy(attrs=self.response['policy']))
+            return_value=sdk_policy.Policy(**self.response['policy']))
 
     def test_policy_update_defaults(self):
         arglist = ['--name', 'new_policy', '9f779ddf']

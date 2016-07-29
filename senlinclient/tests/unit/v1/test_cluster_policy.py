@@ -12,7 +12,7 @@
 
 import mock
 
-from openstack.cluster.v1 import cluster_policy as sdk_cluster_policy
+from openstack.cluster.v1 import cluster_policy as scp
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import cluster_policy as osc_cluster_policy
@@ -76,7 +76,7 @@ class TestClusterPolicyList(TestClusterPolicy):
 
 
 class TestClusterPolicyShow(TestClusterPolicy):
-    get_response = {"cluster_policy": {
+    response = {"cluster_policy": {
         "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
         "cluster_name": "my_cluster",
         "enabled": True,
@@ -90,8 +90,7 @@ class TestClusterPolicyShow(TestClusterPolicy):
         super(TestClusterPolicyShow, self).setUp()
         self.cmd = osc_cluster_policy.ClusterPolicyShow(self.app, None)
         self.mock_client.get_cluster_policy = mock.Mock(
-            return_value=sdk_cluster_policy.ClusterPolicy(None,
-                                                          self.get_response))
+            return_value=scp.ClusterPolicy(**self.response['cluster_policy']))
 
     def test_cluster_policy_show(self):
         arglist = ['--policy', 'my_policy', 'my_cluster']

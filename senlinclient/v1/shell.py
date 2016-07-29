@@ -36,7 +36,7 @@ def do_build_info(service, args=None):
     :param args: Additional command line arguments, if any.
     """
     show_deprecated('senlin build-info', 'openstack cluster build info')
-    result = service.get_build_info()
+    result = service.get_build_info().to_dict()
 
     formatters = {
         'api': utils.json_formatter,
@@ -491,6 +491,33 @@ def do_cluster_create(service, args):
     _show_cluster(service, cluster.id)
 
 
+@utils.arg('-p', '--path', metavar='<PATH>',
+           help=_('A Json path string specifying the attribute to collect.'))
+@utils.arg('-L', '--list', default=False, action="store_true",
+           help=_('Print a full list that contains both node ids and '
+                  'attribute values instead of values only. Default is True.'))
+@utils.arg('-F', '--full-id', default=False, action="store_true",
+           help=_('Print full IDs in list.'))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('Name or ID of cluster(s) to operate on.'))
+def do_cluster_collect(service, args):
+    """Collect attributes across a cluster."""
+    show_deprecated('senlin cluster-collect', 'openstack cluster collect')
+
+    attrs = service.cluster_collect(args.id, args.path)
+    if args.list:
+        fields = ['node_id', 'value']
+        formatters = {
+            'value': utils.json_formatter
+        }
+        if not args.full_id:
+            formatters['node_id'] = lambda x: x.node_id[:8]
+        utils.print_list(attrs, fields, formatters=formatters)
+    else:
+        for attr in attrs:
+            print(attr.value)
+
+
 @utils.arg('id', metavar='<CLUSTER>', nargs='+',
            help=_('Name or ID of cluster(s) to delete.'))
 def do_cluster_delete(service, args):
@@ -624,7 +651,7 @@ def do_cluster_node_del(service, args):
 @utils.arg('-t', '--min-step', metavar='<MIN_STEP>', type=int,
            help=_('An integer specifying the number of nodes for adjustment '
                   'when <PERCENTAGE> is specified.'))
-@utils.arg('-s', '--strict',  action='store_true', default=False,
+@utils.arg('-s', '--strict', action='store_true', default=False,
            help=_('A boolean specifying whether the resize should be '
                   'performed on a best-effort basis when the new capacity '
                   'may go beyond size constraints.'))
@@ -910,9 +937,8 @@ def do_node_list(service, args):
 
 def _show_node(service, node_id, show_details=False):
     """Show detailed info about the specified node."""
-    args = {'show_details': True} if show_details else None
     try:
-        node = service.get_node(node_id, args=args)
+        node = service.get_node(node_id, details=show_details)
     except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Node not found: %s') % node_id)
 
@@ -923,7 +949,7 @@ def _show_node(service, node_id, show_details=False):
     data = node.to_dict()
     if show_details:
         formatters['details'] = utils.nested_dict_formatter(
-            list(node['details'].keys()), ['property', 'value'])
+            list(data['details'].keys()), ['property', 'value'])
 
     utils.print_dict(data, formatters=formatters)
 
@@ -1203,7 +1229,7 @@ def do_event_list(service, args):
     """List events."""
     show_deprecated('senlin event-list', 'openstack cluster event list')
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
-              'status', 'status_reason', 'level']
+              'status', 'level', 'cluster_id']
     queries = {
         'sort': args.sort,
         'limit': args.limit,
@@ -1218,6 +1244,8 @@ def do_event_list(service, args):
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
         formatters['obj_id'] = lambda x: x.obj_id[:8] if x.obj_id else ''
+        formatters['cluster_id'] = (lambda x: x.cluster_id[:8]
+                                    if x.cluster_id else '')
 
     events = service.events(**queries)
     utils.print_list(events, fields, formatters=formatters)
@@ -1282,7 +1310,7 @@ def do_action_list(service, args):
         formatters['depended_by'] = f_depby
     else:
         formatters['id'] = lambda x: x.id[:8]
-        formatters['target'] = lambda x: x.target[:8]
+        formatters['target'] = lambda x: x.target_id[:8]
         f_depon = lambda x: '\n'.join(a[:8] for a in x.depends_on)
         f_depby = lambda x: '\n'.join(a[:8] for a in x.depended_by)
         formatters['depends_on'] = f_depon

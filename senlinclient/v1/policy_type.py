@@ -63,6 +63,7 @@ class PolicyTypeShow(format_utils.YamlFormat):
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_('Policy Type not found: %s')
                                    % parsed_args.type_name)
-        rows = list(six.itervalues(res))
-        columns = list(six.iterkeys(res))
+        data = res.to_dict()
+        rows = list(six.itervalues(data))
+        columns = list(six.iterkeys(data))
         return columns, rows

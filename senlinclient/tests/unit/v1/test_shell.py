@@ -66,8 +66,9 @@ class ShellTest(testtools.TestCase):
             'api': utils.json_formatter,
             'engine': utils.json_formatter,
         }
-        mock_print.assert_called_once_with(result, formatters=formatters)
-        self.assertTrue(service.get_build_info.called)
+        mock_print.assert_called_once_with(result.to_dict(),
+                                           formatters=formatters)
+        service.get_build_info.assert_called_once_with()
 
     @mock.patch.object(utils, 'print_list')
     def test_do_profile_type_list(self, mock_print):
@@ -1104,7 +1105,7 @@ class ShellTest(testtools.TestCase):
 
         sh._show_node(service, node_id, show_details=False)
 
-        service.get_node.assert_called_once_with(node_id, args=None)
+        service.get_node.assert_called_once_with(node_id, details=False)
         mock_print.assert_called_once_with(data, formatters=formatters)
 
     @mock.patch.object(sh, '_show_node')
@@ -1232,7 +1233,7 @@ class ShellTest(testtools.TestCase):
     def test_do_event_list(self, mock_print):
         service = mock.Mock()
         fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
-                  'action', 'status', 'status_reason', 'level']
+                  'action', 'status', 'level', 'cluster_id']
         args = {
             'sort': 'timestamp:asc',
             'limit': 20,

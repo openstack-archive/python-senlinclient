@@ -104,7 +104,8 @@ class ListAction(lister.Lister):
 
         return (
             columns,
-            (utils.get_item_properties(a, columns, formatters=formatters)
+            (utils.get_item_properties(a.to_dict(), columns,
+                                       formatters=formatters)
              for a in actions)
         )
 
@@ -141,6 +142,7 @@ class ShowAction(show.ShowOne):
             'depends_on': senlin_utils.list_formatter,
             'depended_by': senlin_utils.list_formatter,
         }
-        columns = sorted(list(six.iterkeys(action)))
-        return columns, utils.get_dict_properties(action.to_dict(), columns,
+        data = action.to_dict()
+        columns = sorted(list(six.iterkeys(data)))
+        return columns, utils.get_dict_properties(data, columns,
                                                   formatters=formatters)

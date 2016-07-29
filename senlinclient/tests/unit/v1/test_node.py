@@ -144,7 +144,7 @@ class TestNodeList(TestNode):
 
 
 class TestNodeShow(TestNode):
-    get_response = {"node": {
+    response = {"node": {
         "cluster_id": None,
         "created_at": "2015-02-10T12:03:16",
         "data": {},
@@ -171,7 +171,7 @@ class TestNodeShow(TestNode):
         super(TestNodeShow, self).setUp()
         self.cmd = osc_node.ShowNode(self.app, None)
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.get_response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
 
     def test_node_show(self):
         arglist = ['my_node']
@@ -230,9 +230,9 @@ class TestNodeCreate(TestNode):
         super(TestNodeCreate, self).setUp()
         self.cmd = osc_node.CreateNode(self.app, None)
         self.mock_client.create_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
 
     def test_node_create_defaults(self):
         arglist = ['my_node', '--profile', 'mystack']
@@ -305,11 +305,11 @@ class TestNodeUpdate(TestNode):
         super(TestNodeUpdate, self).setUp()
         self.cmd = osc_node.UpdateNode(self.app, None)
         self.mock_client.update_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
         self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
         self.mock_client.find_node = mock.Mock(
-            return_value=sdk_node.Node(attrs=self.response['node']))
+            return_value=sdk_node.Node(**self.response['node']))
 
     def test_node_update_defaults(self):
         arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
