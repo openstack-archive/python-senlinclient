@@ -30,7 +30,7 @@ class TestProfile(fakes.TestClusteringv1):
 
 
 class TestProfileShow(TestProfile):
-    get_response = {"profile": {
+    response = {"profile": {
         "created_at": "2015-03-01T14:28:25",
         "domain": 'false',
         "id": "7fa885cd-fa39-4531-a42d-780af95c84a4",
@@ -92,8 +92,7 @@ class TestProfileShow(TestProfile):
         super(TestProfileShow, self).setUp()
         self.cmd = osc_profile.ShowProfile(self.app, None)
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(
-                attrs=self.get_response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_show(self):
@@ -305,13 +304,15 @@ class TestProfileCreate(TestProfile):
         "updated_at": None,
         "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
 
-    defaults = {"spec": {
-        "version": 1.0,
-        "type": "os.nova.server",
-        "properties": {
-            "flavor": 1,
-            "name": "cirros_server",
-            "image": "cirros-0.3.4-x86_64-uec"}
+    defaults = {
+        "spec": {
+            "version": 1.0,
+            "type": "os.nova.server",
+            "properties": {
+                "flavor": 1,
+                "name": "cirros_server",
+                "image": "cirros-0.3.4-x86_64-uec"
+            },
         },
         "name": "my_profile",
         "metadata": {}
@@ -321,9 +322,9 @@ class TestProfileCreate(TestProfile):
         super(TestProfileCreate, self).setUp()
         self.cmd = osc_profile.CreateProfile(self.app, None)
         self.mock_client.create_profile = mock.Mock(
-            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_create_defaults(self):
@@ -376,11 +377,11 @@ class TestProfileUpdate(TestProfile):
         super(TestProfileUpdate, self).setUp()
         self.cmd = osc_profile.UpdateProfile(self.app, None)
         self.mock_client.update_profile = mock.Mock(
-            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         self.mock_client.find_profile = mock.Mock(
-            return_value=sdk_profile.Profile(attrs=self.response['profile']))
+            return_value=sdk_profile.Profile(**self.response['profile']))
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_update_defaults(self):

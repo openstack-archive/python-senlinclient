@@ -181,8 +181,8 @@ class SenlinShell(object):
             raise exc.CommandError(msg)
 
         # project name or ID is needed, or else sdk may find the wrong project
-        if (not (args.project_id or args.project_name or args.tenant_id
-                 or args.tenant_name)):
+        if (not (args.project_id or args.project_name or args.tenant_id or
+                 args.tenant_name)):
             if not (args.user_id):
                 msg = _('Either project/tenant ID or project/tenant name '
                         'must be specified, or else Senlin cannot know '

@@ -98,11 +98,10 @@ class ListEvent(command.Lister):
             formatters['obj_id'] = lambda x: x[:8] if x else ''
 
         events = senlin_client.events(**queries)
-        return (
-            columns,
-            (utils.get_item_properties(e, columns, formatters=formatters)
-             for e in events)
-        )
+        return (columns,
+                (utils.get_item_properties(e.to_dict(), columns,
+                                           formatters=formatters)
+                 for e in events))
 
 
 class ShowEvent(command.ShowOne):
@@ -128,5 +127,6 @@ class ShowEvent(command.ShowOne):
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_("Event not found: %s")
                                    % parsed_args.event)
-        columns = sorted(list(six.iterkeys(event)))
-        return columns, utils.get_dict_properties(event.to_dict(), columns)
+        data = event.to_dict()
+        columns = sorted(list(six.iterkeys(data)))
+        return columns, utils.get_dict_properties(data, columns)

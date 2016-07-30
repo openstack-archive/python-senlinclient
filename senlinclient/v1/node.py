@@ -156,12 +156,12 @@ def _show_node(senlin_client, node_id, show_details=False):
         'metadata': senlin_utils.json_formatter,
         'data': senlin_utils.json_formatter,
     }
-    if show_details and node:
+    data = node.to_dict()
+    if show_details:
         formatters['details'] = senlin_utils.nested_dict_formatter(
-            list(node['details'].keys()), ['property', 'value'])
-
-    columns = sorted(list(six.iterkeys(node)))
-    return columns, utils.get_dict_properties(node.to_dict(), columns,
+            list(data['details'].keys()), ['property', 'value'])
+    columns = sorted(list(six.iterkeys(data)))
+    return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
 
 
