@@ -43,7 +43,7 @@ class TestClusterList(TestCluster):
             "metadata": {},
             "min_size": 0,
             "name": "cluster1",
-            "nodes": [
+            "node_ids": [
                 "b07c57c8-7ab2-47bf-bdf8-e894c0c601b9",
                 "ecc23d3e-bb68-48f8-8260-c9cf6bcb6e61",
                 "da1e9c87-e584-4626-a120-022da5062dac"
@@ -158,7 +158,7 @@ class TestClusterShow(TestCluster):
         "metadata": {},
         "min_size": 0,
         "name": "my_cluster",
-        "nodes": [],
+        "node_ids": [],
         "policies": [],
         "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
         "profile_name": "mystack",
@@ -204,7 +204,7 @@ class TestClusterCreate(TestCluster):
         "metadata": {},
         "min_size": 0,
         "name": "test_cluster",
-        "nodes": [],
+        "node_ids": [],
         "policies": [],
         "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
         "profile_name": "mystack",
@@ -274,7 +274,7 @@ class TestClusterUpdate(TestCluster):
         "metadata": {},
         "min_size": 0,
         "name": "test_cluster",
-        "nodes": [],
+        "node_ids": [],
         "policies": [],
         "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
         "profile_name": "mystack",

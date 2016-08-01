@@ -449,7 +449,7 @@ def _show_cluster(service, cluster_id):
 
     formatters = {
         'metadata': utils.json_formatter,
-        'nodes': utils.list_formatter,
+        'node_ids': utils.list_formatter,
     }
     utils.print_dict(cluster.to_dict(), formatters=formatters)
 
