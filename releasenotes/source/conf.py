@@ -66,7 +66,7 @@ copyright = u'2015, Senlin Developers'
 #
 # The short X.Y version.
 
-senlin_version = pbr.version.VersionInfo('python-muranoclient')
+senlin_version = pbr.version.VersionInfo('python-senlinclient')
 # The full version, including alpha/beta/rc tags.
 release = senlin_version.version_string_with_vcs()
 # The short X.Y version.
