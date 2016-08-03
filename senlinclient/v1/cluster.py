@@ -133,7 +133,7 @@ def _show_cluster(senlin_client, cluster_id):
 
     formatters = {
         'metadata': senlin_utils.json_formatter,
-        'nodes': senlin_utils.list_formatter
+        'node_ids': senlin_utils.list_formatter
     }
     data = cluster.to_dict()
     columns = sorted(list(six.iterkeys(data)))

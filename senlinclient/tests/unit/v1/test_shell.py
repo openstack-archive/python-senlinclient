@@ -637,7 +637,7 @@ class ShellTest(testtools.TestCase):
         service.get_cluster.return_value = cluster
         formatters = {
             'metadata': utils.json_formatter,
-            'nodes': utils.list_formatter,
+            'node_ids': utils.list_formatter,
         }
         cluster_dict = mock.Mock()
         cluster.to_dict.return_value = cluster_dict
