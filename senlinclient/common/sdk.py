@@ -133,6 +133,7 @@ def create_connection(prof=None, user_agent=None, **kwargs):
         if region_name:
             prof.set_region('clustering', region_name)
 
+        prof.set_api_version('clustering', '1.2')
         try:
             conn = connection.Connection(profile=prof, user_agent=user_agent,
                                          **kwargs)
