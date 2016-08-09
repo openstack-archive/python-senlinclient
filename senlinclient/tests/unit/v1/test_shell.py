@@ -1057,6 +1057,65 @@ class ShellTest(testtools.TestCase):
 
         service.recover_cluster.assert_called_once_with('cluster1')
 
+    def test_do_cluster_collect(self):
+        service = mock.Mock()
+        args = self._make_args({
+            'path': 'path.to.attr',
+            'list': False,
+            'full_id': False,
+            'id': 'cluster1'
+        })
+        service.collect_cluster_attrs = mock.Mock(
+            return_value=[mock.Mock(node_id='FAKE1', attr_value='VALUE1')]
+        )
+
+        sh.do_cluster_collect(service, args)
+
+        service.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'path.to.attr')
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_cluster_collect_as_list(self, mock_print):
+        service = mock.Mock()
+        args = self._make_args({
+            'path': 'path.to.attr',
+            'list': True,
+            'full_id': True,
+            'id': 'cluster1'
+        })
+        attrs = [mock.Mock(node_id='FAKE1', attr_value='VALUE1')]
+        fields = ['node_id', 'attr_value']
+        formatters = {'attr_value': utils.json_formatter}
+        service.collect_cluster_attrs = mock.Mock(return_value=attrs)
+
+        sh.do_cluster_collect(service, args)
+
+        service.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'path.to.attr')
+        mock_print.assert_called_once_with(attrs, fields,
+                                           formatters=formatters)
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_cluster_collect_as_list_with_shortid(self, mock_print):
+        service = mock.Mock()
+        args = self._make_args({
+            'path': 'path.to.attr',
+            'list': True,
+            'full_id': False,
+            'id': 'cluster1'
+        })
+        attrs = [mock.Mock(node_id='FAKE1', attr_value='VALUE1')]
+        fields = ['node_id', 'attr_value']
+        formatters = {'node_id': mock.ANY, 'attr_value': utils.json_formatter}
+        service.collect_cluster_attrs = mock.Mock(return_value=attrs)
+
+        sh.do_cluster_collect(service, args)
+
+        service.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'path.to.attr')
+        mock_print.assert_called_once_with(attrs, fields,
+                                           formatters=formatters)
+
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
         service = mock.Mock()

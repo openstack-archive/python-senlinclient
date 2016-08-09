@@ -504,11 +504,11 @@ def do_cluster_collect(service, args):
     """Collect attributes across a cluster."""
     show_deprecated('senlin cluster-collect', 'openstack cluster collect')
 
-    attrs = service.cluster_collect(args.id, args.path)
+    attrs = service.collect_cluster_attrs(args.id, args.path)
     if args.list:
-        fields = ['node_id', 'value']
+        fields = ['node_id', 'attr_value']
         formatters = {
-            'value': utils.json_formatter
+            'attr_value': utils.json_formatter
         }
         if not args.full_id:
             formatters['node_id'] = lambda x: x.node_id[:8]

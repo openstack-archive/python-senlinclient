@@ -15,8 +15,9 @@ from senlinclient.common import sdk
 
 class Client(object):
 
-    def __init__(self, preferences=None, user_agent=None, **kwargs):
-        self.conn = sdk.create_connection(preferences, user_agent, **kwargs)
+    def __init__(self, prof=None, user_agent=None, **kwargs):
+        self.conn = sdk.create_connection(prof=prof, user_agent=user_agent,
+                                          **kwargs)
         self.service = self.conn.cluster
 
     ######################################################################
