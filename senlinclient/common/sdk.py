@@ -11,14 +11,12 @@
 # under the License.
 
 import argparse
+import os
+
 from openstack import connection
 from openstack import exceptions
 from openstack import profile
 from openstack import resource as base
-from openstack import utils
-import os
-
-from six.moves.urllib import parse as url_parse
 
 from senlinclient.common import exc
 
@@ -72,55 +70,6 @@ class ProfileAction(argparse.Action):
         if getattr(namespace, self.dest, None) is None:
             setattr(namespace, self.dest, ProfileAction.prof)
         self.set_option(option_string, values)
-
-
-class Resource(base.Resource):
-    """Senlin version of resource.
-
-    These classes are here because the OpenStack SDK base version is making
-    some assumptions about operations that cannot be satisfied in Senlin.
-    """
-
-    def create(self, session, extra_attrs=False):
-        """Create a remote resource from this instance.
-
-        :param extra_attrs: If true, all attributions that
-        included in response will be collected and returned
-        to user after resource creation
-
-        """
-        resp = self.create_by_id(session, self._attrs, self.id, path_args=self)
-        self._attrs[self.id_attribute] = resp[self.id_attribute]
-        if extra_attrs:
-            for attr in resp:
-                self._attrs[attr] = resp[attr]
-        self._reset_dirty()
-
-        return self
-
-    @classmethod
-    def get_data_with_args(cls, session, resource_id, args=None):
-        if not cls.allow_retrieve:
-            raise exceptions.MethodNotSupported('list')
-
-        url = utils.urljoin(cls.base_path, resource_id)
-        if args:
-            args.pop('id')
-            url = '%s?%s' % (url, url_parse.urlencode(args))
-        resp = session.get(url, endpoint_filter=cls.service)
-        body = resp.json()
-        if cls.resource_key:
-            body = body[cls.resource_key]
-
-        return body
-
-    def get_with_args(self, session, args=None):
-        body = self.get_data_with_args(session, self.id, args=args)
-
-        self._attrs.update(body)
-        self._loaded = True
-
-        return self
 
 
 def create_connection(prof=None, user_agent=None, **kwargs):
