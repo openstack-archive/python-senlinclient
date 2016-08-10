@@ -366,8 +366,8 @@ class ShellTest(testtools.TestCase):
         mock_conn.return_value = conn
         conn.session = mock.Mock()
         sh._setup_senlin_client('1', args)
-        mock_conn.assert_called_once_with(args.user_preferences, USER_AGENT,
-                                          **kwargs)
+        mock_conn.assert_called_once_with(prof=args.user_preferences,
+                                          user_agent=USER_AGENT, **kwargs)
         client = mock.Mock()
         senlin_client.Client = mock.MagicMock(return_value=client)
         self.assertEqual(client, sh._setup_senlin_client('1', args))

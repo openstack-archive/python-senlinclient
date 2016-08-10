@@ -766,3 +766,44 @@ class RecoverCluster(command.Command):
             print('Cluster recover request on cluster %(cid)s is accepted by '
                   'action %(action)s.'
                   % {'cid': cid, 'action': resp['action']})
+
+
+class ClusterCollect(command.Lister):
+    """Recover the cluster(s)."""
+    log = logging.getLogger(__name__ + ".ClusterCollect")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterCollect, self).get_parser(prog_name)
+        parser.add_argument(
+            '--full-id',
+            default=False,
+            action="store_true",
+            help=_('Print full IDs in list')
+        )
+        parser.add_argument(
+            '--path',
+            metavar='<path>',
+            required=True,
+            help=_('JSON path expression for attribute to be collected')
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('ID or name of cluster(s) to operate on.')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        attrs = senlin_client.collect_cluster_attrs(parsed_args.cluster,
+                                                    parsed_args.path)
+        columns = ['node_id', 'attr_value']
+        formatters = {}
+        if not parsed_args.full_id:
+            formatters = {
+                'node_id': lambda x: x[:8]
+            }
+        return (columns,
+                (utils.get_item_properties(a, columns, formatters=formatters)
+                 for a in attrs))

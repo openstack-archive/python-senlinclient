@@ -798,3 +798,38 @@ class TestClusterRecover(TestCluster):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Cluster not found: cluster1', str(error))
+
+
+class TestClusterCollect(TestCluster):
+    response = [
+        {
+            "node_id": "8bb476c3-0f4c-44ee-9f64-c7b0260814de",
+            "attr_value": "value 1",
+        },
+        {
+            "node_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
+            "attr_value": "value 2",
+        }
+    ]
+
+    def setUp(self):
+        super(TestClusterCollect, self).setUp()
+        self.cmd = osc_cluster.ClusterCollect(self.app, None)
+        self.mock_client.collect_cluster_attrs = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_collect(self):
+        arglist = ['--path', 'path.to.attr', 'cluster1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'path.to.attr')
+        self.assertEqual(['node_id', 'attr_value'], columns)
+
+    def test_cluster_collect_with_full_id(self):
+        arglist = ['--path', 'path.to.attr', '--full-id', 'cluster1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        columns, data = self.cmd.take_action(parsed_args)
+        self.mock_client.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'path.to.attr')
+        self.assertEqual(['node_id', 'attr_value'], columns)

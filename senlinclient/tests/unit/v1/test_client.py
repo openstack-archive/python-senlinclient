@@ -33,16 +33,17 @@ class ClientTest(testtools.TestCase):
 
         self.assertEqual(self.conn, sc.conn)
         self.assertEqual(self.service, sc.service)
-        mock_conn.assert_called_once_with(None, None)
+        mock_conn.assert_called_once_with(prof=None, user_agent=None)
 
     def test_init_with_params(self, mock_conn):
         mock_conn.return_value = self.conn
 
-        sc = client.Client(preferences='FOO', user_agent='BAR', zoo='LARR')
+        sc = client.Client(prof='FOO', user_agent='BAR', zoo='LARR')
 
         self.assertEqual(self.conn, sc.conn)
         self.assertEqual(self.service, sc.service)
-        mock_conn.assert_called_once_with('FOO', 'BAR', zoo='LARR')
+        mock_conn.assert_called_once_with(prof='FOO', user_agent='BAR',
+                                          zoo='LARR')
 
     def test_profile_types(self, mock_conn):
         mock_conn.return_value = self.conn
