@@ -41,10 +41,6 @@ class TestCliArgs(testtools.TestCase):
             '--os-trust-id',
             '--os-token',
             '--os-access-info',
-            '--os-api-name',
-            '--os-api-region',
-            '--os-api-version',
-            '--os-api-interface'
         ]
 
         options = [arg[0][0] for arg in parser.add_argument.call_args_list]

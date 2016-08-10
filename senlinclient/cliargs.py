@@ -13,7 +13,6 @@
 import argparse
 
 from senlinclient.common.i18n import _
-from senlinclient.common import sdk
 from senlinclient.common import utils
 
 
@@ -139,35 +138,6 @@ def add_global_identity_args(parser):
         '--os-access-info', dest='access_info', metavar='ACCESS_INFO',
         default=utils.env('OS_ACCESS_INFO'),
         help=_('Access info, defaults to env[OS_ACCESS_INFO]'))
-
-    parser.add_argument(
-        '--os-api-name', dest='user_preferences',
-        metavar='<service>=<name>',
-        action=sdk.ProfileAction,
-        default=sdk.ProfileAction.env('OS_API_NAME'),
-        help=_('Desired API names, defaults to env[OS_API_NAME]'))
-
-    parser.add_argument(
-        '--os-api-region', dest='user_preferences',
-        metavar='<service>=<region>',
-        action=sdk.ProfileAction,
-        default=sdk.ProfileAction.env('OS_API_REGION', 'OS_REGION_NAME'),
-        help=_('Desired API region, defaults to env[OS_API_REGION]'))
-
-    parser.add_argument(
-        '--os-api-version', dest='user_preferences',
-        metavar='<service>=<version>',
-        action=sdk.ProfileAction,
-        default=sdk.ProfileAction.env('OS_API_VERSION'),
-        help=_('Desired API versions, defaults to env[OS_API_VERSION]'))
-
-    parser.add_argument(
-        '--os-api-interface', dest='user_preferences',
-        metavar='<service>=<interface>',
-        action=sdk.ProfileAction,
-        default=sdk.ProfileAction.env('OS_INTERFACE'),
-        help=_('Desired API interface, defaults to env[OS_INTERFACE]'))
-
 
 #    parser.add_argument(
 #        '--os-cert',
