@@ -515,7 +515,7 @@ def do_cluster_collect(service, args):
         utils.print_list(attrs, fields, formatters=formatters)
     else:
         for attr in attrs:
-            print(attr.value)
+            print(attr.attr_value)
 
 
 @utils.arg('id', metavar='<CLUSTER>', nargs='+',
