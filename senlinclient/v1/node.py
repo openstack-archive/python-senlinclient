@@ -173,12 +173,6 @@ class CreateNode(command.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CreateNode, self).get_parser(prog_name)
         parser.add_argument(
-            '--profile',
-            metavar='<profile>',
-            required=True,
-            help=_('Profile Id or Name used for this node')
-        )
-        parser.add_argument(
             '--cluster',
             metavar='<cluster>',
             help=_('Cluster Id or Name for this node')
@@ -195,6 +189,12 @@ class CreateNode(command.ShowOne):
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),
             action='append'
+        )
+        parser.add_argument(
+            '--profile',
+            metavar='<profile>',
+            required=True,
+            help=_('Profile Id or Name used for this node')
         )
         parser.add_argument(
             'name',
