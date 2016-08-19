@@ -2,13 +2,13 @@
 # zzxwill <zzxwill@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: python-senlinclient 0.5.1.dev13\n"
+"Project-Id-Version: python-senlinclient 0.5.1.dev37\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-07-04 03:45+0000\n"
+"POT-Creation-Date: 2016-08-12 10:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-06-30 12:00+0000\n"
+"PO-Revision-Date: 2016-08-19 03:05+0000\n"
 "Last-Translator: zzxwill <zzxwill@gmail.com>\n"
 "Language-Team: Chinese (China)\n"
 "Language: zh-CN\n"
@@ -157,18 +157,6 @@ msgstr "默认是env[OS_USER_ID]。"
 
 msgid "Defaults to env[SENLINCLIENT_DEBUG]."
 msgstr "默认是env[SENLINCLIENT_DEBUG]。"
-
-msgid "Desired API interface, defaults to env[OS_INTERFACE]"
-msgstr "必填的API接口，默认是env[OS_INTERFACE]"
-
-msgid "Desired API names, defaults to env[OS_API_NAME]"
-msgstr "必填的API名字，默认是env[OS_API_NAME]"
-
-msgid "Desired API region, defaults to env[OS_API_REGION]"
-msgstr "必填的API区域，默认是env[OS_API_REGION]"
-
-msgid "Desired API versions, defaults to env[OS_API_VERSION]"
-msgstr "Desired API版本，默认是env[OS_API_VERSION]"
 
 msgid ""
 "Desired capacity of the cluster. Default to min_size if min_size is "
@@ -398,6 +386,9 @@ msgid ""
 msgstr ""
 "过滤参数以应用在返回的结果上。该参数可以指定多次，也可以用分号分隔参数之后执"
 "行一次。有效的过滤键是['type', 'name']"
+
+msgid "ID of event to display details for."
+msgstr "显示事件详情的ID。"
 
 msgid "ID of new profile to use"
 msgstr "将要使用的样版的ID"
@@ -783,6 +774,12 @@ msgstr "要删除的receiver的名称或ID"
 
 msgid "Name or ID of receiver(s) to delete."
 msgstr "待删除的receiver的名称或ID。"
+
+msgid "Name or ID of the action to show the details for."
+msgstr "显示action详情的名字或ID。"
+
+msgid "Name or ID of the node to show the details for."
+msgstr "显示action详情的名字或ID。"
 
 msgid "Name or ID of the policy to be updated"
 msgstr "将要更新的策略的名称或ID"
