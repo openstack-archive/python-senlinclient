@@ -149,12 +149,6 @@ class CreateCluster(command.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CreateCluster, self).get_parser(prog_name)
         parser.add_argument(
-            '--profile',
-            metavar='<profile>',
-            required=True,
-            help=_('Profile Id used for this cluster')
-        )
-        parser.add_argument(
             '--min-size',
             metavar='<min-size>',
             default=0,
@@ -186,6 +180,12 @@ class CreateCluster(command.ShowOne):
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon.'),
             action='append'
+        )
+        parser.add_argument(
+            '--profile',
+            metavar='<profile>',
+            required=True,
+            help=_('Profile Id used for this cluster')
         )
         parser.add_argument(
             'name',
@@ -522,17 +522,17 @@ class ClusterPolicyAttach(command.Command):
     def get_parser(self, prog_name):
         parser = super(ClusterPolicyAttach, self).get_parser(prog_name)
         parser.add_argument(
-            '--policy',
-            metavar='<policy>',
-            required=True,
-            help=_('ID or name of policy to be attached')
-        )
-        parser.add_argument(
             '--enabled',
             default=True,
             action="store_true",
             help=_('Whether the policy should be enabled once attached. '
                    'Default to True')
+        )
+        parser.add_argument(
+            '--policy',
+            metavar='<policy>',
+            required=True,
+            help=_('ID or name of policy to be attached')
         )
         parser.add_argument(
             'cluster',

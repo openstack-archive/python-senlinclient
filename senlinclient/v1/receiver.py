@@ -160,6 +160,13 @@ class CreateReceiver(command.ShowOne):
             help=_('Type of the receiver to create')
         )
         parser.add_argument(
+            '--params',
+            metavar='<key1=value1;key2=value2...>',
+            help=_('A dictionary of parameters that will be passed to target '
+                   'action when the receiver is triggered'),
+            action='append'
+        )
+        parser.add_argument(
             '--cluster',
             metavar='<cluster>',
             required=True,
@@ -170,13 +177,6 @@ class CreateReceiver(command.ShowOne):
             metavar='<action>',
             required=True,
             help=_('Name or ID of the targeted action to be triggered')
-        )
-        parser.add_argument(
-            '--params',
-            metavar='<key1=value1;key2=value2...>',
-            help=_('A dictionary of parameters that will be passed to target '
-                   'action when the receiver is triggered'),
-            action='append'
         )
         parser.add_argument(
             'name',
