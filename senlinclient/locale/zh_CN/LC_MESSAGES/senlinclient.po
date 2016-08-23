@@ -2,13 +2,13 @@
 # zzxwill <zzxwill@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: python-senlinclient 0.5.1.dev37\n"
+"Project-Id-Version: python-senlinclient 0.5.1.dev40\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-08-12 10:11+0000\n"
+"POT-Creation-Date: 2016-08-22 13:00+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-08-19 03:05+0000\n"
+"PO-Revision-Date: 2016-08-22 09:48+0000\n"
 "Last-Translator: zzxwill <zzxwill@gmail.com>\n"
 "Language-Team: Chinese (China)\n"
 "Language: zh-CN\n"
@@ -387,6 +387,9 @@ msgstr ""
 "过滤参数以应用在返回的结果上。该参数可以指定多次，也可以用分号分隔参数之后执"
 "行一次。有效的过滤键是['type', 'name']"
 
+msgid "ID of event to display details for"
+msgstr "显示事件详情的ID"
+
 msgid "ID of event to display details for."
 msgstr "显示事件详情的ID。"
 
@@ -714,6 +717,12 @@ msgstr "将要更新的集群的名称或ID"
 msgid "Name or ID of cluster to be updated."
 msgstr "将要更新的集群的名称或ID。"
 
+msgid "Name or ID of cluster to nodes from"
+msgstr "该集群的节点的名字或ID"
+
+msgid "Name or ID of cluster to nodes from."
+msgstr "该集群的节点的名字或ID。"
+
 msgid "Name or ID of cluster to operate on"
 msgstr "将要操作的集群的名字或ID"
 
@@ -737,6 +746,9 @@ msgstr "将要删除的集群的名称或ID"
 
 msgid "Name or ID of cluster(s) to delete."
 msgstr "将要删除的集群的名称或ID。"
+
+msgid "Name or ID of cluster(s) to operate on."
+msgstr "待操作的集群的名字或ID。"
 
 msgid "Name or ID of node to update"
 msgstr "将要更新的节点的名字或ID"
@@ -775,11 +787,17 @@ msgstr "要删除的receiver的名称或ID"
 msgid "Name or ID of receiver(s) to delete."
 msgstr "待删除的receiver的名称或ID。"
 
+msgid "Name or ID of the action to show the details for"
+msgstr "显示action详情的名字或ID"
+
 msgid "Name or ID of the action to show the details for."
 msgstr "显示action详情的名字或ID。"
 
+msgid "Name or ID of the node to show the details for"
+msgstr "显示节点详情的名字或ID。"
+
 msgid "Name or ID of the node to show the details for."
-msgstr "显示action详情的名字或ID。"
+msgstr "显示节点详情的名字或ID。"
 
 msgid "Name or ID of the policy to be updated"
 msgstr "将要更新的策略的名称或ID"
@@ -1158,6 +1176,10 @@ msgstr "所提供的文件不是合法的YAML文件：%s"
 #, python-format
 msgid "The template output format, one of: %s."
 msgstr "模板输出格式，需要是%s中的一种。"
+
+#, fuzzy, python-format
+msgid "Trace ID: %s"
+msgstr "Trace ID: %s"
 
 msgid "Type \"senlin help <COMMAND>\" for help on a specific command."
 msgstr "输入“senlin help <COMMAND>”来获取该命令的帮助信息。"
