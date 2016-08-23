@@ -13,7 +13,6 @@
 """Clustering v1 cluster action implementations"""
 
 import logging
-import six
 import sys
 
 from openstack import exceptions as sdk_exc
@@ -136,7 +135,7 @@ def _show_cluster(senlin_client, cluster_id):
         'node_ids': senlin_utils.list_formatter
     }
     data = cluster.to_dict()
-    columns = sorted(list(six.iterkeys(data)))
+    columns = sorted(data.keys())
     return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
 

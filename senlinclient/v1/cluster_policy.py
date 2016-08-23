@@ -13,7 +13,6 @@
 """Clustering v1 cluster policy action implementations"""
 
 import logging
-import six
 
 from osc_lib.command import command
 from osc_lib import utils
@@ -113,7 +112,7 @@ class ClusterPolicyShow(command.ShowOne):
         policy = senlin_client.get_cluster_policy(parsed_args.policy,
                                                   parsed_args.cluster)
         data = policy.to_dict()
-        columns = sorted(list(six.iterkeys(data)))
+        columns = sorted(data.keys())
         return columns, utils.get_dict_properties(data, columns)
 
 

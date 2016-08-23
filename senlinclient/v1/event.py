@@ -13,7 +13,6 @@
 """Clustering v1 event action implementations"""
 
 import logging
-import six
 
 from openstack import exceptions as sdk_exc
 from osc_lib.command import command
@@ -128,5 +127,5 @@ class ShowEvent(command.ShowOne):
             raise exc.CommandError(_("Event not found: %s")
                                    % parsed_args.event)
         data = event.to_dict()
-        columns = sorted(list(six.iterkeys(data)))
+        columns = sorted(data.keys())
         return columns, utils.get_dict_properties(data, columns)

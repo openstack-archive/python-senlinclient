@@ -13,7 +13,6 @@
 """Clustering v1 action implementations"""
 
 import logging
-import six
 
 from openstack import exceptions as sdk_exc
 from osc_lib.command import command
@@ -142,6 +141,6 @@ class ShowAction(command.ShowOne):
             'depended_by': senlin_utils.list_formatter,
         }
         data = action.to_dict()
-        columns = sorted(list(six.iterkeys(data)))
+        columns = sorted(data.keys())
         return columns, utils.get_dict_properties(data, columns,
                                                   formatters=formatters)

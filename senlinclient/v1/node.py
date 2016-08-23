@@ -13,7 +13,6 @@
 """Clustering v1 node action implementations"""
 
 import logging
-import six
 import sys
 
 from openstack import exceptions as sdk_exc
@@ -160,7 +159,7 @@ def _show_node(senlin_client, node_id, show_details=False):
     if show_details:
         formatters['details'] = senlin_utils.nested_dict_formatter(
             list(data['details'].keys()), ['property', 'value'])
-    columns = sorted(list(six.iterkeys(data)))
+    columns = sorted(data.keys())
     return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
 
