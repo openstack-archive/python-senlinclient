@@ -368,3 +368,56 @@ class TestPolicyDelete(TestPolicy):
 
         mock_stdin.readline.assert_called_with()
         self.mock_client.delete_policy.assert_not_called()
+
+
+class TestPolicyValidate(TestPolicy):
+    spec_path = 'senlinclient/tests/test_specs/deletion_policy.yaml'
+    response = {"policy": {
+        "created_at": None,
+        "data": {},
+        "domain": 'null',
+        "id": None,
+        "name": "validated_policy",
+        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+        "spec": {
+            "description": "A policy for choosing victim node(s) from a "
+                           "cluster for deletion.",
+            "properties": {
+                "criteria": "OLDEST_FIRST",
+                "destroy_after_deletion": True,
+                "grace_period": 60,
+                "reduce_desired_capacity": False
+            },
+            "type": "senlin.policy.deletion",
+            "version": 1.0
+        },
+        "type": "senlin.policy.deletion-1.0",
+        "updated_at": 'null',
+        "user": "2d7aca950f3e465d8ef0c81720faf6ff"
+    }}
+    defaults = {
+        "spec": {
+            "version": 1,
+            "type": "senlin.policy.deletion",
+            "description": "A policy for choosing victim node(s) from a "
+                           "cluster for deletion.",
+            "properties": {
+                "destroy_after_deletion": True,
+                "grace_period": 60,
+                "reduce_desired_capacity": False,
+                "criteria": "OLDEST_FIRST"
+            }
+        }
+    }
+
+    def setUp(self):
+        super(TestPolicyValidate, self).setUp()
+        self.cmd = osc_policy.ValidatePolicy(self.app, None)
+        self.mock_client.validate_policy = mock.Mock(
+            return_value=sdk_policy.Policy(**self.response['policy']))
+
+    def test_policy_validate(self):
+        arglist = ['--spec-file', self.spec_path]
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.validate_policy.assert_called_with(**self.defaults)

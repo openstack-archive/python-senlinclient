@@ -641,6 +641,25 @@ class ShellTest(testtools.TestCase):
         msg = _("Failed to delete some of the specified policy(s).")
         self.assertEqual(msg, six.text_type(ex))
 
+    @mock.patch.object(utils, 'get_spec_content')
+    def test_do_policy_validate(self, mock_get):
+        service = mock.Mock()
+        spec = mock.Mock()
+        mock_get.return_value = spec
+        args = {
+            'spec_file': 'policy_file',
+        }
+        args = self._make_args({'spec_file': 'policy_file'})
+        attrs = {
+            'spec': spec,
+        }
+        policy = mock.Mock()
+        policy.to_dict.return_value = {}
+        service.validate_policy.return_value = policy
+        sh.do_policy_validate(service, args)
+        mock_get.assert_called_once_with(args.spec_file)
+        service.validate_policy.assert_called_once_with(**attrs)
+
     @mock.patch.object(utils, 'print_list')
     def test_do_cluster_list(self, mock_print):
         service = mock.Mock()

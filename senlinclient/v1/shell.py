@@ -431,6 +431,24 @@ def do_policy_delete(service, args):
     print('Policy deleted: %s' % args.id)
 
 
+@utils.arg('-s', '--spec-file', metavar='<SPEC_FILE>', required=True,
+           help=_('The spec file used to create the policy.'))
+def do_policy_validate(service, args):
+    """VAlidate a policy spec."""
+    show_deprecated('senlin policy-validate',
+                    'openstack cluster policy validate')
+    spec = utils.get_spec_content(args.spec_file)
+    attrs = {
+        'spec': spec,
+    }
+
+    policy = service.validate_policy(**attrs)
+    formatters = {
+        'metadata': utils.json_formatter,
+        'spec': utils.json_formatter,
+    }
+    utils.print_dict(policy.to_dict(), formatters=formatters)
+
 # CLUSTERS
 
 
