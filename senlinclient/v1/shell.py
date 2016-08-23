@@ -241,6 +241,44 @@ def do_profile_delete(service, args):
     print('Profile deleted: %s' % args.id)
 
 
+@utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
+           help=_('The spec file used to create the profile.'))
+def do_profile_validate(service, args):
+    """Validate a profile."""
+    show_deprecated('senlin profile-validate',
+                    'openstack cluster profile validate')
+    spec = utils.get_spec_content(args.spec_file)
+    type_name = spec.get('type', None)
+    type_version = spec.get('version', None)
+    properties = spec.get('properties', None)
+    if type_name is None:
+        raise exc.CommandError(_("Missing 'type' key in spec file."))
+    if type_version is None:
+        raise exc.CommandError(_("Missing 'version' key in spec file."))
+    if properties is None:
+        raise exc.CommandError(_("Missing 'properties' key in spec file."))
+
+    if type_name == 'os.heat.stack':
+        stack_properties = utils.process_stack_spec(properties)
+        spec['properties'] = stack_properties
+
+    params = {
+        'spec': spec,
+    }
+
+    profile = service.validate_profile(**params)
+
+    formatters = {
+        'metadata': utils.json_formatter,
+    }
+
+    formatters['spec'] = utils.nested_dict_formatter(
+        ['type', 'version', 'properties'],
+        ['property', 'value'])
+
+    utils.print_dict(profile.to_dict(), formatters=formatters)
+
+
 # POLICY TYPES
 
 

@@ -402,3 +402,49 @@ class TestProfileUpdate(TestProfile):
             self.cmd.take_action,
             parsed_args)
         self.assertIn('Profile not found: c6b8b252', str(error))
+
+
+class TestProfileValidate(TestProfile):
+
+    spec_path = 'senlinclient/tests/test_specs/nova_server.yaml'
+    response = {"profile": {
+        "created_at": None,
+        "domain": None,
+        "id": None,
+        "metadata": None,
+        "name": "validated_profile",
+        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
+        "spec": {"properties": {
+            "flavor": 1,
+            "image": "cirros-0.3.4-x86_64-uec",
+            "name": "cirros_server"},
+            "type": "os.nova.server",
+            "version": 1.0},
+        "type": "os.nova.server-1.0",
+        "updated_at": None,
+        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
+
+    defaults = {
+        "spec": {
+            "version": 1.0,
+            "type": "os.nova.server",
+            "properties": {
+                "flavor": 1,
+                "name": "cirros_server",
+                "image": "cirros-0.3.4-x86_64-uec"
+            },
+        }
+    }
+
+    def setUp(self):
+        super(TestProfileValidate, self).setUp()
+        self.cmd = osc_profile.ValidateProfile(self.app, None)
+        self.mock_client.validate_profile = mock.Mock(
+            return_value=sdk_profile.Profile(**self.response['profile']))
+        utils.get_dict_properties = mock.Mock(return_value='')
+
+    def test_profile_validate(self):
+        arglist = ['--spec-file', self.spec_path]
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.validate_profile.assert_called_with(**self.defaults)
