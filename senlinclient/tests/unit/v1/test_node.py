@@ -177,14 +177,14 @@ class TestNodeShow(TestNode):
         arglist = ['my_node']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.get_node.assert_called_with('my_node', args=None)
+        self.mock_client.get_node.assert_called_with('my_node', details=False)
 
     def test_node_show_with_details(self):
         arglist = ['my_node', '--details']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.get_node.assert_called_with(
-            'my_node', args={'show_details': True})
+            'my_node', details=True)
 
     def test_node_show_not_found(self):
         arglist = ['my_node']

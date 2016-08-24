@@ -146,9 +146,8 @@ class ShowNode(command.ShowOne):
 def _show_node(senlin_client, node_id, show_details=False):
     """Show detailed info about the specified node."""
 
-    args = {'show_details': True} if show_details else None
     try:
-        node = senlin_client.get_node(node_id, args=args)
+        node = senlin_client.get_node(node_id, details=show_details)
     except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Node not found: %s') % node_id)
 
@@ -157,7 +156,7 @@ def _show_node(senlin_client, node_id, show_details=False):
         'data': senlin_utils.json_formatter,
     }
     data = node.to_dict()
-    if show_details:
+    if show_details and data['details']:
         formatters['details'] = senlin_utils.nested_dict_formatter(
             list(data['details'].keys()), ['property', 'value'])
     columns = sorted(list(six.iterkeys(data)))

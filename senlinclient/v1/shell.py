@@ -947,7 +947,7 @@ def _show_node(service, node_id, show_details=False):
         'data': utils.json_formatter,
     }
     data = node.to_dict()
-    if show_details:
+    if show_details and data['details']:
         formatters['details'] = utils.nested_dict_formatter(
             list(data['details'].keys()), ['property', 'value'])
 
