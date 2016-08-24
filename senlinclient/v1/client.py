@@ -304,13 +304,13 @@ class Client(object):
         """
         return self.service.create_node(**attrs)
 
-    def get_node(self, node, args=None):
+    def get_node(self, node, details=False):
         """Show node details
 
         Doc link:
         http://developer.openstack.org/api-ref-clustering-v1.html#showNode
         """
-        return self.service.get_node(node, args=args)
+        return self.service.get_node(node, details=details)
 
     def update_node(self, node, **attrs):
         """Update node
