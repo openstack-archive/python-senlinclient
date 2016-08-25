@@ -150,6 +150,14 @@ class Client(object):
         """
         return self.service.delete_policy(policy, ignore_missing)
 
+    def validate_policy(self, **attrs):
+        """validate a policy spec
+
+        Doc link:
+        http://developer.openstack.org/api-ref-clustering-v1.html#validatePolicy
+        """
+        return self.service.validate_policy(**attrs)
+
     def clusters(self, **queries):
         """List clusters
 

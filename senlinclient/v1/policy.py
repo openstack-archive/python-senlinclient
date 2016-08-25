@@ -269,3 +269,47 @@ class DeletePolicy(command.Command):
                                    {'count': failure_count,
                                    'total': len(parsed_args.policy)})
         print('Policy deleted: %s' % parsed_args.policy)
+
+
+class ValidatePolicy(command.ShowOne):
+    """Validate a policy."""
+
+    log = logging.getLogger(__name__ + ".ValidatePolicy")
+
+    def get_parser(self, prog_name):
+        parser = super(ValidatePolicy, self).get_parser(prog_name)
+        parser.add_argument(
+            '--spec-file',
+            metavar='<spec-file>',
+            required=True,
+            help=_('The spec file used to create the policy')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        spec = senlin_utils.get_spec_content(parsed_args.spec_file)
+        attrs = {
+            'spec': spec,
+        }
+
+        policy = senlin_client.validate_policy(**attrs)
+        formatters = {
+            'spec': senlin_utils.json_formatter
+        }
+        columns = [
+            'created_at',
+            'data',
+            'domain',
+            'id',
+            'name',
+            'project',
+            'spec',
+            'type',
+            'updated_at',
+            'user'
+        ]
+        return columns, utils.get_dict_properties(policy.to_dict(), columns,
+                                                  formatters=formatters)
