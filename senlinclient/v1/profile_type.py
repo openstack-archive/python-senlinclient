@@ -13,7 +13,6 @@
 """Clustering v1 profile type action implementations"""
 
 import logging
-import six
 
 from openstack import exceptions as sdk_exc
 from osc_lib.command import command
@@ -64,6 +63,6 @@ class ProfileTypeShow(format_utils.YamlFormat):
             raise exc.CommandError(_('Profile Type not found: %s')
                                    % parsed_args.type_name)
         data = res.to_dict()
-        rows = list(six.itervalues(data))
-        columns = list(six.iterkeys(data))
+        rows = data.values()
+        columns = data.keys()
         return columns, rows
