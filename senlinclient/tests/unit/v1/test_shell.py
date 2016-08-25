@@ -298,6 +298,48 @@ class ShellTest(testtools.TestCase):
         self.assertEqual(msg, six.text_type(ex))
         service.delete_profile.assert_called_with('profile2', False)
 
+    @mock.patch.object(utils, 'process_stack_spec')
+    @mock.patch.object(utils, 'get_spec_content')
+    def test_do_profile_validate(self, mock_get, mock_proc):
+        args = self._make_args({'spec_file': mock.Mock()})
+        spec = copy.deepcopy(self.profile_spec)
+        mock_get.return_value = spec
+        params = {
+            'spec': spec,
+        }
+        service = mock.Mock()
+        profile = mock.Mock()
+        profile.to_dict.return_value = {}
+        service.validate_profile.return_value = profile
+
+        sh.do_profile_validate(service, args)
+
+        service.validate_profile.assert_called_once_with(**params)
+
+        # Miss 'type' key in spec file
+        del spec['type']
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_profile_validate,
+                               service, args)
+        self.assertEqual(_("Missing 'type' key in spec file."),
+                         six.text_type(ex))
+        # Miss 'version' key in spec file
+        spec['type'] = 'os.heat.stack'
+        del spec['version']
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_profile_validate,
+                               service, args)
+        self.assertEqual(_("Missing 'version' key in spec file."),
+                         six.text_type(ex))
+        # Miss 'properties' key in spec file
+        spec['version'] = 1.0
+        del spec['properties']
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_profile_validate,
+                               service, args)
+        self.assertEqual(_("Missing 'properties' key in spec file."),
+                         six.text_type(ex))
+
     @mock.patch.object(utils, 'print_list')
     def test_do_policy_type_list(self, mock_print):
         service = mock.Mock()

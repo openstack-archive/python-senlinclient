@@ -84,6 +84,14 @@ class Client(object):
         """
         return self.service.delete_profile(profile, ignore_missing)
 
+    def validate_profile(self, **attrs):
+        """Validate a profile spec
+
+        Doc link:
+        http://developer.openstack.org/api-ref-clustering-v1.html#validateProfile
+        """
+        return self.service.validate_profile(**attrs)
+
     def policy_types(self, **query):
         """List policy types
 
