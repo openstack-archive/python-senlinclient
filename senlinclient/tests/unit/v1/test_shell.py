@@ -11,6 +11,8 @@
 # under the License.
 
 import copy
+import subprocess
+
 import mock
 import six
 import testtools
@@ -747,6 +749,175 @@ class ShellTest(testtools.TestCase):
                                sh.do_cluster_delete, service, args)
         msg = _('Failed to delete some of the specified clusters.')
         self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch('subprocess.Popen')
+    def test__run_script(self, mock_proc):
+        x_proc = mock.Mock(returncode=0)
+        x_stdout = 'OUTPUT'
+        x_stderr = 'ERROR'
+        x_proc.communicate.return_value = (x_stdout, x_stderr)
+        mock_proc.return_value = x_proc
+
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'floating',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                }
+            ]
+        }
+        output = {}
+
+        sh._run_script('NODE_ID', addr, 'private', 'floating', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+        mock_proc.assert_called_once_with(
+            ['ssh', '-4', '-p22', '-i identity_path', '-f bar', 'john@1.2.3.4',
+             'echo foo'],
+            stdout=subprocess.PIPE)
+        self.assertEqual(
+            {'status': 'SUCCEEDED (0)', 'output': 'OUTPUT', 'error': 'ERROR'},
+            output)
+
+    def test__run_script_network_not_found(self):
+        addr = {'foo': 'bar'}
+        output = {}
+
+        sh._run_script('NODE_ID', addr, 'private', 'floating', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'reason': "Node 'NODE_ID' is not attached to network 'private'."
+             },
+            output)
+
+    def test__run_script_more_than_one_network(self):
+        addr = {'foo': 'bar', 'koo': 'tar'}
+        output = {}
+
+        sh._run_script('NODE_ID', addr, '', 'floating', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'reason': "Node 'NODE_ID' is attached to more than one "
+                       "network. Please pick the network to use."},
+            output)
+
+    def test__run_script_no_network(self):
+        addr = {}
+        output = {}
+
+        sh._run_script('NODE_ID', addr, '', 'floating', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+
+        self.assertEqual(
+            {'status': 'FAILED',
+             'reason': "Node 'NODE_ID' is not attached to any network."},
+            output)
+
+    def test__run_script_no_matching_address(self):
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                }
+            ]
+        }
+        output = {}
+
+        sh._run_script('NODE_ID', addr, 'private', 'floating', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'reason': "No address that would match network 'private' and "
+                       "type 'floating' of IPv4 has been found for node "
+                       "'NODE_ID'."},
+            output)
+
+    def test__run_script_more_than_one_address(self):
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                },
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '5.6.7.8',
+                },
+            ]
+        }
+
+        output = {}
+
+        sh._run_script('NODE_ID', addr, 'private', 'fixed', 22, 'john',
+                       False, 'identity_path', 'echo foo', '-f bar',
+                       output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'reason': "More than one IPv4 fixed address found."},
+            output)
+
+    @mock.patch('threading.Thread')
+    @mock.patch.object(sh, '_run_script')
+    def test_do_cluster_run(self, mock_run, mock_thread):
+        service = mock.Mock()
+        args = {
+            'script': 'script_name',
+            'network': 'network_name',
+            'address_type': 'fixed',
+            'port': 22,
+            'user': 'root',
+            'ipv6': False,
+            'identity_file': 'identity_filename',
+            'ssh_options': '-f oo',
+        }
+        args = self._make_args(args)
+        args.id = 'CID'
+        addr1 = {'addresses': 'ADDR CONTENT 1'}
+        addr2 = {'addresses': 'ADDR CONTENT 2'}
+        attributes = [
+            mock.Mock(node_id='NODE1', attr_value=addr1),
+            mock.Mock(node_id='NODE2', attr_value=addr2)
+        ]
+        service.collect_cluster_attrs.return_value = attributes
+
+        th1 = mock.Mock()
+        th2 = mock.Mock()
+        mock_thread.side_effect = [th1, th2]
+        fake_script = 'blah blah'
+        with mock.patch('senlinclient.v1.shell.open',
+                        mock.mock_open(read_data=fake_script)) as mock_open:
+            sh.do_cluster_run(service, args)
+
+        service.collect_cluster_attrs.assert_called_once_with(
+            args.id, 'details')
+        mock_open.assert_called_once_with('script_name', 'r')
+        mock_thread.assert_has_calls([
+            mock.call(target=mock_run,
+                      args=('NODE1', 'ADDR CONTENT 1', 'network_name',
+                            'fixed', 22, 'root', False, 'identity_filename',
+                            'blah blah', '-f oo'),
+                      kwargs={'output': {}}),
+            mock.call(target=mock_run,
+                      args=('NODE2', 'ADDR CONTENT 2', 'network_name',
+                            'fixed', 22, 'root', False, 'identity_filename',
+                            'blah blah', '-f oo'),
+                      kwargs={'output': {}})
+        ])
+        th1.start.assert_called_once_with()
+        th2.start.assert_called_once_with()
+        th1.join.assert_called_once_with()
+        th2.join.assert_called_once_with()
 
     @mock.patch.object(sh, '_show_cluster')
     def test_do_cluster_update(self, mock_show):
