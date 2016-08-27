@@ -828,7 +828,7 @@ def do_cluster_policy_list(service, args):
     """List policies from cluster."""
     show_deprecated('senlin cluster-policy-list',
                     'openstack cluster policy binding list')
-    fields = ['policy_id', 'policy_name', 'policy_type', 'enabled']
+    fields = ['policy_id', 'policy_name', 'policy_type', 'is_enabled']
 
     cluster = service.get_cluster(args.id)
     queries = {
