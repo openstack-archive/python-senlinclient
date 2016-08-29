@@ -11,12 +11,13 @@
 # under the License.
 
 import copy
-import mock
-import six
+import subprocess
 
+import mock
 from openstack.cluster.v1 import cluster as sdk_cluster
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
+import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import cluster as osc_cluster
@@ -782,7 +783,7 @@ class TestClusterRecover(TestCluster):
         self.mock_client.recover_cluster = mock.Mock(
             return_value=self.response)
 
-    def test_cluster_recoverk(self):
+    def test_cluster_recover(self):
         arglist = ['cluster1', 'cluster2', 'cluster3']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
@@ -833,3 +834,181 @@ class TestClusterCollect(TestCluster):
         self.mock_client.collect_cluster_attrs.assert_called_once_with(
             'cluster1', 'path.to.attr')
         self.assertEqual(['node_id', 'attr_value'], columns)
+
+
+class TestClusterRun(TestCluster):
+    attrs = [
+        mock.Mock(node_id="NODE_ID1",
+                  attr_value={"addresses": 'ADDRESS CONTENT 1'}),
+        mock.Mock(node_id="NODE_ID2",
+                  attr_value={"addresses": 'ADDRESS CONTENT 2'})
+    ]
+
+    def setUp(self):
+        super(TestClusterRun, self).setUp()
+        self.cmd = osc_cluster.ClusterRun(self.app, None)
+        self.mock_client.collect_cluster_attrs = mock.Mock(
+            return_value=self.attrs)
+
+    @mock.patch('subprocess.Popen')
+    def test__run_script(self, mock_proc):
+        x_proc = mock.Mock(returncode=0)
+        x_stdout = 'OUTPUT'
+        x_stderr = 'ERROR'
+        x_proc.communicate.return_value = (x_stdout, x_stderr)
+        mock_proc.return_value = x_proc
+
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'floating',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                }
+            ]
+        }
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, 'private', 'floating', 22,
+                             'john', False, 'identity_path', 'echo foo',
+                             '-f bar',
+                             output=output)
+        mock_proc.assert_called_once_with(
+            ['ssh', '-4', '-p22', '-i identity_path', '-f bar', 'john@1.2.3.4',
+             'echo foo'],
+            stdout=subprocess.PIPE)
+        self.assertEqual(
+            {'status': 'SUCCEEDED (0)', 'output': 'OUTPUT', 'error': 'ERROR'},
+            output)
+
+    def test__run_script_network_not_found(self):
+        addr = {'foo': 'bar'}
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, 'private', 'floating', 22,
+                             'john', False, 'identity_path', 'echo foo',
+                             '-f bar',
+                             output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'error': "Node 'NODE_ID' is not attached to network 'private'."
+             },
+            output)
+
+    def test__run_script_more_than_one_network(self):
+        addr = {'foo': 'bar', 'koo': 'tar'}
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, '', 'floating', 22, 'john',
+                             False, 'identity_path', 'echo foo', '-f bar',
+                             output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'error': "Node 'NODE_ID' is attached to more than one "
+                       "network. Please pick the network to use."},
+            output)
+
+    def test__run_script_no_network(self):
+        addr = {}
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, '', 'floating', 22, 'john',
+                             False, 'identity_path', 'echo foo', '-f bar',
+                             output=output)
+
+        self.assertEqual(
+            {'status': 'FAILED',
+             'error': "Node 'NODE_ID' is not attached to any network."},
+            output)
+
+    def test__run_script_no_matching_address(self):
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                }
+            ]
+        }
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, 'private', 'floating', 22,
+                             'john', False, 'identity_path', 'echo foo',
+                             '-f bar',
+                             output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'error': "No address that matches network 'private' and "
+                      "type 'floating' of IPv4 has been found for node "
+                      "'NODE_ID'."},
+            output)
+
+    def test__run_script_more_than_one_address(self):
+        addr = {
+            'private': [
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '1.2.3.4',
+                },
+                {
+                    'OS-EXT-IPS:type': 'fixed',
+                    'version': 4,
+                    'addr': '5.6.7.8',
+                },
+            ]
+        }
+
+        output = {}
+
+        self.cmd._run_script('NODE_ID', addr, 'private', 'fixed', 22, 'john',
+                             False, 'identity_path', 'echo foo', '-f bar',
+                             output=output)
+        self.assertEqual(
+            {'status': 'FAILED',
+             'error': "More than one IPv4 fixed address found."},
+            output)
+
+    @mock.patch('threading.Thread')
+    @mock.patch.object(osc_cluster.ClusterRun, '_run_script')
+    def test_cluster_run(self, mock_script, mock_thread):
+        arglist = [
+            '--port', '22',
+            '--address-type', 'fixed',
+            '--network', 'private',
+            '--user', 'root',
+            '--identity-file', 'path-to-identity',
+            '--ssh-options', '-f boo',
+            '--script', 'script-file',
+            'cluster1'
+        ]
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        th1 = mock.Mock()
+        th2 = mock.Mock()
+        mock_thread.side_effect = [th1, th2]
+        fake_script = 'blah blah'
+        with mock.patch('senlinclient.v1.cluster.open',
+                        mock.mock_open(read_data=fake_script)) as mock_open:
+            self.cmd.take_action(parsed_args)
+
+        self.mock_client.collect_cluster_attrs.assert_called_once_with(
+            'cluster1', 'details')
+        mock_open.assert_called_once_with('script-file', 'r')
+        mock_thread.assert_has_calls([
+            mock.call(target=mock_script,
+                      args=('NODE_ID1', 'ADDRESS CONTENT 1', 'private',
+                            'fixed', 22, 'root', False, 'path-to-identity',
+                            'blah blah', '-f boo'),
+                      kwargs={'output': {}}),
+            mock.call(target=mock_script,
+                      args=('NODE_ID2', 'ADDRESS CONTENT 2', 'private',
+                            'fixed', 22, 'root', False, 'path-to-identity',
+                            'blah blah', '-f boo'),
+                      kwargs={'output': {}})
+        ])
+        th1.start.assert_called_once_with()
+        th2.start.assert_called_once_with()
+        th1.join.assert_called_once_with()
+        th2.join.assert_called_once_with()
