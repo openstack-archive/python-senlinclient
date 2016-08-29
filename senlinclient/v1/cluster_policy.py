@@ -63,7 +63,7 @@ class ClusterPolicyList(command.Lister):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
 
-        columns = ['policy_id', 'policy_name', 'policy_type', 'enabled']
+        columns = ['policy_id', 'policy_name', 'policy_type', 'is_enabled']
         cluster = senlin_client.get_cluster(parsed_args.cluster)
         queries = {
             'sort': parsed_args.sort,

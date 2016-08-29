@@ -25,7 +25,7 @@ class TestClusterPolicy(fakes.TestClusteringv1):
 
 
 class TestClusterPolicyList(TestClusterPolicy):
-    columns = ['policy_id', 'policy_name', 'policy_type', 'enabled']
+    columns = ['policy_id', 'policy_name', 'policy_type', 'is_enabled']
     response = {"cluster_policies": [
         {
             "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
