@@ -168,14 +168,14 @@ class CreateReceiver(command.ShowOne):
         parser.add_argument(
             '--cluster',
             metavar='<cluster>',
-            required=True,
-            help=_('Targeted cluster for this receiver')
+            help=_('Targeted cluster for this receiver. Required if '
+                   'receiver type is webhook')
         )
         parser.add_argument(
             '--action',
             metavar='<action>',
-            required=True,
-            help=_('Name or ID of the targeted action to be triggered')
+            help=_('Name or ID of the targeted action to be triggered. '
+                   'Required if receiver type is webhook')
         )
         parser.add_argument(
             'name',
@@ -186,6 +186,11 @@ class CreateReceiver(command.ShowOne):
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
+        if parsed_args.type == 'webhook':
+            if (not parsed_args.cluster or not parsed_args.action):
+                msg = _('cluster and action parameters are required to create '
+                        'webhook type of receiver.')
+                raise exc.CommandError(msg)
 
         senlin_client = self.app.client_manager.clustering
         params = {

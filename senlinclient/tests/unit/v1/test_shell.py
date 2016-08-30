@@ -468,7 +468,7 @@ class ShellTest(testtools.TestCase):
                                           receiver_id='receiver_id')
 
     @mock.patch.object(sh, '_show_receiver')
-    def test_do_receiver_create(self, mock_show):
+    def test_do_receiver_create_webhook(self, mock_show):
         service = mock.Mock()
         args = {
             'name': 'receiver1',
@@ -483,6 +483,47 @@ class ShellTest(testtools.TestCase):
             'type': 'webhook',
             'cluster_id': 'cluster1',
             'action': 'CLUSTER_SCALE_IN',
+            'params': {}
+        }
+        receiver = mock.Mock()
+        receiver.id = 'FAKE_ID'
+        service.create_receiver.return_value = receiver
+        sh.do_receiver_create(service, args)
+        service.create_receiver.assert_called_once_with(**params)
+        mock_show.assert_called_once_with(service, 'FAKE_ID')
+
+    def test_do_receiver_create_webhook_failed(self):
+        service = mock.Mock()
+        args = {
+            'name': 'receiver1',
+            'type': 'webhook',
+            'cluster': None,
+            'action': None,
+            'params': {}
+        }
+        args = self._make_args(args)
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_receiver_create, service, args)
+        msg = _("cluster and action parameters are required to create webhook"
+                " type of receiver.")
+        self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(sh, '_show_receiver')
+    def test_do_receiver_create_non_webhook(self, mock_show):
+        service = mock.Mock()
+        args = {
+            'name': 'receiver1',
+            'type': 'foo',
+            'cluster': None,
+            'action': None,
+            'params': {}
+        }
+        args = self._make_args(args)
+        params = {
+            'name': 'receiver1',
+            'type': 'foo',
+            'cluster_id': None,
+            'action': None,
             'params': {}
         }
         receiver = mock.Mock()
