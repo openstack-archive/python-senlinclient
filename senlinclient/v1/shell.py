@@ -1367,10 +1367,12 @@ def do_receiver_show(service, args):
 
 @utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
            help=_('Type of the receiver to create.'))
-@utils.arg('-c', '--cluster', metavar='<CLUSTER>', required=True,
-           help=_('Targeted cluster for this receiver.'))
-@utils.arg('-a', '--action', metavar='<ACTION>', required=True,
-           help=_('Name or ID of the targeted action to be triggered.'))
+@utils.arg('-c', '--cluster', metavar='<CLUSTER>',
+           help=_('Targeted cluster for this receiver. Required if receiver '
+                  'type is webhook.'))
+@utils.arg('-a', '--action', metavar='<ACTION>',
+           help=_('Name or ID of the targeted action to be triggered. '
+                  'Required if receiver type is webhook.'))
 @utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
            help=_('A dictionary of parameters that will be passed to target '
                   'action when the receiver is triggered.'),
@@ -1381,6 +1383,12 @@ def do_receiver_create(service, args):
     """Create a receiver."""
     show_deprecated('senlin receiver-create',
                     'openstack cluster receiver create')
+
+    if args.type == 'webhook':
+        if (not args.cluster or not args.action):
+            msg = _('cluster and action parameters are required to create '
+                    'webhook type of receiver.')
+            raise exc.CommandError(msg)
 
     params = {
         'name': args.name,

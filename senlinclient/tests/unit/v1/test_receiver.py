@@ -18,6 +18,7 @@ from openstack.cluster.v1 import receiver as sdk_receiver
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
+from senlinclient.common.i18n import _
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import receiver as osc_receiver
 
@@ -233,13 +234,33 @@ class TestReceiverCreate(TestReceiver):
         self.mock_client.get_receiver = mock.Mock(
             return_value=sdk_receiver.Receiver(**self.response['receiver']))
 
-    def test_receiver_create(self):
+    def test_receiver_create_webhook(self):
         arglist = ['my_receiver', '--action', 'CLUSTER_SCALE_OUT',
                    '--cluster', 'my_cluster', '--params', 'count=1',
                    '--type', 'webhook']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_receiver.assert_called_with(**self.args)
+
+    def test_receiver_create_webhook_failed(self):
+        arglist = ['my_receiver', '--action', 'CLUSTER_SCALE_OUT',
+                   '--params', 'count=1', '--type', 'webhook']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn(_('cluster and action parameters are required to create '
+                        'webhook type of receiver'), str(error))
+
+    def test_receiver_create_non_webhook(self):
+        arglist = ['my_receiver', '--params', 'count=1',
+                   '--type', 'foo']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        args = copy.deepcopy(self.args)
+        args['type'] = 'foo'
+        args['cluster_id'] = None
+        args['action'] = None
+        self.mock_client.create_receiver.assert_called_with(**args)
 
 
 class TestReceiverDelete(TestReceiver):
