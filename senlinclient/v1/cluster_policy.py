@@ -80,7 +80,7 @@ class ClusterPolicyList(command.Lister):
             }
         return (
             columns,
-            (utils.get_item_properties(p.to_dict(), columns,
+            (utils.get_item_properties(p, columns,
                                        formatters=formatters)
              for p in policies)
         )
