@@ -1,0 +1,4 @@
+---
+features:
+  - The senlinclient now supports API micro-versioning. Current supported
+    version is 'clustering 1.2'.

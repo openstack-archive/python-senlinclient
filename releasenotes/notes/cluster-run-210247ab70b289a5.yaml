@@ -1,0 +1,5 @@
+---
+features:
+  - A new CLI command 'senlin cluster-run' and a new OSC plugin command
+    'openstack cluster run' have been added. Use the 'help' command to find
+    out how to use it.

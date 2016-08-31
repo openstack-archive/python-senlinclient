@@ -1,0 +1,5 @@
+---
+features:
+  - The senlin CLI 'node-delete' and the OSC plugin command
+    'cluster node delete' now outputs the action IDs when successful. Error
+    messages are printed when appropriate.

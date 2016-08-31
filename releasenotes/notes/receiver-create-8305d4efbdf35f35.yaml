@@ -1,0 +1,5 @@
+---
+other:
+  - The receiver creation command (both senlin CLI and OSC plugin command)
+    now allow 'cluster' and 'action' to be left unspecified if the receiver
+    type is not 'webhook'.

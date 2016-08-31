@@ -1,0 +1,4 @@
+---
+features:
+  - A profile-validate command has been added to command line. It can be
+    used for validating the spec of a profile without creating it.

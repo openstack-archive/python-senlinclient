@@ -1,0 +1,4 @@
+---
+fixes:
+  - The cluster policy list command was broken by new SDK changes and then
+    fixed. The 'enabled' field is now renamed to 'is_enabled'.
