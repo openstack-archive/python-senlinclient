@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 def show_deprecated(deprecated, recommended):
     logger.warning(
-        _LW('"%(old)s" is deprecated, please use "%(new)s" instead.'),
+        _LW('"%(old)s" is deprecated and will be removed by Apr 2017, '
+            'please use "%(new)s" instead.'),
         {'old': deprecated, 'new': recommended})
 
 
