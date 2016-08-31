@@ -335,7 +335,8 @@ class TestNodeDelete(TestNode):
     def setUp(self):
         super(TestNodeDelete, self).setUp()
         self.cmd = osc_node.DeleteNode(self.app, None)
-        self.mock_client.delete_node = mock.Mock()
+        mock_node = mock.Mock(location='loc/fake_action_id')
+        self.mock_client.delete_node = mock.Mock(return_value=mock_node)
 
     def test_node_delete(self):
         arglist = ['node1', 'node2', 'node3']
@@ -359,10 +360,12 @@ class TestNodeDelete(TestNode):
         arglist = ['my_node']
         self.mock_client.delete_node.side_effect = sdk_exc.ResourceNotFound
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
-                                  parsed_args)
-        self.assertIn('Failed to delete 1 of the 1 specified node(s).',
-                      str(error))
+
+        self.cmd.take_action(parsed_args)
+
+        self.mock_client.delete_node.assert_has_calls(
+            [mock.call('my_node', False)]
+        )
 
     def test_node_delete_one_found_one_not_found(self):
         arglist = ['node1', 'node2']
@@ -370,13 +373,12 @@ class TestNodeDelete(TestNode):
             [None, sdk_exc.ResourceNotFound]
         )
         parsed_args = self.check_parser(self.cmd, arglist, [])
-        error = self.assertRaises(exc.CommandError,
-                                  self.cmd.take_action, parsed_args)
+
+        self.cmd.take_action(parsed_args)
+
         self.mock_client.delete_node.assert_has_calls(
             [mock.call('node1', False), mock.call('node2', False)]
         )
-        self.assertEqual('Failed to delete 1 of the 2 specified node(s).',
-                         str(error))
 
     @mock.patch('sys.stdin', spec=six.StringIO)
     def test_node_delete_prompt_yes(self, mock_stdin):

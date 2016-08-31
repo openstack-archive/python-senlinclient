@@ -187,6 +187,14 @@ def print_dict(d, formatters=None):
         print(encodeutils.safe_encode(content))
 
 
+def print_action_result(rid, res):
+    if res[0] == "OK":
+        output = _("accepted by action %s") % res[1]
+    else:
+        output = _("failed due to '%s'") % res[1]
+    print(_(" %(cid)s: %(output)s") % {"cid": rid, "output": output})
+
+
 def format_parameters(params, parse_semicolon=True):
     """Reformat parameters into dict of format expected by the API."""
     if not params:
