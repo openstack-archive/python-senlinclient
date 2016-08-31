@@ -780,17 +780,6 @@ class ShellTest(testtools.TestCase):
         sh.do_cluster_delete(service, args)
         service.delete_cluster.assert_called_once_with('CID', False)
 
-    def test_do_cluster_delete_not_found(self):
-        service = mock.Mock()
-        args = {'id': ['cluster_id']}
-        args = self._make_args(args)
-
-        service.delete_cluster.side_effect = oexc.ResourceNotFound
-        ex = self.assertRaises(exc.CommandError,
-                               sh.do_cluster_delete, service, args)
-        msg = _('Failed to delete some of the specified clusters.')
-        self.assertEqual(msg, six.text_type(ex))
-
     @mock.patch('subprocess.Popen')
     def test__run_script(self, mock_proc):
         x_proc = mock.Mock(returncode=0)
@@ -1484,17 +1473,6 @@ class ShellTest(testtools.TestCase):
         sh.do_node_delete(service, args)
 
         service.delete_node.assert_called_once_with('node1', False)
-
-    def test_do_node_delete_not_found(self):
-        service = mock.Mock()
-        ex = oexc.ResourceNotFound
-        service.delete_node.side_effect = ex
-
-        args = self._make_args({'id': ['node1']})
-        ex = self.assertRaises(exc.CommandError,
-                               sh.do_node_delete, service, args)
-        msg = _('Failed to delete some of the specified nodes.')
-        self.assertEqual(msg, six.text_type(ex))
 
     def test_do_node_check(self):
         service = mock.Mock()

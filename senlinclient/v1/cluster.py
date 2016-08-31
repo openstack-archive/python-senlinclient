@@ -311,20 +311,16 @@ class DeleteCluster(command.Command):
             self.log.info(_LI('Ctrl-d detected'))
             return
 
-        failure_count = 0
-
+        result = {}
         for cid in parsed_args.cluster:
             try:
-                senlin_client.delete_cluster(cid, False)
+                cluster = senlin_client.delete_cluster(cid, False)
+                result[cid] = ('OK', cluster.location.split('/')[-1])
             except Exception as ex:
-                failure_count += 1
-                print(ex)
-        if failure_count:
-            raise exc.CommandError(_('Failed to delete %(count)s of the '
-                                     '%(total)s specified cluster(s).') %
-                                   {'count': failure_count,
-                                   'total': len(parsed_args.cluster)})
-        print('Request accepted')
+                result[cid] = ('ERROR', six.text_type(ex))
+
+        for rid, res in result.items():
+            senlin_utils.print_action_result(rid, res)
 
 
 class ResizeCluster(command.Command):

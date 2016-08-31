@@ -19,6 +19,7 @@ from openstack import exceptions as sdk_exc
 from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
+import six
 
 from senlinclient.common.i18n import _
 from senlinclient.common.i18n import _LI
@@ -314,20 +315,16 @@ class DeleteNode(command.Command):
             self.log.info(_LI('Ctrl-d detected'))
             return
 
-        failure_count = 0
-
+        result = {}
         for nid in parsed_args.node:
             try:
-                senlin_client.delete_node(nid, False)
+                node = senlin_client.delete_node(nid, False)
+                result[nid] = ('OK', node.location.split('/')[-1])
             except Exception as ex:
-                failure_count += 1
-                print(ex)
-        if failure_count:
-            raise exc.CommandError(_('Failed to delete %(count)s of the '
-                                     '%(total)s specified node(s).') %
-                                   {'count': failure_count,
-                                   'total': len(parsed_args.node)})
-        print('Request accepted')
+                result[nid] = ('ERROR', six.text_type(ex))
+
+        for rid, res in result.items():
+            senlin_utils.print_action_result(rid, res)
 
 
 class CheckNode(command.Command):

@@ -582,18 +582,17 @@ def do_cluster_collect(service, args):
 def do_cluster_delete(service, args):
     """Delete the cluster(s)."""
     show_deprecated('senlin cluster-delete', 'openstack cluster delete')
-    failure_count = 0
 
+    result = {}
     for cid in args.id:
         try:
-            service.delete_cluster(cid, False)
+            cluster = service.delete_cluster(cid, False)
+            result[cid] = ('OK', cluster.location.split('/')[-1])
         except Exception as ex:
-            failure_count += 1
-            print(ex)
-    if failure_count > 0:
-        msg = _('Failed to delete some of the specified clusters.')
-        raise exc.CommandError(msg)
-    print('Request accepted')
+            result[cid] = ('ERROR', six.text_type(ex))
+
+    for rid, res in result.items():
+        utils.print_action_result(rid, res)
 
 
 def _run_script(node_id, addr, net, addr_type, port, user, ipv6, identity_file,
@@ -1208,18 +1207,17 @@ def do_node_show(service, args):
 def do_node_delete(service, args):
     """Delete the node(s)."""
     show_deprecated('senlin node-delete', 'openstack cluster node delete')
-    failure_count = 0
 
+    result = {}
     for nid in args.id:
         try:
-            service.delete_node(nid, False)
+            node = service.delete_node(nid, False)
+            result[nid] = ('OK', node.location.split('/')[-1])
         except Exception as ex:
-            failure_count += 1
-            print(ex)
-    if failure_count > 0:
-        msg = _('Failed to delete some of the specified nodes.')
-        raise exc.CommandError(msg)
-    print('Request accepted')
+            result[nid] = ('ERROR', six.text_type(ex))
+
+    for rid, res in result.items():
+        utils.print_action_result(rid, res)
 
 
 @utils.arg('-n', '--name', metavar='<NAME>',
