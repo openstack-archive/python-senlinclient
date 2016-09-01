@@ -55,7 +55,7 @@ List available clusters::
 
 Create a profile::
 
-    senlin profile-create -t os.heat.stack -s profile.spec myprofile
+    senlin profile-create -s profile.spec myprofile
 
 View profile information::
 
