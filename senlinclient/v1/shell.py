@@ -1335,7 +1335,7 @@ def do_receiver_list(service, args):
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
-            'cluster_id': lambda x: x.cluster_id[:8],
+            'cluster_id': lambda x: x.cluster_id[:8] if x.cluster_id else '-',
         }
     utils.print_list(receivers, fields, formatters=formatters,
                      sortby_index=sortby_index)
