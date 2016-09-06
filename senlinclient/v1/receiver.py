@@ -97,7 +97,7 @@ class ListReceiver(command.Lister):
         if not parsed_args.full_id:
             formatters = {
                 'id': lambda x: x[:8],
-                'cluster_id': lambda x: x[:8],
+                'cluster_id': lambda x: x[:8] if x else None,
             }
 
         return (
