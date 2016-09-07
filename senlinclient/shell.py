@@ -308,13 +308,13 @@ def main(args=None):
         SenlinShell().main(args)
     except KeyboardInterrupt:
         print(_("... terminating senlin client"), file=sys.stderr)
-        sys.exit(130)
+        return 130
     except Exception as e:
         if '--debug' in args or '-d' in args:
             raise
         else:
             print(encodeutils.safe_encode(six.text_type(e)), file=sys.stderr)
-        sys.exit(1)
+        return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
