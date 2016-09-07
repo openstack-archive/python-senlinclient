@@ -6,4 +6,4 @@ Senlin Client Release Notes
    :maxdepth: 1
 
    unreleased
-    newton
+   newton
