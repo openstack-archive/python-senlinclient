@@ -20,14 +20,13 @@ from heatclient.common import template_utils
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils
-from six import moves
 
 
 class CaptureStdout(object):
     """Context manager for capturing stdout from statements in its block."""
     def __enter__(self):
         self.real_stdout = sys.stdout
-        self.stringio = moves.StringIO()
+        self.stringio = six.StringIO()
         sys.stdout = self.stringio
         return self
 
