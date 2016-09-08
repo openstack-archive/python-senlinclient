@@ -112,7 +112,7 @@ class TestProfileShow(TestProfile):
 
 
 class TestProfileList(TestProfile):
-    columns = ['id', 'name', 'type', 'created_at']
+    columns = ['id', 'name', 'type_name', 'created_at']
     data = {"profiles": [
         {
             "created_at": "2016-02-17T13:01:05",
