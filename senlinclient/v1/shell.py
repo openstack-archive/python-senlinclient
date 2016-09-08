@@ -112,7 +112,7 @@ def do_profile_type_show(service, args):
 def do_profile_list(service, args=None):
     """List profiles that meet the criteria."""
     show_deprecated('senlin profile-list', 'openstack cluster profile list')
-    fields = ['id', 'name', 'type', 'created_at']
+    fields = ['id', 'name', 'type_name', 'created_at']
     queries = {
         'limit': args.limit,
         'marker': args.marker,

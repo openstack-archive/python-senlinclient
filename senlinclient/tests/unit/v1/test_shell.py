@@ -119,7 +119,7 @@ class ShellTest(testtools.TestCase):
         service = mock.Mock()
         profiles = mock.Mock()
         service.profiles.return_value = profiles
-        fields = ['id', 'name', 'type', 'created_at']
+        fields = ['id', 'name', 'type_name', 'created_at']
         args = {
             'limit': 20,
             'marker': 'mark_id',
