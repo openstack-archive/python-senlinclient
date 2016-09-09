@@ -53,11 +53,7 @@ def do_build_info(service, args=None):
 
 
 def do_profile_type_list(service, args=None):
-    """List the available profile types.
-
-    :param sc: Instance of senlinclient.
-    :param args: Additional command line arguments, if any.
-    """
+    """List the available profile types."""
     show_deprecated('senlin profile-type-list',
                     'openstack cluster profile type list')
     types = service.profile_types()
