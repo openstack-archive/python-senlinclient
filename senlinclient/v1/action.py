@@ -102,7 +102,7 @@ class ListAction(command.Lister):
 
         return (
             columns,
-            (utils.get_item_properties(a.to_dict(), columns,
+            (utils.get_item_properties(a, columns,
                                        formatters=formatters)
              for a in actions)
         )
