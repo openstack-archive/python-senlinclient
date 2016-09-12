@@ -98,7 +98,7 @@ class ListEvent(command.Lister):
 
         events = senlin_client.events(**queries)
         return (columns,
-                (utils.get_item_properties(e.to_dict(), columns,
+                (utils.get_item_properties(e, columns,
                                            formatters=formatters)
                  for e in events))
 
