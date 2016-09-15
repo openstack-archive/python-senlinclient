@@ -1420,6 +1420,7 @@ class ShellTest(testtools.TestCase):
         formatters = {
             'metadata': utils.json_formatter,
             'data': utils.json_formatter,
+            'dependents': utils.json_formatter,
         }
         data = mock.Mock()
         node.to_dict.return_value = data

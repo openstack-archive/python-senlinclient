@@ -154,6 +154,7 @@ def _show_node(senlin_client, node_id, show_details=False):
     formatters = {
         'metadata': senlin_utils.json_formatter,
         'data': senlin_utils.json_formatter,
+        'dependents': senlin_utils.json_formatter,
     }
     data = node.to_dict()
     if show_details and data['details']:

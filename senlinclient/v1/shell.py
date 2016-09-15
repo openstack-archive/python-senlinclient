@@ -1152,6 +1152,7 @@ def _show_node(service, node_id, show_details=False):
     formatters = {
         'metadata': utils.json_formatter,
         'data': utils.json_formatter,
+        'dependents': utils.json_formatter,
     }
     data = node.to_dict()
     if show_details and data['details']:
