@@ -129,7 +129,7 @@ class ListProfile(command.Lister):
 
         senlin_client = self.app.client_manager.clustering
 
-        columns = ['id', 'name', 'type_name', 'created_at']
+        columns = ['id', 'name', 'type', 'created_at']
         queries = {
             'limit': parsed_args.limit,
             'marker': parsed_args.marker,
