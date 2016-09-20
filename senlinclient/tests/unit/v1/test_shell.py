@@ -1599,7 +1599,7 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_action_list(self, mock_print):
         service = mock.Mock()
-        fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
+        fields = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
                   'depended_by', 'created_at']
         args = {
             'sort': 'status',
