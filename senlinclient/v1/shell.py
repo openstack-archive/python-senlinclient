@@ -1499,7 +1499,7 @@ def do_event_show(service, args):
 def do_action_list(service, args):
     """List actions."""
     show_deprecated('senlin action-list', 'openstack cluster action list')
-    fields = ['id', 'name', 'action', 'status', 'target', 'depends_on',
+    fields = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
               'depended_by', 'created_at']
 
     queries = {

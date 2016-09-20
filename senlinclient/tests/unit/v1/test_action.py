@@ -28,7 +28,7 @@ class TestAction(fakes.TestClusteringv1):
 
 
 class TestActionList(TestAction):
-    columns = ['id', 'name', 'action', 'status', 'target', 'depends_on',
+    columns = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
                'depended_by', 'created_at']
     response = {"actions": [
         {
