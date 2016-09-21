@@ -1544,8 +1544,11 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_event_list(self, mock_print):
         service = mock.Mock()
-        fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
+        fields = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
                   'action', 'status', 'level', 'cluster_id']
+        field_labels = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
+                        'action', 'status', 'level', 'cluster_id']
+
         args = {
             'sort': 'timestamp:asc',
             'limit': 20,
@@ -1567,7 +1570,8 @@ class ShellTest(testtools.TestCase):
 
         service.events.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(events, fields,
-                                           formatters=formatters)
+                                           formatters=formatters,
+                                           field_labels=field_labels)
 
     @mock.patch.object(utils, 'print_dict')
     def test_do_event_show(self, mock_print):

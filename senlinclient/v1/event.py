@@ -79,7 +79,7 @@ class ListEvent(command.Lister):
         self.log.debug("take_action(%s)", parsed_args)
 
         senlin_client = self.app.client_manager.clustering
-        columns = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
+        columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
                    'action', 'status', 'status_reason', 'level']
         queries = {
             'sort': parsed_args.sort,

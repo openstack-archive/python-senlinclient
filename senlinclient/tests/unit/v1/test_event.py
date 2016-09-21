@@ -29,8 +29,8 @@ class TestEvent(fakes.TestClusteringv1):
 
 class TestEventList(TestEvent):
 
-    columns = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
-               'status', 'status_reason', 'level']
+    columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
+               'action', 'status', 'status_reason', 'level']
 
     response = {"events": [
         {
@@ -44,7 +44,7 @@ class TestEventList(TestEvent):
             "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
             "status": "CREATING",
             "status_reason": "Initializing",
-            "timestamp": "2015-03-05T08:53:15",
+            "generated_at": "2015-03-05T08:53:15",
             "user": "a21ded6060534d99840658a777c2af5a"
         }
     ]}
@@ -145,7 +145,7 @@ class TestEventShow(TestEvent):
         "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
         "status": "CREATING",
         "status_reason": "Initializing",
-        "timestamp": "2015-03-05T08:53:15",
+        "generated_at": "2015-03-05T08:53:15",
         "user": "a21ded6060534d99840658a777c2af5a"
     }}
 

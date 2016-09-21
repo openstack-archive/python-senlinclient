@@ -1440,8 +1440,11 @@ def do_receiver_delete(service, args):
 def do_event_list(service, args):
     """List events."""
     show_deprecated('senlin event-list', 'openstack cluster event list')
-    fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
+    fields = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name', 'action',
               'status', 'level', 'cluster_id']
+    field_labels = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
+                    'action', 'status', 'level', 'cluster_id']
+
     queries = {
         'sort': args.sort,
         'limit': args.limit,
@@ -1460,7 +1463,8 @@ def do_event_list(service, args):
                                     if x.cluster_id else '')
 
     events = service.events(**queries)
-    utils.print_list(events, fields, formatters=formatters)
+    utils.print_list(events, fields, formatters=formatters,
+                     field_labels=field_labels)
 
 
 @utils.arg('id', metavar='<EVENT>',
