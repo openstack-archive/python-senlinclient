@@ -68,8 +68,9 @@ class ShellTest(testtools.TestCase):
             'api': utils.json_formatter,
             'engine': utils.json_formatter,
         }
-        mock_print.assert_called_once_with(result.to_dict(),
-                                           formatters=formatters)
+        mock_print.assert_called_once_with(
+            {'api': result.api, 'engine': result.engine},
+            formatters=formatters)
         service.get_build_info.assert_called_once_with()
 
     @mock.patch.object(utils, 'print_list')

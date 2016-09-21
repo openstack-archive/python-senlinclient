@@ -34,19 +34,16 @@ def show_deprecated(deprecated, recommended):
 
 
 def do_build_info(service, args=None):
-    """Retrieve build information.
-
-    :param sc: Instance of senlinclient.
-    :param args: Additional command line arguments, if any.
-    """
+    """Retrieve build information."""
     show_deprecated('senlin build-info', 'openstack cluster build info')
-    result = service.get_build_info().to_dict()
+    result = service.get_build_info()
+    info = {'api': result.api, 'engine': result.engine}
 
     formatters = {
         'api': utils.json_formatter,
         'engine': utils.json_formatter,
     }
-    utils.print_dict(result, formatters=formatters)
+    utils.print_dict(info, formatters=formatters)
 
 
 # PROFILE TYPES
