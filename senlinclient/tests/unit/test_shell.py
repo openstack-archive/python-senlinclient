@@ -125,7 +125,7 @@ class ShellTest(testtools.TestCase):
         subparsers = mock.Mock()
         x_subparser1 = mock.Mock()
         x_subparser2 = mock.Mock()
-        x_add_parser = mock.MagicMock(side_effect=[x_subparser1, x_subparser2])
+        x_add_parser = mock.Mock(side_effect=[x_subparser1, x_subparser2])
         subparsers.add_parser = x_add_parser
 
         # subparsers.add_parser = mock.Mock(return_value=x_subparser)
@@ -369,5 +369,5 @@ class ShellTest(testtools.TestCase):
         mock_conn.assert_called_once_with(prof=None, user_agent=USER_AGENT,
                                           **kwargs)
         client = mock.Mock()
-        senlin_client.Client = mock.MagicMock(return_value=client)
+        senlin_client.Client = mock.Mock(return_value=client)
         self.assertEqual(client, sh._setup_senlin_client('1', args))
