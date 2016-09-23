@@ -593,13 +593,13 @@ class TestClusterPolicyAttach(TestCluster):
             return_value=self.response)
 
     def test_cluster_policy_attach(self):
-        arglist = ['--policy', 'my_policy', '--enabled', 'my_cluster']
+        arglist = ['--policy', 'my_policy', '--enabled', 'True', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_attach_policy.assert_called_with(
             'my_cluster',
             'my_policy',
-            enabled=True)
+            enabled='True')
 
 
 class TestClusterPolicyDetach(TestCluster):
