@@ -36,8 +36,8 @@ class ListEvent(command.Lister):
             help=_("Filter parameters to apply on returned events. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
-                   "keys are: ['level', 'obj_type', 'obj_id' ,'cluster_id', "
-                   "'obj_name', 'action']"),
+                   "keys are: ['level', 'otype', 'oid' ,'cluster_id', "
+                   "'oname', 'action']"),
             action='append'
         )
         parser.add_argument(
@@ -56,8 +56,8 @@ class ListEvent(command.Lister):
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
-                   "sort keys are: ['timestamp', 'level', 'obj_type', "
-                   "'obj_name', 'user', 'action', 'status']")
+                   "sort keys are: ['timestamp', 'level', 'otype', "
+                   "'oname', 'user', 'action', 'status']")
         )
         parser.add_argument(
             '--global-project',
