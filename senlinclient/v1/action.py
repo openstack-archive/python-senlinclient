@@ -94,7 +94,7 @@ class ListAction(command.Lister):
             formatters['depended_by'] = f_depby
         else:
             formatters['id'] = lambda x: x[:8]
-            formatters['target'] = lambda x: x[:8]
+            formatters['target_id'] = lambda x: x[:8]
             f_depon = lambda x: '\n'.join(a[:8] for a in x)
             f_depby = lambda x: '\n'.join(a[:8] for a in x)
             formatters['depends_on'] = f_depon
