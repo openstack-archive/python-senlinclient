@@ -1249,7 +1249,7 @@ def do_node_update(service, args):
 
 
 @utils.arg('id', metavar='<NODE>', nargs='+',
-           help=_('ID of node(s) to check.'))
+           help=_('ID or name of node(s) to check.'))
 def do_node_check(service, args):
     """Check the node(s)."""
     show_deprecated('senlin node-check', 'openstack cluster node check')
@@ -1268,7 +1268,7 @@ def do_node_check(service, args):
 
 
 @utils.arg('id', metavar='<NODE>', nargs='+',
-           help=_('ID of node(s) to recover.'))
+           help=_('ID or name of node(s) to recover.'))
 def do_node_recover(service, args):
     """Recover the node(s)."""
     show_deprecated('senlin node-recover', 'openstack cluster node recover')
