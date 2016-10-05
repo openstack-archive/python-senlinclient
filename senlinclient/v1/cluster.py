@@ -522,8 +522,8 @@ class ClusterPolicyAttach(command.Command):
         parser = super(ClusterPolicyAttach, self).get_parser(prog_name)
         parser.add_argument(
             '--enabled',
+            metavar='<enabled>',
             default=True,
-            action="store_true",
             help=_('Whether the policy should be enabled once attached. '
                    'Default to True')
         )
