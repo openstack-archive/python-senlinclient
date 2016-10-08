@@ -1012,7 +1012,7 @@ def do_cluster_policy_show(service, args):
 
 @utils.arg('-p', '--policy', metavar='<POLICY>', required=True,
            help=_('ID or name of policy to be attached.'))
-@utils.arg('-e', '--enabled', metavar='<enabled>', default=True,
+@utils.arg('-e', '--enabled', metavar='<BOOLEAN>', default=True,
            help=_('Whether the policy should be enabled once attached. '
                   'Default to enabled.'))
 @utils.arg('id', metavar='<NAME or ID>',
