@@ -1441,6 +1441,7 @@ def do_event_list(service, args):
     show_deprecated('senlin event-list', 'openstack cluster event list')
     fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name', 'action',
               'status', 'level', 'cluster_id']
+
     queries = {
         'sort': args.sort,
         'limit': args.limit,
@@ -1451,6 +1452,8 @@ def do_event_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
+    sortby_index = None if args.sort else 0
+
     formatters = {}
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
@@ -1459,7 +1462,8 @@ def do_event_list(service, args):
                                     if x.cluster_id else '')
 
     events = service.events(**queries)
-    utils.print_list(events, fields, formatters=formatters)
+    utils.print_list(events, fields, formatters=formatters,
+                     sortby_index=sortby_index)
 
 
 @utils.arg('id', metavar='<EVENT>',

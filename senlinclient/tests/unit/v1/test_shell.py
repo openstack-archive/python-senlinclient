@@ -1545,6 +1545,7 @@ class ShellTest(testtools.TestCase):
         service = mock.Mock()
         fields = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
                   'action', 'status', 'level', 'cluster_id']
+
         args = {
             'sort': 'timestamp:asc',
             'limit': 20,
@@ -1559,6 +1560,7 @@ class ShellTest(testtools.TestCase):
         queries['action'] = 'NODE_DELETE'
         args = self._make_args(args)
         formatters = {}
+        sortby_index = None
         events = mock.Mock()
         service.events.return_value = events
 
@@ -1566,7 +1568,8 @@ class ShellTest(testtools.TestCase):
 
         service.events.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(events, fields,
-                                           formatters=formatters)
+                                           formatters=formatters,
+                                           sortby_index=sortby_index)
 
     @mock.patch.object(utils, 'print_dict')
     def test_do_event_show(self, mock_print):
