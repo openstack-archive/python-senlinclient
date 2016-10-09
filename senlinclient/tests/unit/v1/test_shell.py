@@ -1563,6 +1563,7 @@ class ShellTest(testtools.TestCase):
         queries['action'] = 'NODE_DELETE'
         args = self._make_args(args)
         formatters = {}
+        sortby_index = None
         events = mock.Mock()
         service.events.return_value = events
 
@@ -1571,6 +1572,7 @@ class ShellTest(testtools.TestCase):
         service.events.assert_called_once_with(**queries)
         mock_print.assert_called_once_with(events, fields,
                                            formatters=formatters,
+                                           sortby_index=sortby_index,
                                            field_labels=field_labels)
 
     @mock.patch.object(utils, 'print_dict')

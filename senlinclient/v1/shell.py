@@ -1455,6 +1455,8 @@ def do_event_list(service, args):
     if args.filters:
         queries.update(utils.format_parameters(args.filters))
 
+    sortby_index = None if args.sort else 0
+
     formatters = {}
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
@@ -1464,7 +1466,7 @@ def do_event_list(service, args):
 
     events = service.events(**queries)
     utils.print_list(events, fields, formatters=formatters,
-                     field_labels=field_labels)
+                     sortby_index=sortby_index, field_labels=field_labels)
 
 
 @utils.arg('id', metavar='<EVENT>',
