@@ -89,7 +89,8 @@ class ListProfile(command.Lister):
         parser.add_argument(
             '--marker',
             metavar='<id>',
-            help=_('Only return profiles that appear after the given ID')
+            help=_('Only return profiles that appear after the given profile '
+                   'ID')
         )
         parser.add_argument(
             '--sort',
