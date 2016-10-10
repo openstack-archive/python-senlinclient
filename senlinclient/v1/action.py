@@ -56,7 +56,7 @@ class ListAction(command.Lister):
         parser.add_argument(
             '--marker',
             metavar='<id>',
-            help=_('Only return actions that appear after the given node ID')
+            help=_('Only return actions that appear after the given action ID')
         )
         parser.add_argument(
             '--full-id',
