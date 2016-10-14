@@ -101,7 +101,7 @@ class SenlinShell(object):
     def add_profiler_args(self, parser):
         if osprofiler_profiler:
             parser.add_argument(
-                '--profile', metavar='HMAC_KEY',
+                '--os-profile', metavar='HMAC_KEY',
                 help=_('HMAC key to use for encrypting context data for '
                        'performance profiling of operation. This key should '
                        'be the value of HMAC key configured in osprofiler '
@@ -287,13 +287,13 @@ class SenlinShell(object):
         # Setup Senlin client connection
         sc = self._setup_senlin_client(api_ver, args)
 
-        profile = osprofiler_profiler and options.profile
-        if profile:
-            osprofiler_profiler.init(options.profile)
+        os_profile = osprofiler_profiler and options.os_profile
+        if os_profile:
+            osprofiler_profiler.init(options.os_profile)
 
         args.func(sc.service, args)
 
-        if profile:
+        if os_profile:
             trace_id = osprofiler_profiler.get().get_base_id()
             print(_("Trace ID: %s") % trace_id)
             print(_("To display trace use next command:\n"
