@@ -40,7 +40,8 @@ class ListPolicy(command.Lister):
         parser.add_argument(
             '--marker',
             metavar='<id>',
-            help=_('Only return policies that appear after the given ID')
+            help=_('Only return policies that appear after the given policy '
+                   'ID')
         )
         parser.add_argument(
             '--sort',

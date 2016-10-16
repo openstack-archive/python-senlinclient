@@ -49,7 +49,8 @@ class ListReceiver(command.Lister):
         parser.add_argument(
             '--marker',
             metavar='<id>',
-            help=_('Only return receivers that appear after the given ID')
+            help=_('Only return receivers that appear after the given '
+                   'receiver ID')
         )
         parser.add_argument(
             '--sort',
