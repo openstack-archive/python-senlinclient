@@ -34,7 +34,7 @@ class ClusterPolicyList(command.Lister):
             help=_("Filter parameters to apply on returned results. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
-                   "keys are: ['is_enabled']"),
+                   "keys are: ['is_enabled', 'policy_type', 'policy_name']"),
             action='append'
         )
         parser.add_argument(
