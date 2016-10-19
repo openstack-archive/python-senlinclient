@@ -508,7 +508,7 @@ def _show_cluster(service, cluster_id):
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
-           help=_('Profile Id used for this cluster.'))
+           help=_('Profile Id or name used for this cluster.'))
 @utils.arg('-n', '--min-size', metavar='<MIN-SIZE>', default=0,
            help=_('Min size of the cluster. Default to 0.'))
 @utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=-1,
@@ -742,7 +742,7 @@ def do_cluster_run(service, args):
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
-           help=_('ID of new profile to use.'))
+           help=_('ID or name of new profile to use.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
@@ -1160,7 +1160,7 @@ def _show_node(service, node_id, show_details=False):
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
-           help=_('Profile Id used for this node.'))
+           help=_('Profile Id or name used for this node.'))
 @utils.arg('-c', '--cluster', metavar='<CLUSTER>',
            help=_('Cluster Id for this node.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
@@ -1218,7 +1218,7 @@ def do_node_delete(service, args):
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name for the node.'))
 @utils.arg('-p', '--profile', metavar='<PROFILE ID>',
-           help=_('ID of new profile to use.'))
+           help=_('ID or name of new profile to use.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',

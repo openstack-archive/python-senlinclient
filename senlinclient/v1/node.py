@@ -233,8 +233,8 @@ class UpdateNode(command.ShowOne):
         )
         parser.add_argument(
             '--profile',
-            metavar='<profile-id>',
-            help=_('ID of new profile to use')
+            metavar='<profile>',
+            help=_('ID or name of new profile to use')
         )
         parser.add_argument(
             '--role',
