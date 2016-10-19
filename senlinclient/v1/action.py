@@ -86,19 +86,14 @@ class ListAction(command.Lister):
         actions = senlin_client.actions(**queries)
 
         formatters = {}
-        if parsed_args.full_id:
-            f_depon = lambda x: '\n'.join(a for a in x)
-            f_depby = lambda x: '\n'.join(a for a in x)
+        s = None
+        if not parsed_args.full_id:
+            s = 8
+            formatters['id'] = lambda x: x[:s]
+            formatters['target_id'] = lambda x: x[:s]
 
-            formatters['depends_on'] = f_depon
-            formatters['depended_by'] = f_depby
-        else:
-            formatters['id'] = lambda x: x[:8]
-            formatters['target_id'] = lambda x: x[:8]
-            f_depon = lambda x: '\n'.join(a[:8] for a in x)
-            f_depby = lambda x: '\n'.join(a[:8] for a in x)
-            formatters['depends_on'] = f_depon
-            formatters['depended_by'] = f_depby
+        formatters['depends_on'] = lambda x: '\n'.join(a[:s] for a in x)
+        formatters['depended_by'] = lambda x: '\n'.join(a[:s] for a in x)
 
         return (
             columns,
