@@ -157,7 +157,8 @@ class CreateReceiver(command.ShowOne):
             '--type',
             metavar='<type>',
             default='webhook',
-            help=_('Type of the receiver to create')
+            help=_('Type of the receiver to create. Receiver type can be '
+                   '"webhook" or "message". Default to "webhook".')
         )
         parser.add_argument(
             '--params',

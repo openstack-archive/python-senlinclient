@@ -1359,7 +1359,8 @@ def do_receiver_show(service, args):
 
 
 @utils.arg('-t', '--type', metavar='<TYPE>', default='webhook',
-           help=_('Type of the receiver to create.'))
+           help=_('Type of the receiver to create. Receiver type can be '
+                  '"webhook" or "message". Default to "webhook".'))
 @utils.arg('-c', '--cluster', metavar='<CLUSTER>',
            help=_('Targeted cluster for this receiver. Required if receiver '
                   'type is webhook.'))
