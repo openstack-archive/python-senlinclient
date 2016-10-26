@@ -83,7 +83,7 @@ def do_profile_type_show(service, args):
 
 # PROFILES
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned profiles. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -146,7 +146,7 @@ def _show_profile(service, profile_id):
 
 @utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
            help=_('The spec file used to create the profile.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -192,7 +192,7 @@ def do_profile_show(service, args):
 
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('The new name for the profile.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the profile. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -311,7 +311,7 @@ def do_policy_type_show(service, args):
 
 # POLICIES
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned policies. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -449,7 +449,7 @@ def do_policy_validate(service, args):
 # CLUSTERS
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned clusters. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -518,7 +518,7 @@ def _show_cluster(service, cluster_id):
                   'min_size is specified else 0.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in seconds.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -745,7 +745,7 @@ def do_cluster_run(service, args):
            help=_('ID or name of new profile to use.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -777,7 +777,7 @@ def do_cluster_show(service, args):
     _show_cluster(service, args.id)
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned nodes. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -959,7 +959,7 @@ def do_cluster_scale_in(service, args):
     print('Request accepted by action %s' % resp['action'])
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned results. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -1086,7 +1086,7 @@ def do_cluster_recover(service, args):
 
 @utils.arg('-c', '--cluster', metavar='<CLUSTER>',
            help=_('ID or name of cluster from which nodes are to be listed.'))
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned nodes. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -1165,7 +1165,7 @@ def _show_node(service, node_id, show_details=False):
            help=_('Cluster Id for this node.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the node. '
                   'This can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -1221,7 +1221,7 @@ def do_node_delete(service, args):
            help=_('ID or name of new profile to use.'))
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
-@utils.arg('-M', '--metadata', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the node. '
                   'Metadata can be specified multiple times, or once with '
                   'key-value pairs separated by a semicolon.'),
@@ -1289,7 +1289,7 @@ def do_node_recover(service, args):
 # RECEIVERS
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned receivers. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -1367,7 +1367,7 @@ def do_receiver_show(service, args):
 @utils.arg('-a', '--action', metavar='<ACTION>',
            help=_('Name or ID of the targeted action to be triggered. '
                   'Required if receiver type is webhook.'))
-@utils.arg('-P', '--params', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-P', '--params', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('A dictionary of parameters that will be passed to target '
                   'action when the receiver is triggered.'),
            action='append')
@@ -1419,7 +1419,7 @@ def do_receiver_delete(service, args):
 # EVENTS
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned events. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
@@ -1486,7 +1486,7 @@ def do_event_show(service, args):
 # ACTIONS
 
 
-@utils.arg('-f', '--filters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+@utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Filter parameters to apply on returned actions. '
                   'This can be specified multiple times, or once with '
                   'parameters separated by a semicolon.'),
