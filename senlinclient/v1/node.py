@@ -40,7 +40,7 @@ class ListNode(command.Lister):
         )
         parser.add_argument(
             '--filters',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_("Filter parameters to apply on returned nodes. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter"
@@ -184,7 +184,7 @@ class CreateNode(command.ShowOne):
         )
         parser.add_argument(
             '--metadata',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_('Metadata values to be attached to the node. '
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),
@@ -243,7 +243,7 @@ class UpdateNode(command.ShowOne):
         )
         parser.add_argument(
             '--metadata',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_('Metadata values to be attached to the node. '
                    'Metadata can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),

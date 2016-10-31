@@ -102,7 +102,7 @@ class ListProfile(command.Lister):
         )
         parser.add_argument(
             '--filters',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_("Filter parameters to apply on returned profiles. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
@@ -215,7 +215,7 @@ class CreateProfile(command.ShowOne):
         parser = super(CreateProfile, self).get_parser(prog_name)
         parser.add_argument(
             '--metadata',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_('Metadata values to be attached to the profile. '
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),
@@ -277,7 +277,7 @@ class UpdateProfile(command.ShowOne):
         )
         parser.add_argument(
             '--metadata',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_('Metadata values to be attached to the profile. '
                    'This can be specified multiple times, or once with '
                    'key-value pairs separated by a semicolon'),

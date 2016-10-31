@@ -34,7 +34,7 @@ class ListReceiver(command.Lister):
         parser = super(ListReceiver, self).get_parser(prog_name)
         parser.add_argument(
             '--filters',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_("Filter parameters to apply on returned receivers. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
@@ -162,7 +162,7 @@ class CreateReceiver(command.ShowOne):
         )
         parser.add_argument(
             '--params',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_('A dictionary of parameters that will be passed to target '
                    'action when the receiver is triggered'),
             action='append'

@@ -32,7 +32,7 @@ class ListAction(command.Lister):
         parser = super(ListAction, self).get_parser(prog_name)
         parser.add_argument(
             '--filters',
-            metavar='<key1=value1;key2=value2...>',
+            metavar='<"key1=value1;key2=value2...">',
             help=_("Filter parameters to apply on returned actions. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
