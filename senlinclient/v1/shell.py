@@ -1521,19 +1521,15 @@ def do_action_list(service, args):
     actions = service.actions(**queries)
 
     formatters = {}
-    if args.full_id:
-        f_depon = lambda x: '\n'.join(a for a in x.depends_on)
-        f_depby = lambda x: '\n'.join(a for a in x.depended_by)
+    s = None
+    if not args.full_id:
+        s = 8
+        formatters['id'] = lambda x: x.id[:s]
+        formatters['target_id'] = lambda x: x.target_id[:s]
 
-        formatters['depends_on'] = f_depon
-        formatters['depended_by'] = f_depby
-    else:
-        formatters['id'] = lambda x: x.id[:8]
-        formatters['target_id'] = lambda x: x.target_id[:8]
-        f_depon = lambda x: '\n'.join(a[:8] for a in x.depends_on)
-        f_depby = lambda x: '\n'.join(a[:8] for a in x.depended_by)
-        formatters['depends_on'] = f_depon
-        formatters['depended_by'] = f_depby
+    formatters['depends_on'] = lambda x: '\n'.join(a[:s] for a in x.depends_on)
+    formatters['depended_by'] = lambda x: '\n'.join(a[:s] for a in x.
+                                                    depended_by)
 
     utils.print_list(actions, fields, formatters=formatters,
                      sortby_index=sortby_index)
