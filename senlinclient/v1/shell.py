@@ -1529,7 +1529,7 @@ def do_action_list(service, args):
         formatters['depended_by'] = f_depby
     else:
         formatters['id'] = lambda x: x.id[:8]
-        formatters['target'] = lambda x: x.target_id[:8]
+        formatters['target_id'] = lambda x: x.target_id[:8]
         f_depon = lambda x: '\n'.join(a[:8] for a in x.depends_on)
         f_depby = lambda x: '\n'.join(a[:8] for a in x.depended_by)
         formatters['depends_on'] = f_depon
