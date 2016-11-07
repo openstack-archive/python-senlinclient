@@ -116,4 +116,4 @@ class TestClusterPolicyUpdate(TestClusterPolicy):
         self.mock_client.cluster_update_policy.assert_called_with(
             'my_cluster',
             'my_policy',
-            enabled='true')
+            enabled=True)

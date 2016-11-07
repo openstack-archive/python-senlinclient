@@ -16,6 +16,7 @@ import logging
 
 from osc_lib.command import command
 from osc_lib import utils
+from oslo_utils import strutils
 
 from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
@@ -146,7 +147,8 @@ class ClusterPolicyUpdate(command.Command):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
         kwargs = {
-            'enabled': parsed_args.enabled,
+            'enabled': strutils.bool_from_string(parsed_args.enabled,
+                                                 strict=True),
         }
 
         resp = senlin_client.cluster_update_policy(parsed_args.cluster,
