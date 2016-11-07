@@ -22,6 +22,7 @@ from openstack import exceptions as sdk_exc
 from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
+from oslo_utils import strutils
 import six
 
 from senlinclient.common.i18n import _
@@ -545,7 +546,8 @@ class ClusterPolicyAttach(command.Command):
         senlin_client = self.app.client_manager.clustering
 
         kwargs = {
-            'enabled': parsed_args.enabled,
+            'enabled': strutils.bool_from_string(parsed_args.enabled,
+                                                 strict=True),
         }
 
         resp = senlin_client.cluster_attach_policy(parsed_args.cluster,
