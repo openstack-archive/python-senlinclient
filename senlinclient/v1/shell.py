@@ -16,6 +16,7 @@ import threading
 import time
 
 from openstack import exceptions as sdk_exc
+from oslo_utils import strutils
 import six
 
 from senlinclient.common import exc
@@ -1052,7 +1053,7 @@ def do_cluster_policy_update(service, args):
     show_deprecated('senlin cluster-policy-update',
                     'openstack cluster policy binding update')
     kwargs = {
-        'enabled': args.enabled,
+        'enabled': strutils.bool_from_string(args.enabled, strict=True),
     }
 
     resp = service.cluster_update_policy(args.id, args.policy, **kwargs)
