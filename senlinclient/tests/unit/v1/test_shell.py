@@ -1260,11 +1260,11 @@ class ShellTest(testtools.TestCase):
         args = {
             'id': 'C1',
             'policy': 'P1',
-            'enabled': 'True',
+            'enabled': True,
         }
         args = self._make_args(args)
         kwargs = {
-            'enabled': 'True',
+            'enabled': True,
         }
         service.cluster_attach_policy.return_value = {'action': 'action_id'}
         sh.do_cluster_policy_attach(service, args)
