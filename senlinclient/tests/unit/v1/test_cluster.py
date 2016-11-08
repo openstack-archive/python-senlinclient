@@ -599,7 +599,7 @@ class TestClusterPolicyAttach(TestCluster):
         self.mock_client.cluster_attach_policy.assert_called_with(
             'my_cluster',
             'my_policy',
-            enabled='True')
+            enabled=True)
 
 
 class TestClusterPolicyDetach(TestCluster):
