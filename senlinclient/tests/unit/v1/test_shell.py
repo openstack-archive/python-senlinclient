@@ -1288,11 +1288,11 @@ class ShellTest(testtools.TestCase):
         args = {
             'id': 'C1',
             'policy': 'policy1',
-            'enabled': 'True',
+            'enabled': True,
         }
         args = self._make_args(args)
         kwargs = {
-            'enabled': 'True',
+            'enabled': True,
         }
         service.cluster_update_policy.return_value = {'action': 'action_id'}
 
