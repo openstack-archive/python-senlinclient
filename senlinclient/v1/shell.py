@@ -1500,6 +1500,10 @@ def do_event_show(service, args):
            help=_('Limit the number of actions returned.'))
 @utils.arg('-m', '--marker', metavar='<ID>',
            help=_('Only return actions that appear after the given node ID.'))
+@utils.arg('-g', '--global-project', default=False, action="store_true",
+           help=_('Whether actions from all projects should be listed. '
+                  ' Default to False. Setting this to True may demand '
+                  'for an admin privilege.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 def do_action_list(service, args):
@@ -1512,6 +1516,7 @@ def do_action_list(service, args):
         'sort': args.sort,
         'limit': args.limit,
         'marker': args.marker,
+        'global_project': args.global_project,
     }
 
     if args.filters:

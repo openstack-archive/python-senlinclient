@@ -59,6 +59,14 @@ class ListAction(command.Lister):
             help=_('Only return actions that appear after the given action ID')
         )
         parser.add_argument(
+            '--global-project',
+            default=False,
+            action="store_true",
+            help=_('Whether actions from all projects should be listed. '
+                   ' Default to False. Setting this to True may demand '
+                   'for an admin privilege')
+        )
+        parser.add_argument(
             '--full-id',
             default=False,
             action="store_true",
@@ -78,6 +86,7 @@ class ListAction(command.Lister):
             'sort': parsed_args.sort,
             'limit': parsed_args.limit,
             'marker': parsed_args.marker,
+            'global_project': parsed_args.global_project,
         }
 
         if parsed_args.filters:

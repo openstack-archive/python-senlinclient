@@ -74,6 +74,7 @@ class TestActionList(TestAction):
     ]}
 
     defaults = {
+        'global_project': False,
         'marker': None,
         'limit': None,
         'sort': None,

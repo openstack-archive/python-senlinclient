@@ -1612,6 +1612,7 @@ class ShellTest(testtools.TestCase):
             'sort': 'status',
             'limit': 20,
             'marker': 'marker_id',
+            'global_project': True,
         }
         queries = copy.deepcopy(args)
         args = self._make_args(args)
