@@ -197,7 +197,7 @@ def print_action_result(rid, res):
 
 def format_parameters(params, parse_semicolon=True):
     """Reformat parameters into dict of format expected by the API."""
-    if not params:
+    if not params or params == ['{}']:
         return {}
 
     if parse_semicolon:

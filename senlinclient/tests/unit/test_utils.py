@@ -50,6 +50,10 @@ class shellTest(testtools.TestCase):
         self.assertEqual(format_params,
                          utils.format_parameters(params))
 
+    def test_format_parameter_none_dict(self):
+        params = ['{}']
+        self.assertEqual({}, utils.format_parameters(params))
+
     def test_format_parameter_none(self):
         self.assertEqual({}, utils.format_parameters(None))
 
