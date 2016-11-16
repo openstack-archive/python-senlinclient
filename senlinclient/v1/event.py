@@ -57,7 +57,7 @@ class ListEvent(command.Lister):
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
                    "sort keys are: ['timestamp', 'level', 'otype', "
-                   "'oname', 'user', 'action', 'status']")
+                   "'oname', 'action', 'status']")
         )
         parser.add_argument(
             '--global-project',
