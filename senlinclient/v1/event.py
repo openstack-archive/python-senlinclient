@@ -56,7 +56,7 @@ class ListEvent(command.Lister):
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc). The valid "
-                   "sort keys are: ['timestamp', 'level', 'otype', "
+                   "sort keys are: ['timestamp', 'level', 'oid', 'otype', "
                    "'oname', 'action', 'status']")
         )
         parser.add_argument(
