@@ -44,8 +44,7 @@ class ClusterPolicyList(command.Lister):
             help=_("Sorting option which is a string containing a list of "
                    "keys separated by commas. Each key can be optionally "
                    "appended by a sort direction (:asc or :desc).  The valid "
-                   "sort keys are: ['type', 'name', 'created_at', "
-                   "'updated_at']")
+                   "sort keys are: ['enabled']")
         )
         parser.add_argument(
             '--full-id',
