@@ -80,7 +80,7 @@ class ListEvent(command.Lister):
 
         senlin_client = self.app.client_manager.clustering
         columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
-                   'action', 'status', 'status_reason', 'level']
+                   'action', 'status', 'level', 'cluster_id']
         queries = {
             'sort': parsed_args.sort,
             'limit': parsed_args.limit,

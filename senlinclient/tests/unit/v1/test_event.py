@@ -30,7 +30,7 @@ class TestEvent(fakes.TestClusteringv1):
 class TestEventList(TestEvent):
 
     columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
-               'action', 'status', 'status_reason', 'level']
+               'action', 'status', 'level', 'cluster_id']
 
     response = {"events": [
         {
@@ -43,7 +43,7 @@ class TestEventList(TestEvent):
             "obj_type": "NODE",
             "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
             "status": "CREATING",
-            "status_reason": "Initializing",
+            "cluster_id": "f23ff00c-ec4f-412d-bd42-7f6e209819cb",
             "generated_at": "2015-03-05T08:53:15",
             "user": "a21ded6060534d99840658a777c2af5a"
         }
@@ -144,7 +144,7 @@ class TestEventShow(TestEvent):
         "obj_type": "NODE",
         "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
         "status": "CREATING",
-        "status_reason": "Initializing",
+        "cluster_id": "f23ff00c-ec4f-412d-bd42-7f6e209819cb",
         "generated_at": "2015-03-05T08:53:15",
         "user": "a21ded6060534d99840658a777c2af5a"
     }}
