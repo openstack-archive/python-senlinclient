@@ -36,7 +36,9 @@ class ListAction(command.Lister):
             help=_("Filter parameters to apply on returned actions. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
-                   "keys are: ['name', 'target', 'action', 'status']"),
+                   "keys are: ['name', 'target', 'action', 'status']. "
+                   "NOTICE: The value of 'target', if provided, "
+                   "must be a full ID."),
             action='append'
         )
         parser.add_argument(
