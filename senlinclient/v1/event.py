@@ -101,6 +101,7 @@ class ListEvent(command.Lister):
             formatters['obj_id'] = lambda x: x[:8] if x else ''
             if 'project_id' in columns:
                 formatters['project_id'] = lambda x: x[:8]
+            formatters['cluster_id'] = lambda x: x[:8] if x else ''
 
         events = senlin_client.events(**queries)
         return (columns,
