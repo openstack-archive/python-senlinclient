@@ -794,7 +794,7 @@ def do_cluster_show(service, args):
 def do_cluster_node_list(service, args):
     """List nodes from cluster."""
     show_deprecated('senlin cluster-node-list',
-                    'openstack cluster node members list')
+                    'openstack cluster members list')
     queries = {
         'cluster_id': args.id,
         'limit': args.limit,
