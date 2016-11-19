@@ -602,9 +602,11 @@ class ClusterNodeList(command.Lister):
         parser.add_argument(
             '--sort',
             metavar='<key>[:<direction>]',
-            help=_('Sorting option which is a string containing a list of '
-                   'keys separated by commas. Each key can be optionally '
-                   'appended by a sort direction (:asc or :desc)')
+            help=_("Sorting option which is a string containing a list of "
+                   "keys separated by commas. Each key can be optionally "
+                   "appended by a sort direction (:asc or :desc)' The valid "
+                   "sort keys are:['index', 'name', 'status', 'init_at', "
+                   "'created_at', 'updated_at']")
         )
         parser.add_argument(
             '--limit',
