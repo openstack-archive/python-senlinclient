@@ -39,7 +39,7 @@ class ListCluster(command.Lister):
         parser = super(ListCluster, self).get_parser(prog_name)
         parser.add_argument(
             '--filters',
-            metavar='<"key1=value1;key=value...">',
+            metavar='<"key1=value1;key2=value2...">',
             help=_("Filter parameters to apply on returned clusters. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter"
