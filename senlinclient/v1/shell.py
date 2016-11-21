@@ -549,7 +549,8 @@ def do_cluster_create(service, args):
            help=_('A Json path string specifying the attribute to collect.'))
 @utils.arg('-L', '--list', default=False, action="store_true",
            help=_('Print a full list that contains both node ids and '
-                  'attribute values instead of values only. Default is True.'))
+                  'attribute values instead of values only. Default is '
+                  'False.'))
 @utils.arg('-F', '--full-id', default=False, action="store_true",
            help=_('Print full IDs in list.'))
 @utils.arg('id', metavar='<CLUSTER>',
