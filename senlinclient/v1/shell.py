@@ -562,7 +562,7 @@ def do_cluster_collect(service, args):
     if args.list:
         fields = ['node_id', 'attr_value']
         formatters = {
-            'attr_value': utils.json_formatter
+            'attr_value': lambda x: utils.json_formatter(x.attr_value)
         }
         if not args.full_id:
             formatters['node_id'] = lambda x: x.node_id[:8]

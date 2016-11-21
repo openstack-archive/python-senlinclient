@@ -1348,7 +1348,7 @@ class ShellTest(testtools.TestCase):
         })
         attrs = [mock.Mock(node_id='FAKE1', attr_value='VALUE1')]
         fields = ['node_id', 'attr_value']
-        formatters = {'attr_value': utils.json_formatter}
+        formatters = {'attr_value': mock.ANY}
         service.collect_cluster_attrs = mock.Mock(return_value=attrs)
 
         sh.do_cluster_collect(service, args)
@@ -1369,7 +1369,7 @@ class ShellTest(testtools.TestCase):
         })
         attrs = [mock.Mock(node_id='FAKE1', attr_value='VALUE1')]
         fields = ['node_id', 'attr_value']
-        formatters = {'node_id': mock.ANY, 'attr_value': utils.json_formatter}
+        formatters = {'node_id': mock.ANY, 'attr_value': mock.ANY}
         service.collect_cluster_attrs = mock.Mock(return_value=attrs)
 
         sh.do_cluster_collect(service, args)
