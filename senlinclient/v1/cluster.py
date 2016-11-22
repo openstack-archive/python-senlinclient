@@ -599,9 +599,10 @@ class ClusterNodeList(command.Lister):
         parser.add_argument(
             '--filters',
             metavar='<key1=value1;key2=value2...>',
-            help=_('Filter parameters to apply on returned nodes. '
-                   'This can be specified multiple times, or once with '
-                   'parameters separated by a semicolon'),
+            help=_("Filter parameters to apply on returned nodes. "
+                   "This can be specified multiple times, or once with "
+                   "parameters separated by a semicolon. The valid filter "
+                   "keys are: ['status', 'name']"),
             action='append'
         )
         parser.add_argument(
