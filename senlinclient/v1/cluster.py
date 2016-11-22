@@ -777,7 +777,7 @@ class RecoverCluster(command.Command):
 
 
 class ClusterCollect(command.Lister):
-    """Recover the cluster(s)."""
+    """Collect attributes across a cluster."""
     log = logging.getLogger(__name__ + ".ClusterCollect")
 
     def get_parser(self, prog_name):
