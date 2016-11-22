@@ -37,7 +37,9 @@ class ListEvent(command.Lister):
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
                    "keys are: ['level', 'otype', 'oid' ,'cluster_id', "
-                   "'oname', 'action']"),
+                   "'oname', 'action']. "
+                   "NOTICE: The value of 'oid' or 'cluster_id', "
+                   "if provided, must be a full ID."),
             action='append'
         )
         parser.add_argument(
