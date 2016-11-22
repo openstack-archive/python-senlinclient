@@ -598,7 +598,7 @@ class ClusterNodeList(command.Lister):
         parser = super(ClusterNodeList, self).get_parser(prog_name)
         parser.add_argument(
             '--filters',
-            metavar='<key1=value;key2=value2...>',
+            metavar='<key1=value1;key2=value2...>',
             help=_('Filter parameters to apply on returned nodes. '
                    'This can be specified multiple times, or once with '
                    'parameters separated by a semicolon'),
