@@ -99,13 +99,16 @@ class ListNode(command.Lister):
             queries.update(senlin_utils.format_parameters(parsed_args.filters))
 
         nodes = senlin_client.nodes(**queries)
-
+        if parsed_args.global_project:
+            columns.append('project_id')
         if not parsed_args.full_id:
             formatters = {
                 'id': lambda x: x[:8],
                 'cluster_id': lambda x: x[:8] if x else '',
                 'physical_id': lambda x: x[:8] if x else ''
             }
+            if 'project_id' in columns:
+                formatters['project_id'] = lambda x: x[:8]
         else:
             formatters = {}
 

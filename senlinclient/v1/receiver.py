@@ -95,11 +95,15 @@ class ListReceiver(command.Lister):
 
         receivers = senlin_client.receivers(**queries)
         formatters = {}
+        if parsed_args.global_project:
+            columns.append('project_id')
         if not parsed_args.full_id:
             formatters = {
                 'id': lambda x: x[:8],
                 'cluster_id': lambda x: x[:8] if x else None,
             }
+            if 'project_id' in columns:
+                formatters['project_id'] = lambda x: x[:8]
 
         return (
             columns,

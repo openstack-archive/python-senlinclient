@@ -120,10 +120,15 @@ def do_profile_list(service, args=None):
 
     profiles = service.profiles(**queries)
     formatters = {}
+    if args.global_project:
+        fields.append('project_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
         }
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
+
     utils.print_list(profiles, fields, formatters=formatters,
                      sortby_index=sortby_index)
 
@@ -347,10 +352,15 @@ def do_policy_list(service, args=None):
     sortby_index = None if args.sort else 1
     policies = service.policies(**queries)
     formatters = {}
+    if args.global_project:
+        fields.append('project_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8]
         }
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
+
     utils.print_list(policies, fields, formatters=formatters,
                      sortby_index=sortby_index)
 
@@ -487,10 +497,15 @@ def do_cluster_list(service, args=None):
 
     clusters = service.clusters(**queries)
     formatters = {}
+    if args.global_project:
+        fields.append('project_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8]
         }
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
+
     utils.print_list(clusters, fields, formatters=formatters,
                      sortby_index=sortby_index)
 
@@ -1127,12 +1142,16 @@ def do_node_list(service, args):
 
     nodes = service.nodes(**queries)
 
+    if args.global_project:
+        fields.append('project_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
             'cluster_id': lambda x: x.cluster_id[:8] if x.cluster_id else '',
             'physical_id': lambda x: x.physical_id[:8] if x.physical_id else ''
         }
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
     else:
         formatters = {}
 
@@ -1327,11 +1346,16 @@ def do_receiver_list(service, args):
 
     receivers = service.receivers(**queries)
     formatters = {}
+    if args.global_project:
+        fields.append('project_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
             'cluster_id': lambda x: x.cluster_id[:8] if x.cluster_id else '-',
         }
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
+
     utils.print_list(receivers, fields, formatters=formatters,
                      sortby_index=sortby_index)
 
@@ -1460,11 +1484,16 @@ def do_event_list(service, args):
     sortby_index = None if args.sort else 0
 
     formatters = {}
+    if args.global_project:
+        fields.append('project_id')
+        field_labels.append('project_id')
     if not args.full_id:
         formatters['id'] = lambda x: x.id[:8]
         formatters['obj_id'] = lambda x: x.obj_id[:8] if x.obj_id else ''
         formatters['cluster_id'] = (lambda x: x.cluster_id[:8]
                                     if x.cluster_id else '')
+        if 'project_id' in fields:
+            formatters['project_id'] = lambda x: x.id[:8]
 
     events = service.events(**queries)
     utils.print_list(events, fields, formatters=formatters,

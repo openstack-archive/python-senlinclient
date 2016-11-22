@@ -120,7 +120,7 @@ class ShellTest(testtools.TestCase):
         service = mock.Mock()
         profiles = mock.Mock()
         service.profiles.return_value = profiles
-        fields = ['id', 'name', 'type', 'created_at']
+        fields = ['id', 'name', 'type', 'created_at', 'project_id']
         args = {
             'limit': 20,
             'marker': 'mark_id',
@@ -1383,7 +1383,7 @@ class ShellTest(testtools.TestCase):
     def test_do_node_list(self, mock_print):
         service = mock.Mock()
         fields = ['id', 'name', 'index', 'status', 'cluster_id', 'physical_id',
-                  'profile_name', 'created_at', 'updated_at']
+                  'profile_name', 'created_at', 'updated_at', 'project_id']
         args = {
             'cluster': 'cluster1',
             'sort': 'name:asc',
@@ -1545,9 +1545,10 @@ class ShellTest(testtools.TestCase):
     def test_do_event_list(self, mock_print):
         service = mock.Mock()
         fields = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
-                  'action', 'status', 'level', 'cluster_id']
+                  'action', 'status', 'level', 'cluster_id', 'project_id']
         field_labels = ['id', 'timestamp', 'obj_type', 'obj_id', 'obj_name',
-                        'action', 'status', 'level', 'cluster_id']
+                        'action', 'status', 'level', 'cluster_id',
+                        'project_id']
 
         args = {
             'sort': 'timestamp:asc',

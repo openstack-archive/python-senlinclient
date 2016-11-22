@@ -140,11 +140,17 @@ class ListProfile(command.Lister):
         if parsed_args.filters:
             queries.update(senlin_utils.format_parameters(parsed_args.filters))
         data = senlin_client.profiles(**queries)
+
         formatters = {}
+        if parsed_args.global_project:
+            columns.append('project_id')
         if not parsed_args.full_id:
             formatters = {
                 'id': lambda x: x[:8],
             }
+            if 'project_id' in columns:
+                formatters['project_id'] = lambda x: x[:8]
+
         return (
             columns,
             (utils.get_item_properties(p, columns, formatters=formatters)
