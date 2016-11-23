@@ -560,7 +560,7 @@ def do_cluster_create(service, args):
     _show_cluster(service, cluster.id)
 
 
-@utils.arg('-p', '--path', metavar='<PATH>',
+@utils.arg('-p', '--path', metavar='<PATH>', required=True,
            help=_('A Json path string specifying the attribute to collect.'))
 @utils.arg('-L', '--list', default=False, action="store_true",
            help=_('Print a full list that contains both node ids and '
