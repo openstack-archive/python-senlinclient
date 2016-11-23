@@ -901,7 +901,7 @@ class ClusterRun(command.Command):
             f = open(args.script, 'r')
             script = f.read()
         except Exception:
-            raise exc.CommandError(_("Cound not open script file: %s") %
+            raise exc.CommandError(_("Could not open script file: %s") %
                                    args.script)
 
         tasks = dict()
