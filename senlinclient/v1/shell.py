@@ -396,7 +396,7 @@ def do_policy_create(service, args):
 
 
 @utils.arg('id', metavar='<POLICY>',
-           help=_('Name of the policy to be updated.'))
+           help=_('Name or ID of the policy to be shown.'))
 def do_policy_show(service, args):
     """Show the policy details."""
     show_deprecated('senlin policy-show', 'openstack cluster policy show')
