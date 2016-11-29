@@ -960,7 +960,7 @@ def do_cluster_resize(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_out(service, args):
     """Scale out a cluster by the specified number of nodes."""
-    show_deprecated('senlin cluster-scale-out', 'openstack cluster scale out')
+    show_deprecated('senlin cluster-scale-out', 'openstack cluster expand')
     resp = service.cluster_scale_out(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
@@ -971,7 +971,7 @@ def do_cluster_scale_out(service, args):
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_scale_in(service, args):
     """Scale in a cluster by the specified number of nodes."""
-    show_deprecated('senlin cluster-scale-in', 'openstack cluster scale in')
+    show_deprecated('senlin cluster-scale-in', 'openstack cluster shrink')
     resp = service.cluster_scale_in(args.id, args.count)
     print('Request accepted by action %s' % resp['action'])
 
