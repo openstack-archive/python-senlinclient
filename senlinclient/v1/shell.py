@@ -127,7 +127,7 @@ def do_profile_list(service, args=None):
             'id': lambda x: x.id[:8],
         }
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
 
     utils.print_list(profiles, fields, formatters=formatters,
                      sortby_index=sortby_index)
@@ -359,7 +359,7 @@ def do_policy_list(service, args=None):
             'id': lambda x: x.id[:8]
         }
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
 
     utils.print_list(policies, fields, formatters=formatters,
                      sortby_index=sortby_index)
@@ -504,7 +504,7 @@ def do_cluster_list(service, args=None):
             'id': lambda x: x.id[:8]
         }
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
 
     utils.print_list(clusters, fields, formatters=formatters,
                      sortby_index=sortby_index)
@@ -1152,7 +1152,7 @@ def do_node_list(service, args):
             'physical_id': lambda x: x.physical_id[:8] if x.physical_id else ''
         }
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
     else:
         formatters = {}
 
@@ -1355,7 +1355,7 @@ def do_receiver_list(service, args):
             'cluster_id': lambda x: x.cluster_id[:8] if x.cluster_id else '-',
         }
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
 
     utils.print_list(receivers, fields, formatters=formatters,
                      sortby_index=sortby_index)
@@ -1494,7 +1494,7 @@ def do_event_list(service, args):
         formatters['cluster_id'] = (lambda x: x.cluster_id[:8]
                                     if x.cluster_id else '')
         if 'project_id' in fields:
-            formatters['project_id'] = lambda x: x.id[:8]
+            formatters['project_id'] = lambda x: x.project_id[:8]
 
     events = service.events(**queries)
     utils.print_list(events, fields, formatters=formatters,
