@@ -220,7 +220,7 @@ def do_profile_update(service, args):
         profile = service.get_profile(args.id)
     except sdk_exc.ResourceNotFound:
         raise exc.CommandError(_('Profile not found: %s') % args.id)
-    service.update_profile(profile.id, **params)
+    service.update_profile(profile, **params)
     _show_profile(service, profile.id)
 
 
@@ -416,7 +416,7 @@ def do_policy_update(service, args):
 
     policy = service.get_policy(args.id)
     if policy is not None:
-        service.update_policy(policy.id, **params)
+        service.update_policy(policy, **params)
         _show_policy(service, policy_id=policy.id)
 
 
@@ -782,7 +782,7 @@ def do_cluster_update(service, args):
         'timeout': args.timeout,
     }
 
-    service.update_cluster(cluster.id, **attrs)
+    service.update_cluster(cluster, **attrs)
     _show_cluster(service, cluster.id)
 
 
@@ -1265,7 +1265,7 @@ def do_node_update(service, args):
         'metadata': utils.format_parameters(args.metadata),
     }
 
-    service.update_node(args.id, **attrs)
+    service.update_node(node, **attrs)
     _show_node(service, node.id)
 
 
