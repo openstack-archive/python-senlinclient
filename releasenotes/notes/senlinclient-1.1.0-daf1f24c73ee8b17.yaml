@@ -1,0 +1,10 @@
+---
+fixes:
+  - Fix resource list operations for openstackclient.
+  - Add filter "is_enabled" for policy binding list.
+  - Fix policy binding operations including attach, detach and update.
+  - Remove unsupported sort key "user" for event-list.
+  - Fix metadata purging.
+  - Add "cluster_id" colume for openstack cluster event list.
+  - Support "global_project" arguments for action-list.
+  - Fix resource update operations.
