@@ -262,7 +262,7 @@ class ShellTest(testtools.TestCase):
             'name': 'stack_spec',
             'metadata': {'user': 'demo'},
         }
-        service.update_profile.assert_called_once_with(profile_id, **params)
+        service.update_profile.assert_called_once_with(profile, **params)
         mock_show.assert_called_once_with(service, profile_id)
 
     @mock.patch.object(utils, 'format_parameters')
@@ -662,7 +662,7 @@ class ShellTest(testtools.TestCase):
         sh.do_policy_update(service, args)
         service.get_policy.assert_called_once_with('policy_id')
         service.update_policy.assert_called_once_with(
-            'policy_id', **params)
+            policy, **params)
         mock_show(service, policy_id=policy.id)
 
     def test_do_policy_delete(self):
@@ -972,7 +972,7 @@ class ShellTest(testtools.TestCase):
         sh.do_cluster_update(service, args)
 
         service.get_cluster.assert_called_once_with('CID')
-        service.update_cluster.assert_called_once_with('CID', **attrs)
+        service.update_cluster.assert_called_once_with(cluster, **attrs)
         mock_show.assert_called_once_with(service, 'CID')
 
     @mock.patch.object(sh, '_show_cluster')
@@ -1537,7 +1537,7 @@ class ShellTest(testtools.TestCase):
         service.get_node.return_value = node
         sh.do_node_update(service, args)
         service.get_node.assert_called_once_with('node_id')
-        service.update_node.assert_called_once_with('node_id', **attrs)
+        service.update_node.assert_called_once_with(node, **attrs)
         mock_show.assert_called_once_with(service, 'node_id')
 
     @mock.patch.object(utils, 'print_list')
