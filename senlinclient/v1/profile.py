@@ -20,8 +20,7 @@ from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
-from senlinclient.common.i18n import _
-from senlinclient.common.i18n import _LI
+from senlinclient.common.i18n import _, _LI
 from senlinclient.common import utils as senlin_utils
 
 
