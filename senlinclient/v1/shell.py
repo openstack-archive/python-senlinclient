@@ -199,9 +199,10 @@ def do_profile_show(service, args):
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('The new name for the profile.'))
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
-           help=_('Metadata values to be attached to the profile. '
-                  'This can be specified multiple times, or once with '
-                  'key-value pairs separated by a semicolon.'),
+           help=_("Metadata values to be attached to the profile. "
+                  "This can be specified multiple times, or once with "
+                  "key-value pairs separated by a semicolon. Use '{}' "
+                  "can clean metadata "),
            action='append')
 @utils.arg('id', metavar='<PROFILE_ID>',
            help=_('Name or ID of the profile to update.'))
@@ -763,9 +764,10 @@ def do_cluster_run(service, args):
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
-           help=_('Metadata values to be attached to the cluster. '
-                  'This can be specified multiple times, or once with '
-                  'key-value pairs separated by a semicolon.'),
+           help=_("Metadata values to be attached to the cluster. "
+                  "This can be specified multiple times, or once with "
+                  "key-value pairs separated by a semicolon. Use '{}' "
+                  "can clean metadata "),
            action='append')
 @utils.arg('-n', '--name', metavar='<NAME>',
            help=_('New name for the cluster to update.'))
@@ -1243,9 +1245,10 @@ def do_node_delete(service, args):
 @utils.arg('-r', '--role', metavar='<ROLE>',
            help=_('Role for this node in the specific cluster.'))
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
-           help=_('Metadata values to be attached to the node. '
-                  'Metadata can be specified multiple times, or once with '
-                  'key-value pairs separated by a semicolon.'),
+           help=_("Metadata values to be attached to the node. "
+                  "This can be specified multiple times, or once with "
+                  "key-value pairs separated by a semicolon. Use '{}' "
+                  "can clean metadata "),
            action='append')
 @utils.arg('id', metavar='<NODE>',
            help=_('Name or ID of node to update.'))

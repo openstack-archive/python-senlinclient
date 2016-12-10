@@ -243,9 +243,10 @@ class UpdateCluster(command.ShowOne):
         parser.add_argument(
             '--metadata',
             metavar='<"key1=value1;key2=value2...">',
-            help=_('Metadata values to be attached to the cluster. '
-                   'This can be specified multiple times, or once with '
-                   'key-value pairs separated by a semicolon'),
+            help=_("Metadata values to be attached to the cluster. "
+                   "This can be specified multiple times, or once with "
+                   "key-value pairs separated by a semicolon. Use '{}' "
+                   "can clean metadata "),
             action='append'
         )
         parser.add_argument(
