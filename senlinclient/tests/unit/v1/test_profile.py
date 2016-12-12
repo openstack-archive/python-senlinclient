@@ -100,6 +100,15 @@ class TestProfileShow(TestProfile):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.get_profile.assert_called_with('my_profile')
+        profile = self.mock_client.get_profile('my_profile')
+        self.assertEqual(self.response['profile']['project'],
+                         profile.project_id)
+        self.assertEqual(self.response['profile']['id'], profile.id)
+        self.assertEqual(self.response['profile']['metadata'],
+                         profile.metadata)
+        self.assertEqual(self.response['profile']['name'], profile.name)
+        self.assertEqual(self.response['profile']['spec'], profile.spec)
+        self.assertEqual(self.response['profile']['type'], profile.type)
 
     def test_profile_show_not_found(self):
         arglist = ['my_profile']
