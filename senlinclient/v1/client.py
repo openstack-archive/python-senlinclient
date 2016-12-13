@@ -214,6 +214,14 @@ class Client(object):
         """
         return self.service.cluster_del_nodes(cluster, nodes)
 
+    def cluster_replace_nodes(self, cluster, nodes):
+        """Replace the nodes in a cluster with specified nodes
+
+        Doc link:
+        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        """
+        return self.service.cluster_replace_nodes(cluster, nodes)
+
     def cluster_resize(self, cluster, **params):
         """Resize cluster
 

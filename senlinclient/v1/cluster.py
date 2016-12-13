@@ -723,6 +723,42 @@ class ClusterNodeDel(command.Command):
         print('Request accepted by action: %s' % resp['action'])
 
 
+class ClusterNodeReplace(command.Command):
+    """Replace the nodes in a cluster with specified nodes."""
+    log = logging.getLogger(__name__ + ".ClusterNodeReplace")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterNodeReplace, self).get_parser(prog_name)
+        parser.add_argument(
+            '--nodes',
+            metavar='<OLD_NODE1=NEW_NODE1>',
+            required=True,
+            help=_("OLD_NODE is the name or ID of a node to be replaced, "
+                   "NEW_NODE is the name or ID of a node as replacement. "
+                   "This can be specified multiple times, or once with "
+                   "node-pairs separated by a comma ','."),
+            action='append'
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('Name or ID of cluster to operate on')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        nodepairs = {}
+        for nodepair in parsed_args.nodes:
+            key = nodepair.split('=')[0]
+            value = nodepair.split('=')[1]
+            nodepairs[key] = value
+        resp = senlin_client.cluster_replace_nodes(parsed_args.cluster,
+                                                   nodepairs)
+        print('Request accepted by action: %s' % resp['action'])
+
+
 class CheckCluster(command.Command):
     """Check the cluster(s)."""
     log = logging.getLogger(__name__ + ".CheckCluster")

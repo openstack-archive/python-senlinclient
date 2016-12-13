@@ -859,6 +859,27 @@ def do_cluster_node_del(service, args):
     print('Request accepted by action: %s' % resp['action'])
 
 
+@utils.arg('-n', '--nodes', metavar='<OLD_NODE1=NEW_NODE1>', required=True,
+           help=_("OLD_NODE is the name or ID of a node to be replaced, "
+                  "NEW_NODE is the name or ID of a node as replacement. "
+                  "This can be specified multiple times, or once with "
+                  "node-pairs separated by a comma ','."),
+           action='append')
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('Name or ID of cluster to operate on.'))
+def do_cluster_node_replace(service, args):
+    """Replace the nodes in cluster with specified nodes."""
+    show_deprecated('senlin cluster-node-replace',
+                    'openstack cluster node members replace')
+    nodepairs = {}
+    for nodepair in args.nodes:
+        key = nodepair.split('=')[0]
+        value = nodepair.split('=')[1]
+        nodepairs[key] = value
+    resp = service.cluster_replace_nodes(args.id, nodepairs)
+    print('Request accepted by action: %s' % resp['action'])
+
+
 @utils.arg('-c', '--capacity', metavar='<CAPACITY>', type=int,
            help=_('The desired number of nodes of the cluster.'))
 @utils.arg('-a', '--adjustment', metavar='<ADJUSTMENT>', type=int,
