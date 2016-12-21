@@ -64,11 +64,11 @@ def _show_profile(senlin_client, profile_id):
             'id',
             'metadata',
             'name',
-            'project_id',
+            'project',
             'spec',
             'type',
             'updated_at',
-            'user_id'
+            'user'
         ]
         return columns, utils.get_dict_properties(data.to_dict(), columns,
                                                   formatters=formatters)
