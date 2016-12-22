@@ -440,9 +440,9 @@ def do_policy_delete(service, args):
 
 
 @utils.arg('-s', '--spec-file', metavar='<SPEC_FILE>', required=True,
-           help=_('The spec file used to create the policy.'))
+           help=_('The spec file of the policy to be validated.'))
 def do_policy_validate(service, args):
-    """VAlidate a policy spec."""
+    """Validate a policy spec."""
     show_deprecated('senlin policy-validate',
                     'openstack cluster policy validate')
     spec = utils.get_spec_content(args.spec_file)

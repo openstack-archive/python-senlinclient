@@ -287,7 +287,7 @@ class ValidatePolicy(command.ShowOne):
             '--spec-file',
             metavar='<spec-file>',
             required=True,
-            help=_('The spec file used to create the policy')
+            help=_('The spec file of the policy to be validated')
         )
         return parser
 
