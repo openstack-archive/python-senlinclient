@@ -245,7 +245,7 @@ def do_profile_delete(service, args):
 
 
 @utils.arg('-s', '--spec-file', metavar='<SPEC FILE>', required=True,
-           help=_('The spec file used to create the profile.'))
+           help=_('The spec file of the profile to be validated.'))
 def do_profile_validate(service, args):
     """Validate a profile."""
     show_deprecated('senlin profile-validate',
