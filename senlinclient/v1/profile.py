@@ -368,11 +368,11 @@ class ValidateProfile(command.ShowOne):
             'id',
             'metadata',
             'name',
-            'project_id',
+            'project',
             'spec',
             'type',
             'updated_at',
-            'user_id'
+            'user'
         ]
         return columns, utils.get_dict_properties(profile.to_dict(), columns,
                                                   formatters=formatters)

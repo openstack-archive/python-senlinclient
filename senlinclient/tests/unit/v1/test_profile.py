@@ -448,14 +448,3 @@ class TestProfileValidate(TestProfile):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.validate_profile.assert_called_with(**self.defaults)
-        profile = self.mock_client.validate_profile(**self.defaults)
-        self.assertEqual(self.response['profile']['project'],
-                         profile.project_id)
-        self.assertEqual(self.response['profile']['user'],
-                         profile.user_id)
-        self.assertEqual(self.response['profile']['id'], profile.id)
-        self.assertEqual(self.response['profile']['metadata'],
-                         profile.metadata)
-        self.assertEqual(self.response['profile']['name'], profile.name)
-        self.assertEqual(self.response['profile']['spec'], profile.spec)
-        self.assertEqual(self.response['profile']['type'], profile.type)
