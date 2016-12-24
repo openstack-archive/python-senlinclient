@@ -421,3 +421,15 @@ class TestPolicyValidate(TestPolicy):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.validate_policy.assert_called_with(**self.defaults)
+        policy = self.mock_client.validate_policy(**self.defaults)
+        self.assertEqual(self.response['policy']['project'],
+                         policy.project_id)
+        self.assertEqual(self.response['policy']['data'], policy.data)
+        self.assertEqual(self.response['policy']['id'], policy.id)
+        self.assertEqual(self.response['policy']['name'], policy.name)
+        self.assertEqual(self.response['policy']['project'],
+                         policy.project_id)
+        self.assertEqual(self.response['policy']['spec'], policy.spec)
+        self.assertEqual(self.response['policy']['type'], policy.type)
+        self.assertEqual(self.response['policy']['updated_at'],
+                         policy.updated_at)

@@ -144,11 +144,11 @@ def _show_policy(senlin_client, policy_id):
         'domain',
         'id',
         'name',
-        'project',
+        'project_id',
         'spec',
         'type',
         'updated_at',
-        'user'
+        'user_id'
     ]
     return columns, utils.get_dict_properties(policy.to_dict(), columns,
                                               formatters=formatters)
