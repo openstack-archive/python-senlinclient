@@ -11,12 +11,12 @@
 # under the License.
 
 import copy
-import mock
-import six
 
+import mock
 from openstack.cluster.v1 import policy as sdk_policy
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
+import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import policy as osc_policy

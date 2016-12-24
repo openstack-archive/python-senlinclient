@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-
 from openstack.cluster.v1 import policy_type as sdk_policy_type
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc

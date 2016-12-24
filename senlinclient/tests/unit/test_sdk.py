@@ -11,10 +11,9 @@
 # under the License.
 
 import mock
-import testtools
-
 from openstack import connection as sdk_connection
 from openstack import profile as sdk_profile
+import testtools
 
 from senlinclient.common import sdk
 

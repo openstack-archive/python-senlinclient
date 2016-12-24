@@ -14,11 +14,11 @@ import copy
 import subprocess
 
 import mock
+from openstack import exceptions as oexc
+from oslotest import mockpatch
 import six
 import testtools
 
-from openstack import exceptions as oexc
-from oslotest import mockpatch
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils

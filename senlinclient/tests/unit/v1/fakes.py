@@ -10,13 +10,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
-import mock
-import requests
-import six
 import sys
 
+import json
+import mock
 from osc_lib.tests import utils
+import requests
+import six
 
 
 AUTH_TOKEN = "foobar"

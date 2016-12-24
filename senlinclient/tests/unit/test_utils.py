@@ -11,12 +11,13 @@
 # under the License.
 
 import collections
-import mock
-import six
 import sys
-import testtools
 
 from heatclient.common import template_utils
+import mock
+import six
+import testtools
+
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
 from senlinclient.common import utils

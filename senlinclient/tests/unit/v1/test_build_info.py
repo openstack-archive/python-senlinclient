@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-
 from openstack.cluster.v1 import build_info as sbi
 
 from senlinclient.tests.unit.v1 import fakes

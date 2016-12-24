@@ -11,8 +11,8 @@
 # under the License.
 
 import copy
-import mock
 
+import mock
 from openstack.cluster.v1 import event as sdk_event
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc

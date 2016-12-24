@@ -11,13 +11,13 @@
 # under the License.
 
 import copy
-import mock
-import six
 
+import mock
 from openstack.cluster.v1 import profile as sdk_profile
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 from osc_lib import utils
+import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import profile as osc_profile

@@ -13,7 +13,6 @@
 from keystoneauth1.exceptions import base as kae_base
 from keystoneauth1.exceptions import http as kae_http
 from openstack import exceptions as sdkexc
-
 from oslo_serialization import jsonutils
 from requests import exceptions as reqexc
 import six
