@@ -710,6 +710,14 @@ class ClusterNodeDel(command.Command):
                    'separated with ","')
         )
         parser.add_argument(
+            '-d',
+            '--destroy-after-deletion',
+            required=False,
+            default=False,
+            help=_('Whether nodes should be destroyed after deleted. '
+                   'Default is False.')
+        )
+        parser.add_argument(
             'cluster',
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
@@ -720,7 +728,11 @@ class ClusterNodeDel(command.Command):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
         node_ids = parsed_args.nodes.split(',')
-        resp = senlin_client.cluster_del_nodes(parsed_args.cluster, node_ids)
+        destroy = parsed_args.destroy_after_deletion
+        destroy = strutils.bool_from_string(destroy, strict=True)
+        kwargs = {"destroy_after_deletion": destroy}
+        resp = senlin_client.cluster_del_nodes(parsed_args.cluster, node_ids,
+                                               **kwargs)
         print('Request accepted by action: %s' % resp['action'])
 
 
