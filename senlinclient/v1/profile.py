@@ -327,7 +327,7 @@ class ValidateProfile(command.ShowOne):
             '--spec-file',
             metavar='<spec-file>',
             required=True,
-            help=_('The spec file used to create the profile')
+            help=_('The spec file of the profile to be validated')
         )
         return parser
 
