@@ -105,7 +105,7 @@ class ListProfile(command.Lister):
             help=_("Filter parameters to apply on returned profiles. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
-                   "keys are: ['type', 'name', 'metadata']"),
+                   "keys are: ['type', 'name']"),
             action='append'
         )
         parser.add_argument(
