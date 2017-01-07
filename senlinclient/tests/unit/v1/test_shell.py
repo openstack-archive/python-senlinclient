@@ -1028,7 +1028,8 @@ class ShellTest(testtools.TestCase):
         service = mock.Mock()
         args = {
             'id': 'cluster_id',
-            'nodes': 'node1,node2'
+            'nodes': 'node1,node2',
+            'destroy_after_deletion': False
         }
         args = self._make_args(args)
         node_ids = ['node1', 'node2']
@@ -1037,8 +1038,10 @@ class ShellTest(testtools.TestCase):
 
         sh.do_cluster_node_del(service, args)
 
-        service.cluster_del_nodes.assert_called_once_with('cluster_id',
-                                                          node_ids)
+        service.cluster_del_nodes.assert_called_once_with(
+            'cluster_id',
+            node_ids,
+            destroy_after_deletion=False)
 
     def test_do_cluster_resize(self):
         service = mock.Mock()

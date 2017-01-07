@@ -850,6 +850,10 @@ def do_cluster_node_add(service, args):
 @utils.arg('-n', '--nodes', metavar='<NODES>', required=True,
            help=_('ID of nodes to be deleted; multiple nodes can be separated '
                   'with ",".'))
+@utils.arg('-d', '--destroy-after-deletion', metavar='<BOOLEAN>',
+           required=False, default=False,
+           help=_('Whether nodes should be destroyed after deleted. '
+                  'Default is False.'))
 @utils.arg('id', metavar='<CLUSTER>',
            help=_('Name or ID of cluster to operate on.'))
 def do_cluster_node_del(service, args):
@@ -857,7 +861,10 @@ def do_cluster_node_del(service, args):
     show_deprecated('senlin cluster-node-del',
                     'openstack cluster node members del')
     node_ids = args.nodes.split(',')
-    resp = service.cluster_del_nodes(args.id, node_ids)
+    destroy = args.destroy_after_deletion
+    destroy = strutils.bool_from_string(destroy, strict=True)
+    kwargs = {"destroy_after_deletion": destroy}
+    resp = service.cluster_del_nodes(args.id, node_ids, **kwargs)
     print('Request accepted by action: %s' % resp['action'])
 
 
