@@ -710,6 +710,8 @@ def _run_script(node_id, addr, net, addr_type, port, user, ipv6, identity_file,
            help=_('Name or ID of the cluster.'))
 def do_cluster_run(service, args):
     """Run shell scripts on all nodes of a cluster."""
+    show_deprecated('senlin cluster-run', 'openstack cluster run')
+
     if '@' in args.id:
         user, cluster = args.id.split('@', 1)
         args.user = user
