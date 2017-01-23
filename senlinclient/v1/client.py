@@ -288,13 +288,13 @@ class Client(object):
         """
         return self.service.cluster_update_policy(cluster, policy, **attrs)
 
-    def cluster_collect(self, cluster, path):
-        """Resize cluster
+    def collect_cluster_attrs(self, cluster, path):
+        """Collect cluster attributes
 
         Doc link:
         http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
         """
-        return self.service.cluster_collect(cluster, path)
+        return self.service.collect_cluster_attrs(cluster, path)
 
     def check_cluster(self, cluster, **params):
         """Check cluster's health status
