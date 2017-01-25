@@ -1063,7 +1063,7 @@ def do_cluster_policy_attach(service, args):
     show_deprecated('senlin cluster-policy-attach',
                     'openstack cluster policy attach')
     kwargs = {
-        'enabled': args.enabled,
+        'enabled': strutils.bool_from_string(args.enabled, strict=True),
     }
 
     resp = service.cluster_attach_policy(args.id, args.policy, **kwargs)
