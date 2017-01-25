@@ -1,0 +1,10 @@
+---
+features:
+  - Support node replace operation.
+  - Enhance the parameter check for "path" in cluster collect operation.
+  - Help message for metadata clean operations.
+fixes:
+  - Fix incorrect description of profile/policy validate operations.
+  - Fix project_id and user_id show bug for profile/policy validate and
+    cluster policy show operations.
+  - Fix enabled option for senlin cluster-policy-detach command.
