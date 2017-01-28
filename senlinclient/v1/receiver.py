@@ -37,7 +37,8 @@ class ListReceiver(command.Lister):
             help=_("Filter parameters to apply on returned receivers. "
                    "This can be specified multiple times, or once with "
                    "parameters separated by a semicolon. The valid filter "
-                   "keys are: ['name', 'type', 'action', 'cluster_id']"),
+                   "keys are: ['name', 'type', 'action', 'cluster_id', "
+                   "'user_id']"),
             action='append'
         )
         parser.add_argument(
