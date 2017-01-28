@@ -1374,6 +1374,7 @@ def do_receiver_list(service, args):
     formatters = {}
     if args.global_project:
         fields.append('project_id')
+        fields.append('user_id')
     if not args.full_id:
         formatters = {
             'id': lambda x: x.id[:8],
@@ -1381,6 +1382,7 @@ def do_receiver_list(service, args):
         }
         if 'project_id' in fields:
             formatters['project_id'] = lambda x: x.project_id[:8]
+            formatters['user_id'] = lambda x: x.user_id[:8]
 
     utils.print_list(receivers, fields, formatters=formatters,
                      sortby_index=sortby_index)

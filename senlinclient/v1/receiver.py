@@ -97,6 +97,7 @@ class ListReceiver(command.Lister):
         formatters = {}
         if parsed_args.global_project:
             columns.append('project_id')
+            columns.append('user_id')
         if not parsed_args.full_id:
             formatters = {
                 'id': lambda x: x[:8],
@@ -104,6 +105,7 @@ class ListReceiver(command.Lister):
             }
             if 'project_id' in columns:
                 formatters['project_id'] = lambda x: x[:8]
+                formatters['user_id'] = lambda x: x[:8]
 
         return (
             columns,
