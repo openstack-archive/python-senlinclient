@@ -227,7 +227,7 @@ def format_parameters(params, parse_semicolon=True):
 def get_spec_content(filename):
     with open(filename, 'r') as f:
         try:
-            data = yaml.load(f)
+            data = yaml.safe_load(f)
         except Exception as ex:
             raise exc.CommandError(_('The specified file is not a valid '
                                      'YAML file: %s') % six.text_type(ex))
