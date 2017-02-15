@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import node as sdk_node
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 import six
@@ -33,30 +32,6 @@ class TestNodeList(TestNode):
     columns = ['id', 'name', 'index', 'status', 'cluster_id',
                'physical_id', 'profile_name', 'created_at', 'updated_at']
 
-    response = {"nodes": [
-        {
-            "cluster_id": None,
-            "created_at": "2015-02-27T04:39:21",
-            "data": {},
-            "details": {},
-            "domain": None,
-            "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
-            "index": -1,
-            "init_at": "2015-02-27T04:39:18",
-            "metadata": {},
-            "name": "node00a",
-            "physical_id": "cc028275-d078-4729-bf3e-154b7359814b",
-            "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-            "profile_name": "mystack",
-            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-            "role": None,
-            "status": "ACTIVE",
-            "status_reason": "Creation succeeded",
-            "updated_at": None,
-            "user": "5e5bf8027826429c96af157f68dc9072"
-        }
-    ]}
-
     defaults = {
         'cluster_id': None,
         'global_project': False,
@@ -68,7 +43,29 @@ class TestNodeList(TestNode):
     def setUp(self):
         super(TestNodeList, self).setUp()
         self.cmd = osc_node.ListNode(self.app, None)
-        self.mock_client.nodes = mock.Mock(return_value=self.response)
+        fake_node = mock.Mock(
+            cluster_id=None,
+            created_at="2015-02-27T04:39:21",
+            data={},
+            details={},
+            domain=None,
+            id="573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            index=-1,
+            init_at="2015-02-27T04:39:18",
+            metadata={},
+            physical_id="cc028275-d078-4729-bf3e-154b7359814b",
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            role=None,
+            status="ACTIVE",
+            status_reason="Creation succeeded",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "node00a"
+        fake_node.to_dict = mock.Mock(return_value={})
+        self.mock_client.nodes = mock.Mock(return_value=[fake_node])
 
     def test_node_list_defaults(self):
         arglist = []
@@ -103,8 +100,6 @@ class TestNodeList(TestNode):
         self.assertEqual(self.columns, columns)
 
     def test_node_list_sort_invalid_key(self):
-        self.mock_client.nodes = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -114,8 +109,6 @@ class TestNodeList(TestNode):
                           self.cmd.take_action, parsed_args)
 
     def test_node_list_sort_invalid_direction(self):
-        self.mock_client.nodes = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -145,33 +138,36 @@ class TestNodeList(TestNode):
 
 class TestNodeShow(TestNode):
     response = {"node": {
-        "cluster_id": None,
-        "created_at": "2015-02-10T12:03:16",
-        "data": {},
-        "details": {
-            "OS-DCF:diskConfig": "MANUAL"},
-        "domain": None,
-        "id": "d5779bb0-f0a0-49c9-88cc-6f078adb5a0b",
-        "index": -1,
-        "init_at": "2015-02-10T12:03:13",
-        "metadata": {},
-        "name": "my_node",
-        "physical_id": "f41537fa-22ab-4bea-94c0-c874e19d0c80",
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "role": None,
-        "status": "ACTIVE",
-        "status_reason": "Creation succeeded",
-        "updated_at": "2015-03-04T04:58:27",
-        "user": "5e5bf8027826429c96af157f68dc9072"
     }}
 
     def setUp(self):
         super(TestNodeShow, self).setUp()
         self.cmd = osc_node.ShowNode(self.app, None)
-        self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
+        fake_node = mock.Mock(
+            cluster_id=None,
+            created_at="2015-02-10T12:03:16",
+            data={},
+            details={"OS-DCF:diskConfig": "MANUAL"},
+            domain_id=None,
+            id="d5779bb0-f0a0-49c9-88cc-6f078adb5a0b",
+            index=-1,
+            init_at="2015-02-10T12:03:13",
+            metadata={},
+            physical_id="f41537fa-22ab-4bea-94c0-c874e19d0c80",
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            role=None,
+            status="ACTIVE",
+            status_reason="Creation succeeded",
+            updated_at="2015-03-04T04:58:27",
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "my_node"
+        fake_node.to_dict = mock.Mock(
+            return_value={'details': {'key': 'value'}}
+        )
+        self.mock_client.get_node = mock.Mock(return_value=fake_node)
 
     def test_node_show(self):
         arglist = ['my_node']
@@ -182,7 +178,9 @@ class TestNodeShow(TestNode):
     def test_node_show_with_details(self):
         arglist = ['my_node', '--details']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.get_node.assert_called_with(
             'my_node', details=True)
 
@@ -196,27 +194,6 @@ class TestNodeShow(TestNode):
 
 
 class TestNodeCreate(TestNode):
-    response = {"node": {
-        "action": "2366d440-c73e-4961-9254-6d1c3af7c167",
-        "cluster_id": None,
-        "created_at": None,
-        "data": {},
-        "domain": None,
-        "id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
-        "index": -1,
-        "init_time": "2015-03-05T08:53:15",
-        "metadata": {},
-        "name": "my_node",
-        "physical_id": "",
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "role": "master",
-        "status": "INIT",
-        "status_reason": "Initializing",
-        "updated_at": None,
-        "user": "5e5bf8027826429c96af157f68dc9072"
-    }}
 
     defaults = {
         "cluster_id": None,
@@ -229,10 +206,31 @@ class TestNodeCreate(TestNode):
     def setUp(self):
         super(TestNodeCreate, self).setUp()
         self.cmd = osc_node.CreateNode(self.app, None)
-        self.mock_client.create_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
-        self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
+        fake_node = mock.Mock(
+            action="2366d440-c73e-4961-9254-6d1c3af7c167",
+            cluster_id="",
+            created_at=None,
+            data={},
+            domain=None,
+            id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            index=-1,
+            init_time="2015-03-05T08:53:15",
+            metadata={},
+            physical_id=None,
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            role="master",
+            status="INIT",
+            status_reason="Initializing",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "my_node"
+        fake_node.to_dict = mock.Mock(return_value={})
+
+        self.mock_client.create_node = mock.Mock(return_value=fake_node)
+        self.mock_client.get_node = mock.Mock(return_value=fake_node)
 
     def test_node_create_defaults(self):
         arglist = ['my_node', '--profile', 'mystack']
@@ -269,27 +267,6 @@ class TestNodeCreate(TestNode):
 
 
 class TestNodeUpdate(TestNode):
-    response = {"node": {
-        "action": "2366d440-c73e-4961-9254-6d1c3af7c167",
-        "cluster_id": None,
-        "created_at": None,
-        "data": {},
-        "domain": None,
-        "id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
-        "index": -1,
-        "init_time": "2015-03-05T08:53:15",
-        "metadata": {},
-        "name": "my_node",
-        "physical_id": "",
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "role": "master",
-        "status": "INIT",
-        "status_reason": "Initializing",
-        "updated_at": None,
-        "user": "5e5bf8027826429c96af157f68dc9072"
-    }}
 
     defaults = {
         "name": "new_node",
@@ -304,12 +281,31 @@ class TestNodeUpdate(TestNode):
     def setUp(self):
         super(TestNodeUpdate, self).setUp()
         self.cmd = osc_node.UpdateNode(self.app, None)
-        self.mock_client.update_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
-        self.mock_client.get_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
-        self.mock_client.find_node = mock.Mock(
-            return_value=sdk_node.Node(**self.response['node']))
+        fake_node = mock.Mock(
+            action="2366d440-c73e-4961-9254-6d1c3af7c167",
+            cluster_id="",
+            created_at=None,
+            data={},
+            domain=None,
+            id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            index=-1,
+            init_time="2015-03-05T08:53:15",
+            metadata={},
+            physical_id=None,
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            role="master",
+            status="INIT",
+            status_reason="Initializing",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "my_node"
+        fake_node.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_node = mock.Mock(return_value=fake_node)
+        self.mock_client.get_node = mock.Mock(return_value=fake_node)
+        self.mock_client.find_node = mock.Mock(return_value=fake_node)
 
     def test_node_update_defaults(self):
         arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
@@ -434,13 +430,14 @@ class TestNodeCheck(TestNode):
 
 
 class TestNodeRecover(TestNode):
-    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
+
+    action_id = "8bb476c3-0f4c-44ee-9f64-c7b0260814de"
 
     def setUp(self):
         super(TestNodeRecover, self).setUp()
         self.cmd = osc_node.RecoverNode(self.app, None)
-        self.mock_client.recover_node = mock.Mock(
-            return_value=self.response)
+        fake_res = {'action': self.action_id}
+        self.mock_client.recover_node = mock.Mock(return_value=fake_res)
 
     def test_node_recover(self):
         arglist = ['node1', 'node2', 'node3']
