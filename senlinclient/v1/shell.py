@@ -304,8 +304,25 @@ def do_policy_type_list(service, args):
     """List the available policy types."""
     show_deprecated('senlin policy-type-list',
                     'openstack cluster policy type list')
+
+    class _PolicyType(object):
+
+        def __init__(self, name, version, status):
+            self.name = name
+            self.version = version
+            self.support_status = status
+
+    fields = ['name', 'version', 'support_status']
     types = service.policy_types()
-    utils.print_list(types, ['name'], sortby_index=0)
+
+    results = []
+    for t in types:
+        for v in t.support_status.keys():
+            ss = '\n'.join([' since '.join((item['status'], item['since']))
+                           for item in t.support_status[v]])
+            results.append(_PolicyType(t.name, v, ss))
+
+    utils.print_list(results, fields, sortby_index=0)
 
 
 @utils.arg('type_name', metavar='<TYPE_NAME>',

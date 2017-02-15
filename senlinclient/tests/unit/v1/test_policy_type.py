@@ -27,16 +27,24 @@ class TestPolicyType(fakes.TestClusteringv1):
 
 
 class TestPolicyTypeList(TestPolicyType):
-    expected_columns = ['name']
+    expected_columns = ['name', 'version', 'support_status']
     list_response = [
-        sdk_policy_type.PolicyType(name='BBB', schema={'foo': 'bar'}),
-        sdk_policy_type.PolicyType(name='AAA', schema={'foo': 'bar'}),
-        sdk_policy_type.PolicyType(name='CCC', schema={'foo': 'bar'}),
+        sdk_policy_type.PolicyType(
+            name='BBB', schema={'foo': 'bar'},
+            support_status={
+                "1.0": [{"status": "SUPPORTED", "since": "2016.10"}]
+            }
+        ),
+        sdk_policy_type.PolicyType(
+            name='AAA', schema={'foo': 'bar'},
+            support_status={
+                "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
+            }
+        ),
     ]
     expected_rows = [
-        ['AAA'],
-        ['BBB'],
-        ['CCC']
+        ('AAA', '1.0', 'DEPRECATED since 2016.01'),
+        ('BBB', '1.0', 'SUPPORTED since 2016.10')
     ]
 
     def setUp(self):

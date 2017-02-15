@@ -89,7 +89,9 @@ class ShellTest(testtools.TestCase):
         mock_type.name = "fake_type"
         types = [mock_type]
         service.profile_types.return_value = types
+
         sh.do_profile_type_list(service)
+
         mock_print.assert_called_once_with(
             mock.ANY,
             ['name', 'version', 'support_status'],
@@ -361,10 +363,27 @@ class ShellTest(testtools.TestCase):
     def test_do_policy_type_list(self, mock_print):
         service = mock.Mock()
         args = mock.Mock()
-        types = mock.Mock()
+        mock_type = mock.Mock(
+            support_status={
+                "1.0": [
+                    {
+                        "status": "SUPPORTED",
+                        "since": "2016.10"
+                    }
+                ]
+            }
+        )
+        mock_type.name = "fake_type"
+        types = [mock_type]
         service.policy_types.return_value = types
+
         sh.do_policy_type_list(service, args)
-        mock_print.assert_called_once_with(types, ['name'], sortby_index=0)
+
+        mock_print.assert_called_once_with(
+            mock.ANY,
+            ['name', 'version', 'support_status'],
+            sortby_index=0)
+        self.assertTrue(service.policy_types.called)
 
     @mock.patch.object(utils, 'format_output')
     def test_do_policy_type_show(self, mock_format):
