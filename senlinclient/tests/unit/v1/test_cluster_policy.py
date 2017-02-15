@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-from openstack.cluster.v1 import cluster_policy as scp
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import cluster_policy as osc_cluster_policy
@@ -24,72 +23,57 @@ class TestClusterPolicy(fakes.TestClusteringv1):
 
 
 class TestClusterPolicyList(TestClusterPolicy):
-    columns = ['policy_id', 'policy_name', 'policy_type', 'is_enabled']
-    response = {"cluster_policies": [
-        {
-            "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
-            "cluster_name": "my_cluster",
-            "enabled": True,
-            "id": "06be3a1f-b238-4a96-a737-ceec5714087e",
-            "policy_id": "714fe676-a08f-4196-b7af-61d52eeded15",
-            "policy_name": "my_policy",
-            "policy_type": "senlin.policy.deletion-1.0"
-        },
-        {
-            "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
-            "cluster_name": "my_cluster",
-            "enabled": True,
-            "id": "abddc45e-ac31-4f90-93cc-db55a7d8dd6d",
-            "policy_id": "e026e09f-a3e9-4dad-a1b9-d7ba316026a1",
-            "policy_name": "my_policy",
-            "policy_type": "senlin.policy.scaling-1.0"
-        }
-    ]}
-
-    args = {
-        'sort': 'name:asc',
-    }
 
     def setUp(self):
         super(TestClusterPolicyList, self).setUp()
         self.cmd = osc_cluster_policy.ClusterPolicyList(self.app, None)
-        cluster = mock.Mock()
-        cluster.id = 'C1'
-        self.mock_client.get_cluster = mock.Mock(
-            return_value=cluster
+        fake_cluster = mock.Mock(id='C1')
+        self.mock_client.get_cluster = mock.Mock(return_value=fake_cluster)
+        fake_binding = mock.Mock(
+            cluster_id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            cluster_name="my_cluster",
+            is_enabled=True,
+            id="06be3a1f-b238-4a96-a737-ceec5714087e",
+            policy_id="714fe676-a08f-4196-b7af-61d52eeded15",
+            policy_name="my_policy",
+            policy_type="senlin.policy.deletion-1.0"
         )
+        fake_binding.to_dict = mock.Mock(return_value={})
         self.mock_client.cluster_policies = mock.Mock(
-            return_value=self.response)
+            return_value=[fake_binding])
 
     def test_cluster_policy_list(self):
         arglist = ['--sort', 'name:asc', '--filter', 'name=my_policy',
                    'my_cluster', '--full-id']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+        expected_columns = ['policy_id', 'policy_name', 'policy_type',
+                            'is_enabled']
+
         columns, data = self.cmd.take_action(parsed_args)
+
         self.mock_client.get_cluster.assert_called_with('my_cluster')
         self.mock_client.cluster_policies.assert_called_with(
-            'C1',
-            name='my_policy',
-            **self.args)
-        self.assertEqual(self.columns, columns)
+            'C1', name="my_policy", sort="name:asc")
+        self.assertEqual(expected_columns, columns)
 
 
 class TestClusterPolicyShow(TestClusterPolicy):
-    response = {"cluster_policy": {
-        "cluster_id": "7d85f602-a948-4a30-afd4-e84f47471c15",
-        "cluster_name": "my_cluster",
-        "enabled": True,
-        "id": "06be3a1f-b238-4a96-a737-ceec5714087e",
-        "policy_id": "714fe676-a08f-4196-b7af-61d52eeded15",
-        "policy_name": "my_policy",
-        "policy_type": "senlin.policy.deletion-1.0"
-    }}
 
     def setUp(self):
         super(TestClusterPolicyShow, self).setUp()
         self.cmd = osc_cluster_policy.ClusterPolicyShow(self.app, None)
+        fake_binding = mock.Mock(
+            cluster_id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            cluster_name="my_cluster",
+            is_enabled=True,
+            id="06be3a1f-b238-4a96-a737-ceec5714087e",
+            policy_id="714fe676-a08f-4196-b7af-61d52eeded15",
+            policy_name="my_policy",
+            policy_type="senlin.policy.deletion-1.0"
+        )
+        fake_binding.to_dict = mock.Mock(return_value={})
         self.mock_client.get_cluster_policy = mock.Mock(
-            return_value=scp.ClusterPolicy(**self.response['cluster_policy']))
+            return_value=fake_binding)
 
     def test_cluster_policy_show(self):
         arglist = ['--policy', 'my_policy', 'my_cluster']
@@ -100,19 +84,17 @@ class TestClusterPolicyShow(TestClusterPolicy):
 
 
 class TestClusterPolicyUpdate(TestClusterPolicy):
-    response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
 
     def setUp(self):
         super(TestClusterPolicyUpdate, self).setUp()
         self.cmd = osc_cluster_policy.ClusterPolicyUpdate(self.app, None)
+        fake_resp = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
         self.mock_client.cluster_update_policy = mock.Mock(
-            return_value=self.response)
+            return_value=fake_resp)
 
     def test_cluster_policy_update(self):
         arglist = ['--policy', 'my_policy', '--enabled', 'true', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_update_policy.assert_called_with(
-            'my_cluster',
-            'my_policy',
-            enabled=True)
+            'my_cluster', 'my_policy', enabled=True)
