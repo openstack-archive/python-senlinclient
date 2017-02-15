@@ -632,7 +632,7 @@ def _run_script(node_id, addr, net, addr_type, port, user, ipv6, identity_file,
                                  "network.") % {'node': node_id}
             return
         else:
-            addresses = list(six.itervalues(addr))[0]
+            addresses = list(addr.values())[0]
 
     # Select the address in the selected network.
     # If the extension is not present, we assume the address to be floating.
