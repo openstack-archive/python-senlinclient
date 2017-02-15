@@ -269,7 +269,7 @@ class TestClusterUpdate(TestCluster):
     def setUp(self):
         super(TestClusterUpdate, self).setUp()
         self.cmd = osc_cluster.UpdateCluster(self.app, None)
-        fake_cluster = mock.Mock(
+        self.fake_cluster = mock.Mock(
             created_at="2015-02-11T15:13:20",
             data={},
             desired_capacity=0,
@@ -290,11 +290,14 @@ class TestClusterUpdate(TestCluster):
             updated_at=None,
             user_id="5e5bf8027826429c96af157f68dc9072"
         )
-        fake_cluster.name = "my_cluster"
-        fake_cluster.to_dict = mock.Mock(return_value={})
-        self.mock_client.update_cluster = mock.Mock(return_value=fake_cluster)
-        self.mock_client.get_cluster = mock.Mock(return_value=fake_cluster)
-        self.mock_client.find_cluster = mock.Mock(return_value=fake_cluster)
+        self.fake_cluster.name = "my_cluster"
+        self.fake_cluster.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_cluster = mock.Mock(
+            return_value=self.fake_cluster)
+        self.mock_client.get_cluster = mock.Mock(
+            return_value=self.fake_cluster)
+        self.mock_client.find_cluster = mock.Mock(
+            return_value=self.fake_cluster)
 
     def test_cluster_update_defaults(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
@@ -302,7 +305,7 @@ class TestClusterUpdate(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.update_cluster.assert_called_with(
-            "7d85f602-a948-4a30-afd4-e84f47471c15", **self.defaults)
+            self.fake_cluster, **self.defaults)
 
     def test_cluster_update_not_found(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',

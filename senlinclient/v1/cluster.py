@@ -275,7 +275,7 @@ class UpdateCluster(command.ShowOne):
             'timeout': parsed_args.timeout,
         }
 
-        senlin_client.update_cluster(cluster.id, **attrs)
+        senlin_client.update_cluster(cluster, **attrs)
         return _show_cluster(senlin_client, cluster.id)
 
 
