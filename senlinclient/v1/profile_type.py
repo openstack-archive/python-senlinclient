@@ -17,6 +17,7 @@ import logging
 from openstack import exceptions as sdk_exc
 from osc_lib.command import command
 from osc_lib import exceptions as exc
+
 from senlinclient.common import format_utils
 from senlinclient.common.i18n import _
 
@@ -34,9 +35,19 @@ class ProfileTypeList(command.Lister):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
         types = senlin_client.profile_types()
-        columns = ['name']
-        rows = sorted([t.name] for t in types)
-        return columns, rows
+        columns = ['name', 'version', 'support_status']
+
+        results = []
+        for t in types:
+            for v in t.support_status.keys():
+                st_list = '\n'.join([
+                    ' since '.join((item['status'], item['since']))
+                    for item in t.support_status[v]
+                ])
+
+                results.append((t.name, v, st_list))
+
+        return columns, sorted(results)
 
 
 class ProfileTypeShow(format_utils.YamlFormat):

@@ -23,7 +23,7 @@ LOG = logging.getLogger(__name__)
 DEFAULT_CLUSTERING_API_VERSION = '1'
 API_VERSION_OPTION = 'os_clustering_api_version'
 API_NAME = 'clustering'
-CURRENT_API_VERSION = '1.2'
+CURRENT_API_VERSION = '1.5'
 
 
 def make_client(instance):

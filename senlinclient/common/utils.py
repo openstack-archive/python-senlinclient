@@ -144,9 +144,9 @@ def _print_list(objs, fields, formatters=None, sortby_index=0,
         pt.add_row(row)
 
     if six.PY3:
-        print(encodeutils.safe_encode(pt.get_string(**kwargs)).decode())
+        return encodeutils.safe_encode(pt.get_string(**kwargs)).decode()
     else:
-        print(encodeutils.safe_encode(pt.get_string(**kwargs)))
+        return encodeutils.safe_encode(pt.get_string(**kwargs))
 
 
 def print_list(objs, fields, formatters=None, sortby_index=0,
@@ -157,10 +157,11 @@ def print_list(objs, fields, formatters=None, sortby_index=0,
         objs = []
 
     try:
-        _print_list(objs, fields, formatters=formatters,
-                    sortby_index=sortby_index,
-                    mixed_case_fields=mixed_case_fields,
-                    field_labels=field_labels)
+        res = _print_list(objs, fields, formatters=formatters,
+                          sortby_index=sortby_index,
+                          mixed_case_fields=mixed_case_fields,
+                          field_labels=field_labels)
+        print(res)
     except Exception as ex:
         exc.parse_exception(ex)
 

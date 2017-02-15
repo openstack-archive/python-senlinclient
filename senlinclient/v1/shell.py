@@ -48,13 +48,28 @@ def do_build_info(service, args=None):
 
 # PROFILE TYPES
 
-
 def do_profile_type_list(service, args=None):
     """List the available profile types."""
     show_deprecated('senlin profile-type-list',
                     'openstack cluster profile type list')
+
+    class _ProfileType(object):
+
+        def __init__(self, name, version, status):
+            self.name = name
+            self.version = version
+            self.support_status = status
+
+    fields = ['name', 'version', 'support_status']
     types = service.profile_types()
-    utils.print_list(types, ['name'], sortby_index=0)
+    results = []
+    for t in types:
+        for v in t.support_status.keys():
+            ss = '\n'.join([' since '.join((item['status'], item['since']))
+                           for item in t.support_status[v]])
+            results.append(_ProfileType(t.name, v, ss))
+
+    utils.print_list(results, fields, sortby_index=0)
 
 
 @utils.arg('type_name', metavar='<TYPE_NAME>',
