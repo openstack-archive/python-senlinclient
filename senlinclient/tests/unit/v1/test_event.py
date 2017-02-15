@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import event as sdk_event
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
@@ -31,24 +30,6 @@ class TestEventList(TestEvent):
 
     columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
                'action', 'status', 'level', 'cluster_id']
-
-    response = {"events": [
-        {
-            "action": "create",
-            "cluster_id": 'null',
-            "id": "2d255b9c-8f36-41a2-a137-c0175ccc29c3",
-            "level": "20",
-            "obj_id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
-            "obj_name": "node009",
-            "obj_type": "NODE",
-            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-            "status": "CREATING",
-            "cluster_id": "f23ff00c-ec4f-412d-bd42-7f6e209819cb",
-            "generated_at": "2015-03-05T08:53:15",
-            "user": "a21ded6060534d99840658a777c2af5a"
-        }
-    ]}
-
     defaults = {
         'global_project': False,
         'marker': None,
@@ -59,8 +40,21 @@ class TestEventList(TestEvent):
     def setUp(self):
         super(TestEventList, self).setUp()
         self.cmd = osc_event.ListEvent(self.app, None)
-        self.mock_client.events = mock.Mock(
-            return_value=[sdk_event.Event(**self.response['events'][0])])
+        fake_event = mock.Mock(
+            action="CREATE",
+            cluster_id=None,
+            id="2d255b9c-8f36-41a2-a137-c0175ccc29c3",
+            level="20",
+            obj_id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            obj_name="node009",
+            obj_type="NODE",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="CREATING",
+            generated_at="2015-03-05T08:53:15",
+            user_id="a21ded6060534d99840658a777c2af5a"
+        )
+        fake_event.to_dict = mock.Mock(return_value={})
+        self.mock_client.events = mock.Mock(return_value=[fake_event])
 
     def test_event_list_defaults(self):
         arglist = []
@@ -95,7 +89,6 @@ class TestEventList(TestEvent):
         self.assertEqual(self.columns, columns)
 
     def test_event_list_sort_invalid_key(self):
-        self.mock_client.events = mock.Mock(return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -105,7 +98,6 @@ class TestEventList(TestEvent):
                           self.cmd.take_action, parsed_args)
 
     def test_event_list_sort_invalid_direction(self):
-        self.mock_client.events = mock.Mock(return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -134,37 +126,40 @@ class TestEventList(TestEvent):
 
 
 class TestEventShow(TestEvent):
-    response = {"event": {
-        "action": "create",
-        "cluster_id": 'null',
-        "id": "2d255b9c-8f36-41a2-a137-c0175ccc29c3",
-        "level": "20",
-        "obj_id": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
-        "obj_name": "node009",
-        "obj_type": "NODE",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "status": "CREATING",
-        "cluster_id": "f23ff00c-ec4f-412d-bd42-7f6e209819cb",
-        "generated_at": "2015-03-05T08:53:15",
-        "user": "a21ded6060534d99840658a777c2af5a"
-    }}
 
     def setUp(self):
         super(TestEventShow, self).setUp()
         self.cmd = osc_event.ShowEvent(self.app, None)
-        self.mock_client.get_event = mock.Mock(
-            return_value=sdk_event.Event(**self.response['event']))
+        fake_event = mock.Mock(
+            action="CREATE",
+            cluster_id=None,
+            id="2d255b9c-8f36-41a2-a137-c0175ccc29c3",
+            level="20",
+            obj_id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            obj_name="node009",
+            obj_type="NODE",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="CREATING",
+            generated_at="2015-03-05T08:53:15",
+            user_id="a21ded6060534d99840658a777c2af5a"
+        )
+        fake_event.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_event = mock.Mock(return_value=fake_event)
 
     def test_event_show(self):
         arglist = ['my_event']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.get_event.assert_called_with('my_event')
 
     def test_event_show_not_found(self):
         arglist = ['my_event']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.mock_client.get_event.side_effect = sdk_exc.ResourceNotFound()
+
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
+
         self.assertEqual('Event not found: my_event', str(error))

@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import receiver as sdk_receiver
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 import six
@@ -31,33 +30,6 @@ class TestReceiver(fakes.TestClusteringv1):
 
 class TestReceiverList(TestReceiver):
     columns = ['id', 'name', 'type', 'cluster_id', 'action', 'created_at']
-    response = {"receivers": [
-        {
-            "action": "CLUSTER_SCALE_OUT",
-            "actor": {
-                "trust_id": [
-                    "6dc6d336e3fc4c0a951b5698cd1236d9"
-                ]
-            },
-            "channel": {
-                "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1"
-                             "-8c6a-74ba891e5422/trigger?V=1&count=1"
-            },
-            "cluster_id": "ae63a10b-4a90-452c-aef1-113a0b255ee3",
-            "created_at": "2015-06-27T05:09:43",
-            "domain": "Default",
-            "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
-            "name": "cluster_inflate",
-            "params": {
-                "count": "1"
-            },
-            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-            "type": "webhook",
-            "updated_at": 'null',
-            "user": "b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
-        }
-    ]}
-
     defaults = {
         'global_project': False,
         'marker': None,
@@ -68,7 +40,26 @@ class TestReceiverList(TestReceiver):
     def setUp(self):
         super(TestReceiverList, self).setUp()
         self.cmd = osc_receiver.ListReceiver(self.app, None)
-        self.mock_client.receivers = mock.Mock(return_value=self.response)
+        fake_receiver = mock.Mock(
+            action="CLUSTER_SCALE_OUT",
+            actor={},
+            channel={
+                "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1"
+                             "-8c6a-74ba891e5422/trigger?V=1&count=1"
+            },
+            cluster_id="ae63a10b-4a90-452c-aef1-113a0b255ee3",
+            created_at="2015-06-27T05:09:43",
+            domain_id="Default",
+            id="573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            name="cluster_inflate",
+            params={"count": "1"},
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            type="webhook",
+            updated_at=None,
+            user_id="b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
+        )
+        fake_receiver.to_dict = mock.Mock(return_value={})
+        self.mock_client.receivers = mock.Mock(return_value=[fake_receiver])
 
     def test_receiver_list_defaults(self):
         arglist = []
@@ -103,8 +94,6 @@ class TestReceiverList(TestReceiver):
         self.assertEqual(self.columns, columns)
 
     def test_receiver_list_sort_invalid_key(self):
-        self.mock_client.receivers = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -114,8 +103,6 @@ class TestReceiverList(TestReceiver):
                           self.cmd.take_action, parsed_args)
 
     def test_receiver_list_sort_invalid_direction(self):
-        self.mock_client.receivers = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -144,36 +131,30 @@ class TestReceiverList(TestReceiver):
 
 
 class TestReceiverShow(TestReceiver):
-    get_response = {"receiver": {
-        "action": "CLUSTER_SCALE_OUT",
-        "actor": {
-            "trust_id": [
-                "6dc6d336e3fc4c0a951b5698cd1236d9"
-            ]
-        },
-        "channel": {
-            "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1-"
-                         "8c6a-74ba891e5422/trigger?V=1&count=1"
-        },
-        "cluster_id": "ae63a10b-4a90-452c-aef1-113a0b255ee3",
-        "created_at": "2015-06-27T05:09:43",
-        "domain": "Default",
-        "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
-        "name": "cluster_inflate",
-        "params": {
-            "count": "1"
-        },
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "type": "webhook",
-        "updated_at": 'null',
-        "user": "b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
-    }}
 
     def setUp(self):
         super(TestReceiverShow, self).setUp()
         self.cmd = osc_receiver.ShowReceiver(self.app, None)
-        x_receiver = sdk_receiver.Receiver(**self.get_response['receiver'])
-        self.mock_client.get_receiver = mock.Mock(return_value=x_receiver)
+        fake_receiver = mock.Mock(
+            action="CLUSTER_SCALE_OUT",
+            actor={},
+            channel={
+                "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1"
+                             "-8c6a-74ba891e5422/trigger?V=1&count=1"
+            },
+            cluster_id="ae63a10b-4a90-452c-aef1-113a0b255ee3",
+            created_at="2015-06-27T05:09:43",
+            domain_id="Default",
+            id="573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            name="cluster_inflate",
+            params={"count": "1"},
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            type="webhook",
+            updated_at=None,
+            user_id="b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
+        )
+        fake_receiver.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_receiver = mock.Mock(return_value=fake_receiver)
 
     def test_receiver_show(self):
         arglist = ['my_receiver']
@@ -191,30 +172,6 @@ class TestReceiverShow(TestReceiver):
 
 
 class TestReceiverCreate(TestReceiver):
-    response = {"receiver": {
-        "action": "CLUSTER_SCALE_OUT",
-        "actor": {
-            "trust_id": [
-                "6dc6d336e3fc4c0a951b5698cd1236d9"
-            ]
-        },
-        "channel": {
-            "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec"
-                         "1-8c6a-74ba891e5422/trigger?V=1&count=1"
-        },
-        "cluster_id": "ae63a10b-4a90-452c-aef1-113a0b255ee3",
-        "created_at": "2015-06-27T05:09:43",
-        "domain": "Default",
-        "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
-        "name": "cluster_inflate",
-        "params": {
-            "count": "1"
-        },
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "type": "webhook",
-        "updated_at": 'null',
-        "user": "b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
-    }}
 
     args = {
         "action": "CLUSTER_SCALE_OUT",
@@ -229,10 +186,29 @@ class TestReceiverCreate(TestReceiver):
     def setUp(self):
         super(TestReceiverCreate, self).setUp()
         self.cmd = osc_receiver.CreateReceiver(self.app, None)
+        fake_receiver = mock.Mock(
+            action="CLUSTER_SCALE_OUT",
+            actor={},
+            channel={
+                "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1"
+                             "-8c6a-74ba891e5422/trigger?V=1&count=1"
+            },
+            cluster_id="ae63a10b-4a90-452c-aef1-113a0b255ee3",
+            created_at="2015-06-27T05:09:43",
+            domain_id="Default",
+            id="573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            name="cluster_inflate",
+            params={"count": "1"},
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            type="webhook",
+            updated_at=None,
+            user_id="b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
+        )
+        fake_receiver.to_dict = mock.Mock(return_value={})
         self.mock_client.create_receiver = mock.Mock(
-            return_value=sdk_receiver.Receiver(**self.response['receiver']))
+            return_value=fake_receiver)
         self.mock_client.get_receiver = mock.Mock(
-            return_value=sdk_receiver.Receiver(**self.response['receiver']))
+            return_value=fake_receiver)
 
     def test_receiver_create_webhook(self):
         arglist = ['my_receiver', '--action', 'CLUSTER_SCALE_OUT',
@@ -264,6 +240,7 @@ class TestReceiverCreate(TestReceiver):
 
 
 class TestReceiverDelete(TestReceiver):
+
     def setUp(self):
         super(TestReceiverDelete, self).setUp()
         self.cmd = osc_receiver.DeleteReceiver(self.app, None)

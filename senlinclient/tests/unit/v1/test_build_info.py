@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-from openstack.cluster.v1 import build_info as sbi
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import build_info as osc_build_info
@@ -19,20 +18,17 @@ from senlinclient.v1 import build_info as osc_build_info
 
 class TestBuildInfo(fakes.TestClusteringv1):
     response = {"build_info": {
-        "api": {
-            "revision": "1.0"
-        },
-        "engine": {
-            "revision": "1.0"
-        }
     }}
 
     def setUp(self):
         super(TestBuildInfo, self).setUp()
         self.cmd = osc_build_info.BuildInfo(self.app, None)
         self.mock_client = self.app.client_manager.clustering
-        self.mock_client.get_build_info = mock.Mock(
-            return_value=sbi.BuildInfo(**self.response['build_info']))
+        fake_bi = mock.Mock(
+            api={"revision": "1.0"},
+            engine={"revision": "1.0"}
+        )
+        self.mock_client.get_build_info = mock.Mock(return_value=fake_bi)
 
     def test_build_info(self):
         arglist = []

@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import action as sdk_action
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
@@ -22,57 +21,16 @@ from senlinclient.v1 import action as osc_action
 
 
 class TestAction(fakes.TestClusteringv1):
+
     def setUp(self):
         super(TestAction, self).setUp()
         self.mock_client = self.app.client_manager.clustering
 
 
 class TestActionList(TestAction):
+
     columns = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
                'depended_by', 'created_at']
-    response = {"actions": [
-        {
-            "action": "NODE_CREATE",
-            "cause": "RPC Request",
-            "created_at": "2015-12-04T04:54:41",
-            "depended_by": [],
-            "depends_on": [],
-            "end_time": 1425550000.0,
-            "id": "2366d440-c73e-4961-9254-6d1c3af7c167",
-            "inputs": {},
-            "interval": -1,
-            "name": "node_create_0df0931b",
-            "outputs": {},
-            "owner": 'null',
-            "start_time": 1425550000.0,
-            "status": "SUCCEEDED",
-            "status_reason": "Action completed successfully.",
-            "target": "0df0931b-e251-4f2e-8719-4ebfda3627ba",
-            "timeout": 3600,
-            "updated_at": 'null'
-        },
-        {
-            "action": "NODE_DELETE",
-            "cause": "RPC Request",
-            "created_at": "2015-11-04T05:21:41",
-            "depended_by": [],
-            "depends_on": [],
-            "end_time": 1425550000.0,
-            "id": "edce3528-864f-41fb-8759-f4707925cc09",
-            "inputs": {},
-            "interval": -1,
-            "name": "node_delete_f0de9b9c",
-            "outputs": {},
-            "owner": 'null',
-            "start_time": 1425550000.0,
-            "status": "SUCCEEDED",
-            "status_reason": "Action completed successfully.",
-            "target": "f0de9b9c-6d48-4a46-af21-2ca8607777fe",
-            "timeout": 3600,
-            "updated_at": 'null'
-        }
-    ]}
-
     defaults = {
         'global_project': False,
         'marker': None,
@@ -83,8 +41,28 @@ class TestActionList(TestAction):
     def setUp(self):
         super(TestActionList, self).setUp()
         self.cmd = osc_action.ListAction(self.app, None)
-        self.mock_client.actions = mock.Mock(
-            return_value=self.response)
+        fake_action = mock.Mock(
+            action="NODE_CREATE",
+            cause="RPC Request",
+            created_at="2015-12-04T04:54:41",
+            depended_by=[],
+            depends_on=[],
+            end_time=1425550000.0,
+            id="2366d440-c73e-4961-9254-6d1c3af7c167",
+            inputs={},
+            interval=-1,
+            name="node_create_0df0931b",
+            outputs={},
+            owner=None,
+            start_time=1425550000.0,
+            status="SUCCEEDED",
+            status_reason="Action completed successfully.",
+            target_id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            timeout=3600,
+            updated_at=None
+        )
+        fake_action.to_dict = mock.Mock(return_value={})
+        self.mock_client.actions = mock.Mock(return_value=[fake_action])
 
     def test_action_list_defaults(self):
         arglist = []
@@ -119,8 +97,6 @@ class TestActionList(TestAction):
         self.assertEqual(self.columns, columns)
 
     def test_action_list_sort_invalid_key(self):
-        self.mock_client.actions = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -130,8 +106,6 @@ class TestActionList(TestAction):
                           self.cmd.take_action, parsed_args)
 
     def test_action_list_sort_invalid_direction(self):
-        self.mock_client.actions = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -160,32 +134,32 @@ class TestActionList(TestAction):
 
 
 class TestActionShow(TestAction):
-    response = {
-        "action": "CLUSTER_DELETE",
-        "cause": "RPC Request",
-        "context": {},
-        "created_at": "2015-06-27T05:09:43",
-        "depended_by": [],
-        "depends_on": [],
-        "end_time": 1423570000.0,
-        "id": "ffbb9175-d510-4bc1-b676-c6aba2a4ca81",
-        "inputs": {},
-        "interval": -1,
-        "name": "cluster_delete_fcc9b635",
-        "outputs": {},
-        "owner": 'null',
-        "start_time": 1423570000.0,
-        "status": "FAILED",
-        "status_reason": "Cluster action FAILED",
-        "target": "fcc9b635-52e3-490b-99f2-87b1640e4e89",
-        "timeout": 3600,
-        "updated_at": 'null'}
 
     def setUp(self):
         super(TestActionShow, self).setUp()
         self.cmd = osc_action.ShowAction(self.app, None)
-        self.mock_client.get_action = mock.Mock(
-            return_value=sdk_action.Action(**self.response))
+        fake_action = mock.Mock(
+            action="NODE_CREATE",
+            cause="RPC Request",
+            created_at="2015-12-04T04:54:41",
+            depended_by=[],
+            depends_on=[],
+            end_time=1425550000.0,
+            id="2366d440-c73e-4961-9254-6d1c3af7c167",
+            inputs={},
+            interval=-1,
+            name="node_create_0df0931b",
+            outputs={},
+            owner=None,
+            start_time=1425550000.0,
+            status="SUCCEEDED",
+            status_reason="Action completed successfully.",
+            target_id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            timeout=3600,
+            updated_at=None
+        )
+        fake_action.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_action = mock.Mock(return_value=fake_action)
 
     def test_action_show(self):
         arglist = ['my_action']
