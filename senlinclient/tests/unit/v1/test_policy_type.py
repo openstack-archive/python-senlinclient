@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-from openstack.cluster.v1 import policy_type as sdk_policy_type
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
@@ -27,20 +26,21 @@ class TestPolicyType(fakes.TestClusteringv1):
 
 class TestPolicyTypeList(TestPolicyType):
     expected_columns = ['name', 'version', 'support_status']
-    list_response = [
-        sdk_policy_type.PolicyType(
-            name='BBB', schema={'foo': 'bar'},
-            support_status={
-                "1.0": [{"status": "SUPPORTED", "since": "2016.10"}]
-            }
-        ),
-        sdk_policy_type.PolicyType(
-            name='AAA', schema={'foo': 'bar'},
-            support_status={
-                "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
-            }
-        ),
-    ]
+    pt1 = mock.Mock(
+        schema={'foo': 'bar'},
+        support_status={
+            "1.0": [{"status": "SUPPORTED", "since": "2016.10"}]
+        }
+    )
+    pt1.name = 'BBB'
+    pt2 = mock.Mock(
+        schema={'foo': 'bar'},
+        support_status={
+            "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
+        }
+    )
+    pt2.name = 'AAA'
+    list_response = [pt1, pt2]
     expected_rows = [
         ('AAA', '1.0', 'DEPRECATED since 2016.01'),
         ('BBB', '1.0', 'SUPPORTED since 2016.10')
@@ -64,16 +64,12 @@ class TestPolicyTypeList(TestPolicyType):
 
 class TestPolicyTypeShow(TestPolicyType):
 
-    response = ({'name': 'senlin.policy.deletion-1.0',
-                 'schema': {
-                     'foo': 'bar'}})
-
     def setUp(self):
         super(TestPolicyTypeShow, self).setUp()
         self.cmd = osc_policy_type.PolicyTypeShow(self.app, None)
-        self.mock_client.get_policy_type = mock.Mock(
-            return_value=sdk_policy_type.PolicyType(**self.response)
-        )
+        fake_pt = mock.Mock(schema={'foo': 'bar'})
+        fake_pt.name = 'senlin.policy.deletion-1.0'
+        self.mock_client.get_policy_type = mock.Mock(return_value=fake_pt)
 
     def test_policy_type_show(self):
         arglist = ['os.heat.stack-1.0']

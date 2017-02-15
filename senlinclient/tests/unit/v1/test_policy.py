@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import policy as sdk_policy
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 import six
@@ -32,26 +31,6 @@ class TestPolicyList(TestPolicy):
     columns = ['id', 'name', 'type', 'created_at']
     response = {"policies": [
         {
-            "created_at": "2015-02-15T08:33:13.000000",
-            "data": {},
-            "domain": 'null',
-            "id": "7192d8df-73be-4e98-ab99-1cf6d5066729",
-            "name": "test_policy_1",
-            "project": "42d9e9663331431f97b75e25136307ff",
-            "spec": {
-                "description": "A test policy",
-                "properties": {
-                    "criteria": "OLDEST_FIRST",
-                    "destroy_after_deletion": True,
-                    "grace_period": 60,
-                    "reduce_desired_capacity": False
-                },
-                "type": "senlin.policy.deletion",
-                "version": "1.0"
-            },
-            "type": "senlin.policy.deletion-1.0",
-            "updated_at": 'null',
-            "user": "5e5bf8027826429c96af157f68dc9072"
         }
     ]}
     defaults = {
@@ -64,6 +43,29 @@ class TestPolicyList(TestPolicy):
     def setUp(self):
         super(TestPolicyList, self).setUp()
         self.cmd = osc_policy.ListPolicy(self.app, None)
+        fake_policy = mock.Mock(
+            created_at="2015-02-15T08:33:13.000000",
+            data={},
+            domain=None,
+            id="7192d8df-73be-4e98-ab99-1cf6d5066729",
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={
+                "description": "A test policy",
+                "properties": {
+                    "criteria": "OLDEST_FIRST",
+                    "destroy_after_deletion": True,
+                    "grace_period": 60,
+                    "reduce_desired_capacity": False
+                },
+                "type": "senlin.policy.deletion",
+                "version": "1.0"
+            },
+            type="senlin.policy.deletion-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_policy.name = "test_policy_1"
+        fake_policy.to_dict = mock.Mock(return_value={})
         self.mock_client.policies = mock.Mock(
             return_value=self.response)
 
@@ -142,53 +144,53 @@ class TestPolicyList(TestPolicy):
 
 class TestPolicyShow(TestPolicy):
     response = {"policy": {
-        "created_at": "2015-03-02T07:40:31",
-        "data": {},
-        "domain": 'null',
-        "id": "02f62195-2198-4797-b0a9-877632208527",
-        "name": "sp001",
-        "project": "42d9e9663331431f97b75e25136307ff",
-        "spec": {
-            "properties": {
-                "adjustment": {
-                    "best_effort": True,
-                    "min_step": 1,
-                    "number": 1,
-                    "type": "CHANGE_IN_CAPACITY"
-                },
-                "event": "CLUSTER_SCALE_IN"
-            },
-            "type": "senlin.policy.scaling",
-            "version": "1.0"
-        },
-        "type": "senlin.policy.scaling-1.0",
-        "updated_at": 'null',
-        "user": "5e5bf8027826429c96af157f68dc9072"
     }}
 
     def setUp(self):
         super(TestPolicyShow, self).setUp()
         self.cmd = osc_policy.ShowPolicy(self.app, None)
-        self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
+        fake_policy = mock.Mock(
+            created_at="2015-03-02T07:40:31",
+            data={},
+            domain_id=None,
+            id="02f62195-2198-4797-b0a9-877632208527",
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={
+                "properties": {
+                    "adjustment": {
+                        "best_effort": True,
+                        "min_step": 1,
+                        "number": 1,
+                        "type": "CHANGE_IN_CAPACITY"
+                    },
+                    "event": "CLUSTER_SCALE_IN"
+                },
+                "type": "senlin.policy.scaling",
+                "version": "1.0"
+            },
+            type="senlin.policy.scaling-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_policy.name = "sp001"
+        fake_policy.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_policy = mock.Mock(return_value=fake_policy)
 
     def test_policy_show(self):
         arglist = ['sp001']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.get_policy.assert_called_with('sp001')
         policy = self.mock_client.get_policy('sp001')
-        self.assertEqual(self.response['policy']['created_at'],
-                         policy.created_at)
-        self.assertEqual(self.response['policy']['data'], policy.data)
-        self.assertEqual(self.response['policy']['id'], policy.id)
-        self.assertEqual(self.response['policy']['name'], policy.name)
-        self.assertEqual(self.response['policy']['project'],
-                         policy.project_id)
-        self.assertEqual(self.response['policy']['spec'], policy.spec)
-        self.assertEqual(self.response['policy']['type'], policy.type)
-        self.assertEqual(self.response['policy']['updated_at'],
-                         policy.updated_at)
+        self.assertEqual("2015-03-02T07:40:31", policy.created_at)
+        self.assertEqual({}, policy.data)
+        self.assertEqual("02f62195-2198-4797-b0a9-877632208527", policy.id)
+        self.assertEqual("sp001", policy.name)
+        self.assertEqual("42d9e9663331431f97b75e25136307ff", policy.project_id)
+        self.assertEqual("senlin.policy.scaling-1.0", policy.type)
+        self.assertIsNone(policy.updated_at)
 
     def test_policy_show_not_found(self):
         arglist = ['sp001']
@@ -199,29 +201,6 @@ class TestPolicyShow(TestPolicy):
 
 class TestPolicyCreate(TestPolicy):
     spec_path = 'senlinclient/tests/test_specs/deletion_policy.yaml'
-    response = {"policy": {
-        "created_at": "2016-02-21T02:38:36",
-        "data": {},
-        "domain": 'null',
-        "id": "9f779ddf-744e-48bd-954c-acef7e11116c",
-        "name": "my_policy",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {
-            "description": "A policy for choosing victim node(s) from a "
-                           "cluster for deletion.",
-            "properties": {
-                "criteria": "OLDEST_FIRST",
-                "destroy_after_deletion": True,
-                "grace_period": 60,
-                "reduce_desired_capacity": False
-            },
-            "type": "senlin.policy.deletion",
-            "version": 1.0
-        },
-        "type": "senlin.policy.deletion-1.0",
-        "updated_at": 'null',
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"
-    }}
     defaults = {
         "name": "my_policy",
         "spec": {
@@ -241,10 +220,32 @@ class TestPolicyCreate(TestPolicy):
     def setUp(self):
         super(TestPolicyCreate, self).setUp()
         self.cmd = osc_policy.CreatePolicy(self.app, None)
-        self.mock_client.create_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
-        self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
+        fake_policy = mock.Mock(
+            created_at="2016-02-21T02:38:36",
+            data={},
+            domain_id=None,
+            id="9f779ddf-744e-48bd-954c-acef7e11116c",
+            project_id="5f1cc92b578e4e25a3b284179cf20a9b",
+            spec={
+                "description": "A policy for choosing victim node(s) from a "
+                               "cluster for deletion.",
+                "properties": {
+                    "criteria": "OLDEST_FIRST",
+                    "destroy_after_deletion": True,
+                    "grace_period": 60,
+                    "reduce_desired_capacity": False
+                },
+                "type": "senlin.policy.deletion",
+                "version": 1.0
+            },
+            type="senlin.policy.deletion-1.0",
+            updated_at=None,
+            user_id="2d7aca950f3e465d8ef0c81720faf6ff"
+        )
+        fake_policy.name = "my_policy"
+        fake_policy.to_dict = mock.Mock(return_value={})
+        self.mock_client.create_policy = mock.Mock(return_value=fake_policy)
+        self.mock_client.get_policy = mock.Mock(return_value=fake_policy)
 
     def test_policy_create_defaults(self):
         arglist = ['my_policy', '--spec-file', self.spec_path]
@@ -254,50 +255,46 @@ class TestPolicyCreate(TestPolicy):
 
 
 class TestPolicyUpdate(TestPolicy):
-    response = {"policy": {
-        "created_at": "2016-02-21T02:38:36",
-        "data": {},
-        "domain": 'null',
-        "id": "9f779ddf-744e-48bd-954c-acef7e11116c",
-        "name": "new_policy",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {
-            "description": "A policy for choosing victim node(s) from a "
-                           "cluster for deletion.",
-            "properties": {
-                "criteria": "OLDEST_FIRST",
-                "destroy_after_deletion": True,
-                "grace_period": 60,
-                "reduce_desired_capacity": False
-            },
-            "type": "senlin.policy.deletion",
-            "version": 1.0
-        },
-        "type": "senlin.policy.deletion-1.0",
-        "updated_at": 'null',
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"
-    }}
-
-    defaults = {
-        "name": "new_policy"
-    }
 
     def setUp(self):
         super(TestPolicyUpdate, self).setUp()
         self.cmd = osc_policy.UpdatePolicy(self.app, None)
-        self.mock_client.update_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
-        self.mock_client.get_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
-        self.mock_client.find_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
+        fake_policy = mock.Mock(
+            created_at="2016-02-21T02:38:36",
+            data={},
+            domain_id=None,
+            id="9f779ddf-744e-48bd-954c-acef7e11116c",
+            project_id="5f1cc92b578e4e25a3b284179cf20a9b",
+            spec={
+                "description": "A policy for choosing victim node(s) from a "
+                               "cluster for deletion.",
+                "properties": {
+                    "criteria": "OLDEST_FIRST",
+                    "destroy_after_deletion": True,
+                    "grace_period": 60,
+                    "reduce_desired_capacity": False
+                },
+                "type": "senlin.policy.deletion",
+                "version": 1.0
+            },
+            type="senlin.policy.deletion-1.0",
+            updated_at=None,
+            user_id="2d7aca950f3e465d8ef0c81720faf6ff"
+        )
+        fake_policy.name = "new_policy"
+        fake_policy.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_policy = mock.Mock(return_value=fake_policy)
+        self.mock_client.get_policy = mock.Mock(return_value=fake_policy)
+        self.mock_client.find_policy = mock.Mock(return_value=fake_policy)
 
     def test_policy_update_defaults(self):
         arglist = ['--name', 'new_policy', '9f779ddf']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.update_policy.assert_called_with(
-            '9f779ddf-744e-48bd-954c-acef7e11116c', **self.defaults)
+            '9f779ddf-744e-48bd-954c-acef7e11116c', name="new_policy")
 
     def test_policy_update_not_found(self):
         arglist = ['--name', 'new_policy', 'c6b8b252']
@@ -384,29 +381,6 @@ class TestPolicyDelete(TestPolicy):
 
 class TestPolicyValidate(TestPolicy):
     spec_path = 'senlinclient/tests/test_specs/deletion_policy.yaml'
-    response = {"policy": {
-        "created_at": None,
-        "data": {},
-        "domain": 'null',
-        "id": None,
-        "name": "validated_policy",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {
-            "description": "A policy for choosing victim node(s) from a "
-                           "cluster for deletion.",
-            "properties": {
-                "criteria": "OLDEST_FIRST",
-                "destroy_after_deletion": True,
-                "grace_period": 60,
-                "reduce_desired_capacity": False
-            },
-            "type": "senlin.policy.deletion",
-            "version": 1.0
-        },
-        "type": "senlin.policy.deletion-1.0",
-        "updated_at": 'null',
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"
-    }}
     defaults = {
         "spec": {
             "version": 1,
@@ -425,23 +399,43 @@ class TestPolicyValidate(TestPolicy):
     def setUp(self):
         super(TestPolicyValidate, self).setUp()
         self.cmd = osc_policy.ValidatePolicy(self.app, None)
-        self.mock_client.validate_policy = mock.Mock(
-            return_value=sdk_policy.Policy(**self.response['policy']))
+        fake_policy = mock.Mock(
+            created_at=None,
+            data={},
+            domain_id=None,
+            id=None,
+            project_id="5f1cc92b578e4e25a3b284179cf20a9b",
+            spec={
+                "description": "A policy for choosing victim node(s) from a "
+                               "cluster for deletion.",
+                "properties": {
+                    "criteria": "OLDEST_FIRST",
+                    "destroy_after_deletion": True,
+                    "grace_period": 60,
+                    "reduce_desired_capacity": False
+                },
+                "type": "senlin.policy.deletion",
+                "version": 1.0
+            },
+            type="senlin.policy.deletion-1.0",
+            updated_at=None,
+            user_id="2d7aca950f3e465d8ef0c81720faf6ff"
+        )
+        fake_policy.name = "validated_policy"
+        fake_policy.to_dict = mock.Mock(return_value={})
+        self.mock_client.validate_policy = mock.Mock(return_value=fake_policy)
 
     def test_policy_validate(self):
         arglist = ['--spec-file', self.spec_path]
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.validate_policy.assert_called_with(**self.defaults)
+
         policy = self.mock_client.validate_policy(**self.defaults)
-        self.assertEqual(self.response['policy']['project'],
-                         policy.project_id)
-        self.assertEqual(self.response['policy']['data'], policy.data)
-        self.assertEqual(self.response['policy']['id'], policy.id)
-        self.assertEqual(self.response['policy']['name'], policy.name)
-        self.assertEqual(self.response['policy']['project'],
-                         policy.project_id)
-        self.assertEqual(self.response['policy']['spec'], policy.spec)
-        self.assertEqual(self.response['policy']['type'], policy.type)
-        self.assertEqual(self.response['policy']['updated_at'],
-                         policy.updated_at)
+
+        self.assertEqual("5f1cc92b578e4e25a3b284179cf20a9b", policy.project_id)
+        self.assertEqual({}, policy.data)
+        self.assertIsNone(policy.id)
+        self.assertEqual("validated_policy", policy.name)
+        self.assertEqual("senlin.policy.deletion-1.0", policy.type)
+        self.assertIsNone(policy.updated_at)
