@@ -14,7 +14,6 @@ import copy
 import subprocess
 
 import mock
-from openstack.cluster.v1 import cluster as sdk_cluster
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 import six
@@ -32,35 +31,6 @@ class TestCluster(fakes.TestClusteringv1):
 class TestClusterList(TestCluster):
 
     columns = ['id', 'name', 'status', 'created_at', 'updated_at']
-    response = {"clusters": [
-        {
-            "created_at": "2015-02-10T14:26:14",
-            "data": {},
-            "desired_capacity": 4,
-            "domain": 'null',
-            "id": "7d85f602-a948-4a30-afd4-e84f47471c15",
-            "init_time": "2015-02-10T14:26:11",
-            "max_size": -1,
-            "metadata": {},
-            "min_size": 0,
-            "name": "cluster1",
-            "node_ids": [
-                "b07c57c8-7ab2-47bf-bdf8-e894c0c601b9",
-                "ecc23d3e-bb68-48f8-8260-c9cf6bcb6e61",
-                "da1e9c87-e584-4626-a120-022da5062dac"
-            ],
-            "policies": [],
-            "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-            "profile_name": "mystack",
-            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-            "status": "ACTIVE",
-            "status_reason": "Cluster scale-in succeeded",
-            "timeout": 3600,
-            "updated_at": 'null',
-            "user": "5e5bf8027826429c96af157f68dc9072"
-        }
-    ]}
-
     defaults = {
         'global_project': False,
         'marker': None,
@@ -71,8 +41,35 @@ class TestClusterList(TestCluster):
     def setUp(self):
         super(TestClusterList, self).setUp()
         self.cmd = osc_cluster.ListCluster(self.app, None)
-        self.mock_client.clusters = mock.Mock(
-            return_value=self.response)
+        fake_cluster = mock.Mock(
+            created_at="2015-02-10T14:26:14",
+            data={},
+            desired_capacity=4,
+            domain_id=None,
+            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            init_time="2015-02-10T14:26:11",
+            max_size=-1,
+            metadata={},
+            min_size=0,
+            node_ids=[
+                "b07c57c8-7ab2-47bf-bdf8-e894c0c601b9",
+                "ecc23d3e-bb68-48f8-8260-c9cf6bcb6e61",
+                "da1e9c87-e584-4626-a120-022da5062dac"
+            ],
+            policies=[],
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="ACTIVE",
+            status_reason="Cluster scale-in succeeded",
+            timeout=3600,
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_cluster.name = "cluster1"
+        fake_cluster.to_dict = mock.Mock(return_value={})
+
+        self.mock_client.clusters = mock.Mock(return_value=[fake_cluster])
 
     def test_cluster_list_defaults(self):
         arglist = []
@@ -107,8 +104,6 @@ class TestClusterList(TestCluster):
         self.assertEqual(self.columns, columns)
 
     def test_cluster_list_sort_invalid_key(self):
-        self.mock_client.clusters = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -118,8 +113,6 @@ class TestClusterList(TestCluster):
                           self.cmd.take_action, parsed_args)
 
     def test_cluster_list_sort_invalid_direction(self):
-        self.mock_client.clusters = mock.Mock(
-            return_value=self.response)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'name:bad_direction'
         arglist = ['--sort', 'name:bad_direction']
@@ -148,34 +141,34 @@ class TestClusterList(TestCluster):
 
 
 class TestClusterShow(TestCluster):
-    response = {"cluster": {
-        "created_at": "2015-02-11T15:13:20",
-        "data": {},
-        "desired_capacity": 0,
-        "domain": 'null',
-        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
-        "init_time": "2015-02-10T14:26:10",
-        "max_size": -1,
-        "metadata": {},
-        "min_size": 0,
-        "name": "my_cluster",
-        "node_ids": [],
-        "policies": [],
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "status": "ACTIVE",
-        "status_reason": "Creation succeeded",
-        "timeout": 3600,
-        "updated_at": 'null',
-        "user": "5e5bf8027826429c96af157f68dc9072"
-    }}
 
     def setUp(self):
         super(TestClusterShow, self).setUp()
         self.cmd = osc_cluster.ShowCluster(self.app, None)
-        self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
+        fake_cluster = mock.Mock(
+            created_at="2015-02-11T15:13:20",
+            data={},
+            desired_capacity=0,
+            domain_id=None,
+            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            init_time="2015-02-10T14:26:11",
+            max_size=-1,
+            metadata={},
+            min_size=0,
+            node_ids=[],
+            policies=[],
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="ACTIVE",
+            status_reason="Cluster scale-in succeeded",
+            timeout=3600,
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_cluster.name = "my_cluster"
+        fake_cluster.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_cluster = mock.Mock(return_value=fake_cluster)
 
     def test_cluster_show(self):
         arglist = ['my_cluster']
@@ -193,29 +186,6 @@ class TestClusterShow(TestCluster):
 
 
 class TestClusterCreate(TestCluster):
-    response = {"cluster": {
-        "action": "bbf4558b-9fa3-482a-93c2-a4aa5cc85317",
-        "created_at": 'null',
-        "data": {},
-        "desired_capacity": 4,
-        "domain": 'null',
-        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
-        "init_at": "2015-02-10T14:16:10",
-        "max_size": -1,
-        "metadata": {},
-        "min_size": 0,
-        "name": "test_cluster",
-        "node_ids": [],
-        "policies": [],
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "status": "INIT",
-        "status_reason": "Initializing",
-        "timeout": 3600,
-        "updated_at": 'null',
-        "user": "5e5bf8027826429c96af157f68dc9072"
-    }}
 
     defaults = {
         "desired_capacity": 0,
@@ -230,10 +200,31 @@ class TestClusterCreate(TestCluster):
     def setUp(self):
         super(TestClusterCreate, self).setUp()
         self.cmd = osc_cluster.CreateCluster(self.app, None)
-        self.mock_client.create_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
-        self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
+        fake_cluster = mock.Mock(
+            created_at="2015-02-11T15:13:20",
+            data={},
+            desired_capacity=0,
+            domain_id=None,
+            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            init_time="2015-02-10T14:26:11",
+            max_size=-1,
+            metadata={},
+            min_size=0,
+            node_ids=[],
+            policies=[],
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="ACTIVE",
+            status_reason="Cluster scale-in succeeded",
+            timeout=3600,
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_cluster.name = "my_cluster"
+        fake_cluster.to_dict = mock.Mock(return_value={})
+        self.mock_client.create_cluster = mock.Mock(return_value=fake_cluster)
+        self.mock_client.get_cluster = mock.Mock(return_value=fake_cluster)
 
     def test_cluster_create_defaults(self):
         arglist = ['test_cluster', '--profile', 'mystack']
@@ -264,28 +255,6 @@ class TestClusterCreate(TestCluster):
 
 
 class TestClusterUpdate(TestCluster):
-    response = {"cluster": {
-        "created_at": "2015-02-11T15:13:20",
-        "data": {},
-        "desired_capacity": 0,
-        "domain": 'null',
-        "id": "45edadcb-c73b-4920-87e1-518b2f29f54b",
-        "init_time": "2015-02-10T14:26:10",
-        "max_size": -1,
-        "metadata": {},
-        "min_size": 0,
-        "name": "test_cluster",
-        "node_ids": [],
-        "policies": [],
-        "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-        "profile_name": "mystack",
-        "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-        "status": "INIT",
-        "status_reason": "Initializing",
-        "timeout": 3600,
-        "updated_at": 'null',
-        "user": "5e5bf8027826429c96af157f68dc9072"
-    }}
 
     defaults = {
         "metadata": {
@@ -300,12 +269,32 @@ class TestClusterUpdate(TestCluster):
     def setUp(self):
         super(TestClusterUpdate, self).setUp()
         self.cmd = osc_cluster.UpdateCluster(self.app, None)
-        self.mock_client.update_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
-        self.mock_client.get_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
-        self.mock_client.find_cluster = mock.Mock(
-            return_value=sdk_cluster.Cluster(**self.response['cluster']))
+        fake_cluster = mock.Mock(
+            created_at="2015-02-11T15:13:20",
+            data={},
+            desired_capacity=0,
+            domain_id=None,
+            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            init_time="2015-02-10T14:26:11",
+            max_size=-1,
+            metadata={},
+            min_size=0,
+            node_ids=[],
+            policies=[],
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="ACTIVE",
+            status_reason="Cluster scale-in succeeded",
+            timeout=3600,
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_cluster.name = "my_cluster"
+        fake_cluster.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_cluster = mock.Mock(return_value=fake_cluster)
+        self.mock_client.get_cluster = mock.Mock(return_value=fake_cluster)
+        self.mock_client.find_cluster = mock.Mock(return_value=fake_cluster)
 
     def test_cluster_update_defaults(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
@@ -313,7 +302,7 @@ class TestClusterUpdate(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.update_cluster.assert_called_with(
-            '45edadcb-c73b-4920-87e1-518b2f29f54b', **self.defaults)
+            "7d85f602-a948-4a30-afd4-e84f47471c15", **self.defaults)
 
     def test_cluster_update_not_found(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
@@ -622,31 +611,6 @@ class TestClusterPolicyDetach(TestCluster):
 
 class TestClusterNodeList(TestCluster):
     columns = ['id', 'name', 'index', 'status', 'physical_id', 'created_at']
-
-    response = {"nodes": [
-        {
-            "cluster_id": None,
-            "created_at": "2015-02-27T04:39:21",
-            "data": {},
-            "details": {},
-            "domain": None,
-            "id": "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
-            "index": -1,
-            "init_at": "2015-02-27T04:39:18",
-            "metadata": {},
-            "name": "node00a",
-            "physical_id": "cc028275-d078-4729-bf3e-154b7359814b",
-            "profile_id": "edc63d0a-2ca4-48fa-9854-27926da76a4a",
-            "profile_name": "mystack",
-            "project": "6e18cc2bdbeb48a5b3cad2dc499f6804",
-            "role": None,
-            "status": "ACTIVE",
-            "status_reason": "Creation succeeded",
-            "updated_at": None,
-            "user": "5e5bf8027826429c96af157f68dc9072"
-        }
-    ]}
-
     args = {
         'cluster_id': 'my_cluster',
         'marker': 'a9448bf6',
@@ -657,8 +621,28 @@ class TestClusterNodeList(TestCluster):
     def setUp(self):
         super(TestClusterNodeList, self).setUp()
         self.cmd = osc_cluster.ClusterNodeList(self.app, None)
-        self.mock_client.nodes = mock.Mock(
-            return_value=self.response)
+        fake_node = mock.Mock(
+            cluster_id="",
+            created_at="2015-02-11T15:13:20",
+            data={},
+            details={},
+            domain_id=None,
+            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            index=-1,
+            init_at="2015-02-10T14:26:11",
+            metadata={},
+            phyiscal_id="cc028275-d078-4729-bf3e-154b7359814b",
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            status="ACTIVE",
+            status_reason="Creation succeeded",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "node001"
+        fake_node.to_dict = mock.Mock(return_value={})
+        self.mock_client.nodes = mock.Mock(return_value=[fake_node])
 
     def test_cluster_node_list(self):
         arglist = ['--limit', '3', '--marker', 'a9448bf6', 'my_cluster']

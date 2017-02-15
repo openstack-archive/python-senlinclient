@@ -13,7 +13,6 @@
 import copy
 
 import mock
-from openstack.cluster.v1 import profile as sdk_profile
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 from osc_lib import utils
@@ -91,8 +90,20 @@ class TestProfileShow(TestProfile):
     def setUp(self):
         super(TestProfileShow, self).setUp()
         self.cmd = osc_profile.ShowProfile(self.app, None)
-        self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
+        fake_profile = mock.Mock(
+            created_at="2015-03-01T14:28:25",
+            domain_id=None,
+            id="7fa885cd-fa39-4531-a42d-780af95c84a4",
+            metadata={},
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={"foo": 'bar'},
+            type="os.heat.stack-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_profile.name = "test_prof1"
+        fake_profile.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_profile = mock.Mock(return_value=fake_profile)
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_show(self):
@@ -101,14 +112,12 @@ class TestProfileShow(TestProfile):
         self.cmd.take_action(parsed_args)
         self.mock_client.get_profile.assert_called_with('my_profile')
         profile = self.mock_client.get_profile('my_profile')
-        self.assertEqual(self.response['profile']['project'],
+        self.assertEqual("42d9e9663331431f97b75e25136307ff",
                          profile.project_id)
-        self.assertEqual(self.response['profile']['id'], profile.id)
-        self.assertEqual(self.response['profile']['metadata'],
-                         profile.metadata)
-        self.assertEqual(self.response['profile']['name'], profile.name)
-        self.assertEqual(self.response['profile']['spec'], profile.spec)
-        self.assertEqual(self.response['profile']['type'], profile.type)
+        self.assertEqual("7fa885cd-fa39-4531-a42d-780af95c84a4", profile.id)
+        self.assertEqual({}, profile.metadata)
+        self.assertEqual("test_prof1", profile.name)
+        self.assertEqual("os.heat.stack-1.0", profile.type)
 
     def test_profile_show_not_found(self):
         arglist = ['my_profile']
@@ -121,40 +130,31 @@ class TestProfileShow(TestProfile):
 
 
 class TestProfileList(TestProfile):
-    columns = ['id', 'name', 'type', 'created_at']
-    data = {"profiles": [
-        {
-            "created_at": "2016-02-17T13:01:05",
-            "domain": None,
-            "id": "757347e0-6526-4a77-a16d-e099fecde123",
-            "metadata": {},
-            "name": "my_profile",
-            "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-            "spec": {
-                "properties": {
-                    "flavor": 1,
-                    "name": "cirros_server"
-                },
-                "type": "os.nova.server",
-                "version": 1
-            },
-            "type": "os.nova.server-1.0",
-            "updated_at": None,
-            "user": "2d7aca950f3e465d8ef0c81720faf6ff"
-        }
-    ]}
-    defaults = {
-        'limit': None,
-        'marker': None,
-        'sort': None,
-        'global_project': False,
-    }
 
     def setUp(self):
         super(TestProfileList, self).setUp()
         self.cmd = osc_profile.ListProfile(self.app, None)
-        self.mock_client.profiles = mock.Mock(
-            return_value=self.data)
+        fake_profile = mock.Mock(
+            created_at="2015-03-01T14:28:25",
+            domain_id=None,
+            id="7fa885cd-fa39-4531-a42d-780af95c84a4",
+            metadata={},
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={"foo": 'bar'},
+            type="os.heat.stack-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_profile.name = "test_profile"
+        fake_profile.to_dict = mock.Mock(return_value={})
+        self.mock_client.profiles = mock.Mock(return_value=[fake_profile])
+        self.defaults = {
+            'limit': None,
+            'marker': None,
+            'sort': None,
+            'global_project': False,
+        }
+        self.columns = ['id', 'name', 'type', 'created_at']
 
     def test_profile_list_defaults(self):
         arglist = []
@@ -189,8 +189,6 @@ class TestProfileList(TestProfile):
         self.assertEqual(self.columns, columns)
 
     def test_profile_list_sort_invalid_key(self):
-        self.mock_client.profiles = mock.Mock(
-            return_value=self.data)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'bad_key'
         arglist = ['--sort', 'bad_key']
@@ -200,8 +198,6 @@ class TestProfileList(TestProfile):
                           self.cmd.take_action, parsed_args)
 
     def test_profile_list_sort_invalid_direction(self):
-        self.mock_client.profiles = mock.Mock(
-            return_value=self.data)
         kwargs = copy.deepcopy(self.defaults)
         kwargs['sort'] = 'id:bad_direction'
         arglist = ['--sort', 'id:bad_direction']
@@ -221,6 +217,7 @@ class TestProfileList(TestProfile):
 
 
 class TestProfileDelete(TestProfile):
+
     def setUp(self):
         super(TestProfileDelete, self).setUp()
         self.cmd = osc_profile.DeleteProfile(self.app, None)
@@ -296,50 +293,46 @@ class TestProfileDelete(TestProfile):
 class TestProfileCreate(TestProfile):
 
     spec_path = 'senlinclient/tests/test_specs/nova_server.yaml'
-    response = {"profile": {
-        "created_at": "2016-02-17T12:10:57",
-        "domain": None,
-        "id": "e3057c77-a178-4265-bafd-16b2fae50eea",
-        "metadata": {},
-        "name": "pro-nova",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {"properties": {
-            "flavor": 1,
-            "image": "cirros-0.3.4-x86_64-uec",
-            "name": "cirros_server"},
-            "type": "os.nova.server",
-            "version": 1.0},
-        "type": "os.nova.server-1.0",
-        "updated_at": None,
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
-
-    defaults = {
-        "spec": {
-            "version": 1.0,
-            "type": "os.nova.server",
-            "properties": {
-                "flavor": 1,
-                "name": "cirros_server",
-                "image": "cirros-0.3.4-x86_64-uec"
-            },
-        },
-        "name": "my_profile",
-        "metadata": {}
-    }
 
     def setUp(self):
         super(TestProfileCreate, self).setUp()
         self.cmd = osc_profile.CreateProfile(self.app, None)
-        self.mock_client.create_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
-        self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
+        fake_profile = mock.Mock(
+            created_at="2015-03-01T14:28:25",
+            domain_id=None,
+            id="7fa885cd-fa39-4531-a42d-780af95c84a4",
+            metadata={},
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={"foo": 'bar'},
+            type="os.heat.stack-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_profile.name = "test_profile"
+        fake_profile.to_dict = mock.Mock(return_value={})
+        self.mock_client.create_profile = mock.Mock(return_value=fake_profile)
+        self.mock_client.get_profile = mock.Mock(return_value=fake_profile)
         utils.get_dict_properties = mock.Mock(return_value='')
+        self.defaults = {
+            "spec": {
+                "version": 1.0,
+                "type": "os.nova.server",
+                "properties": {
+                    "flavor": 1,
+                    "name": "cirros_server",
+                    "image": "cirros-0.3.4-x86_64-uec"
+                },
+            },
+            "name": "my_profile",
+            "metadata": {}
+        }
 
     def test_profile_create_defaults(self):
         arglist = ['my_profile', '--spec-file', self.spec_path]
         parsed_args = self.check_parser(self.cmd, arglist, [])
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.create_profile.assert_called_with(**self.defaults)
 
     def test_profile_create_metadata(self):
@@ -354,52 +347,43 @@ class TestProfileCreate(TestProfile):
 
 class TestProfileUpdate(TestProfile):
 
-    response = {"profile": {
-        "created_at": "2016-02-17T12:10:57",
-        "domain": None,
-        "id": "e3057c77-a178-4265-bafd-16b2fae50eea",
-        "metadata": {
-            "nk1": "nv1",
-            "nk2": "nv2",
-        },
-        "name": "new_profile",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {"properties": {
-            "flavor": 1,
-            "image": "cirros-0.3.4-x86_64-uec",
-            "name": "cirros_server"},
-            "type": "os.nova.server",
-            "version": 1.0},
-        "type": "os.nova.server-1.0",
-        "updated_at": None,
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
-
-    defaults = {
-        "name": "new_profile",
-        "metadata": {
-            "nk1": "nv1",
-            "nk2": "nv2",
-        }
-    }
-
     def setUp(self):
         super(TestProfileUpdate, self).setUp()
         self.cmd = osc_profile.UpdateProfile(self.app, None)
-        self.mock_client.update_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
-        self.mock_client.get_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
-        self.mock_client.find_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
+        fake_profile = mock.Mock(
+            created_at="2015-03-01T14:28:25",
+            domain_id=None,
+            id="7fa885cd-fa39-4531-a42d-780af95c84a4",
+            metadata={},
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={"foo": 'bar'},
+            type="os.heat.stack-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_profile.name = "test_profile"
+        fake_profile.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_profile = mock.Mock(return_value=fake_profile)
+        self.mock_client.get_profile = mock.Mock(return_value=fake_profile)
+        self.mock_client.find_profile = mock.Mock(return_value=fake_profile)
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_update_defaults(self):
         arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
                    'e3057c77']
         parsed_args = self.check_parser(self.cmd, arglist, [])
+        defaults = {
+            "name": "new_profile",
+            "metadata": {
+                "nk1": "nv1",
+                "nk2": "nv2",
+            }
+        }
+
         self.cmd.take_action(parsed_args)
+
         self.mock_client.update_profile.assert_called_with(
-            'e3057c77-a178-4265-bafd-16b2fae50eea', **self.defaults)
+            "7fa885cd-fa39-4531-a42d-780af95c84a4", **defaults)
 
     def test_profile_update_not_found(self):
         arglist = ['--name', 'new_profile', '--metadata', 'nk1=nv1;nk2=nv2',
@@ -416,23 +400,6 @@ class TestProfileUpdate(TestProfile):
 class TestProfileValidate(TestProfile):
 
     spec_path = 'senlinclient/tests/test_specs/nova_server.yaml'
-    response = {"profile": {
-        "created_at": None,
-        "domain": None,
-        "id": None,
-        "metadata": None,
-        "name": "validated_profile",
-        "project": "5f1cc92b578e4e25a3b284179cf20a9b",
-        "spec": {"properties": {
-            "flavor": 1,
-            "image": "cirros-0.3.4-x86_64-uec",
-            "name": "cirros_server"},
-            "type": "os.nova.server",
-            "version": 1.0},
-        "type": "os.nova.server-1.0",
-        "updated_at": None,
-        "user": "2d7aca950f3e465d8ef0c81720faf6ff"}}
-
     defaults = {
         "spec": {
             "version": 1.0,
@@ -448,8 +415,21 @@ class TestProfileValidate(TestProfile):
     def setUp(self):
         super(TestProfileValidate, self).setUp()
         self.cmd = osc_profile.ValidateProfile(self.app, None)
+        fake_profile = mock.Mock(
+            created_at=None,
+            domain_id=None,
+            id=None,
+            metadata={},
+            project_id="42d9e9663331431f97b75e25136307ff",
+            spec={"foo": 'bar'},
+            type="os.heat.stack-1.0",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_profile.name = "test_profile"
+        fake_profile.to_dict = mock.Mock(return_value={})
         self.mock_client.validate_profile = mock.Mock(
-            return_value=sdk_profile.Profile(**self.response['profile']))
+            return_value=fake_profile)
         utils.get_dict_properties = mock.Mock(return_value='')
 
     def test_profile_validate(self):
@@ -457,14 +437,13 @@ class TestProfileValidate(TestProfile):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.validate_profile.assert_called_with(**self.defaults)
+
         profile = self.mock_client.validate_profile(**self.defaults)
-        self.assertEqual(self.response['profile']['project'],
+
+        self.assertEqual("42d9e9663331431f97b75e25136307ff",
                          profile.project_id)
-        self.assertEqual(self.response['profile']['user'],
-                         profile.user_id)
-        self.assertEqual(self.response['profile']['id'], profile.id)
-        self.assertEqual(self.response['profile']['metadata'],
-                         profile.metadata)
-        self.assertEqual(self.response['profile']['name'], profile.name)
-        self.assertEqual(self.response['profile']['spec'], profile.spec)
-        self.assertEqual(self.response['profile']['type'], profile.type)
+        self.assertEqual("5e5bf8027826429c96af157f68dc9072", profile.user_id)
+        self.assertIsNone(profile.id)
+        self.assertEqual({}, profile.metadata)
+        self.assertEqual("test_profile", profile.name)
+        self.assertEqual("os.heat.stack-1.0", profile.type)

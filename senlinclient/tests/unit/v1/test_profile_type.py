@@ -11,7 +11,6 @@
 # under the License.
 
 import mock
-from openstack.cluster.v1 import profile_type as sdk_profile_type
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
@@ -26,54 +25,57 @@ class TestProfileType(fakes.TestClusteringv1):
 
 
 class TestProfileTypeList(TestProfileType):
-    expected_columns = ['name', 'version', 'support_status']
-    list_response = [
-        sdk_profile_type.ProfileType(
-            name='BBB', schema={'foo': 'bar'},
-            support_status={
-                "1.0": [{"status": "SUPPORTED", "since": "2016.10"}]
-            }
-        ),
-        sdk_profile_type.ProfileType(
-            name='AAA', schema={'foo': 'bar'},
-            support_status={
-                "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
-            }
-        ),
-    ]
-    expected_rows = [
-        ('AAA', '1.0', 'DEPRECATED since 2016.01'),
-        ('BBB', '1.0', 'SUPPORTED since 2016.10')
-    ]
 
     def setUp(self):
         super(TestProfileTypeList, self).setUp()
         self.cmd = osc_profile_type.ProfileTypeList(self.app, None)
-        self.mock_client.profile_types = mock.Mock(
-            return_value=self.list_response)
+        pt1 = mock.Mock(
+            schema={'foo': 'bar'},
+            support_status={
+                "1.0": [{"status": "SUPPORTED", "since": "2016.10"}]
+            }
+        )
+        pt1.name = "BBB"
+        pt2 = mock.Mock(
+            schema={'foo': 'bar'},
+            support_status={
+                "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
+            }
+        )
+        pt2.name = "AAA"
+        self.mock_client.profile_types = mock.Mock(return_value=[pt1, pt2])
 
     def test_profile_type_list(self):
         arglist = []
         parsed_args = self.check_parser(self.cmd, arglist, [])
+        expected_rows = [
+            ('AAA', '1.0', 'DEPRECATED since 2016.01'),
+            ('BBB', '1.0', 'SUPPORTED since 2016.10')
+        ]
+        expected_columns = ['name', 'version', 'support_status']
+
         columns, rows = self.cmd.take_action(parsed_args)
 
         self.mock_client.profile_types.assert_called_with()
-        self.assertEqual(self.expected_columns, columns)
-        self.assertEqual(self.expected_rows, rows)
+        self.assertEqual(expected_columns, columns)
+        self.assertEqual(expected_rows, rows)
 
 
 class TestProfileTypeShow(TestProfileType):
 
-    response = ({'name': 'os.heat.stack-1.0',
-                 'schema': {
-                     'foo': 'bar'}})
-
     def setUp(self):
         super(TestProfileTypeShow, self).setUp()
         self.cmd = osc_profile_type.ProfileTypeShow(self.app, None)
-        self.mock_client.get_profile_type = mock.Mock(
-            return_value=sdk_profile_type.ProfileType(**self.response)
+        fake_profile_type = mock.Mock(
+            schema={'foo': 'bar'},
+            support_status={
+                "1.0": [{"status": "DEPRECATED", "since": "2016.01"}]
+            }
         )
+        fake_profile_type.name = "os.heat.stack-1.0"
+        fake_profile_type.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_profile_type = mock.Mock(
+            return_value=fake_profile_type)
 
     def test_profile_type_show(self):
         arglist = ['os.heat.stack-1.0']
