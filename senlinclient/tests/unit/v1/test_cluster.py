@@ -733,12 +733,22 @@ class TestClusterNodeDel(TestCluster):
             return_value=self.response)
 
     def test_cluster_node_delete(self):
-        arglist = ['--nodes', 'node1', 'my_cluster']
+        arglist = ['-d', 'True', '--nodes', 'node1', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_del_nodes.assert_called_with(
             'my_cluster',
-            ['node1'])
+            ['node1'],
+            destroy_after_deletion=True)
+
+    def test_cluster_node_delete_without_destroy(self):
+        arglist = ['-d', 'False', '--nodes', 'node1', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.cluster_del_nodes.assert_called_with(
+            'my_cluster',
+            ['node1'],
+            destroy_after_deletion=False)
 
     def test_cluster_node_delete_multi(self):
         arglist = ['--nodes', 'node1,node2', 'my_cluster']
@@ -746,7 +756,8 @@ class TestClusterNodeDel(TestCluster):
         self.cmd.take_action(parsed_args)
         self.mock_client.cluster_del_nodes.assert_called_with(
             'my_cluster',
-            ['node1', 'node2'])
+            ['node1', 'node2'],
+            destroy_after_deletion=False)
 
 
 class TestClusterCheck(TestCluster):
