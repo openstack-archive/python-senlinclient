@@ -263,6 +263,7 @@ class TestClusterUpdate(TestCluster):
         },
         "name": 'new_cluster',
         "profile_id": 'new_profile',
+        "profile_only": False,
         "timeout": "30"
     }
 

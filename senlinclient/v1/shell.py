@@ -794,6 +794,11 @@ def do_cluster_run(service, args):
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>',
            help=_('ID or name of new profile to use.'))
+@utils.arg('-P', '--profile-only', metavar='<BOOLEAN>', default=False,
+           help=_("Whether the cluster should be updated profile only. "
+                  "If false, it will be applied to all existing nodes. "
+                  "If true, any newly created nodes will use the new profile, "
+                  "but existing nodes will not be changed. Default is False."))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
@@ -813,6 +818,9 @@ def do_cluster_update(service, args):
     attrs = {
         'name': args.name,
         'profile_id': args.profile,
+        'profile_only': strutils.bool_from_string(
+            args.profile_only, strict=True
+        ),
         'metadata': utils.format_parameters(args.metadata),
         'timeout': args.timeout,
     }
