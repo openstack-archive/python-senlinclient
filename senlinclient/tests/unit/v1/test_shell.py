@@ -11,11 +11,11 @@
 # under the License.
 
 import copy
+import fixtures
 import subprocess
 
 import mock
 from openstack import exceptions as oexc
-from oslotest import mockpatch
 import six
 import testtools
 
@@ -47,7 +47,7 @@ class ShellTest(testtools.TestCase):
     # NOTE(pshchelo): this overrides the testtools.TestCase.patch method
     # that does simple monkey-patching in favor of mock's patching
     def patch(self, target, **kwargs):
-        mockfixture = self.useFixture(mockpatch.Patch(target, **kwargs))
+        mockfixture = self.useFixture(fixtures.MockPatch(target, **kwargs))
         return mockfixture.mock
 
     def _make_args(self, args):
