@@ -1534,19 +1534,30 @@ class ShellTest(testtools.TestCase):
 
     def test_do_node_recover(self):
         service = mock.Mock()
-        args = self._make_args({'id': ['node1']})
+        args = {
+            'id': ['node1'],
+            'check': 'false'
+        }
+        args = self._make_args(args)
+        attrs = {
+            'check': False
+        }
         service.check_node = mock.Mock()
 
         sh.do_node_recover(service, args)
 
-        service.recover_node.assert_called_once_with('node1')
+        service.recover_node.assert_called_once_with('node1', **attrs)
 
     def test_do_node_recover_not_found(self):
         service = mock.Mock()
         ex = exc.HTTPNotFound
         service.recover_node.side_effect = ex
+        args = {
+            'id': ['node1'],
+            'check': 'false'
+        }
+        args = self._make_args(args)
 
-        args = self._make_args({'id': ['node1']})
         ex = self.assertRaises(exc.CommandError,
                                sh.do_node_recover, service, args)
         msg = _('Failed to recover some of the specified nodes.')

@@ -1352,6 +1352,9 @@ def do_node_check(service, args):
     print('Request accepted')
 
 
+@utils.arg('-c', '--check', metavar='<BOOLEAN>', default=False,
+           help=_("Whether the node(s) should check physical resource status "
+                  "before doing node recover.Default is false"))
 @utils.arg('id', metavar='<NODE>', nargs='+',
            help=_('ID or name of node(s) to recover.'))
 def do_node_recover(service, args):
@@ -1359,9 +1362,13 @@ def do_node_recover(service, args):
     show_deprecated('senlin node-recover', 'openstack cluster node recover')
     failure_count = 0
 
+    params = {
+        'check': strutils.bool_from_string(args.check, strict=True)
+    }
+
     for nid in args.id:
         try:
-            service.recover_node(nid)
+            service.recover_node(nid, **params)
         except exc.HTTPNotFound:
             failure_count += 1
             print('Node id "%s" not found' % nid)
