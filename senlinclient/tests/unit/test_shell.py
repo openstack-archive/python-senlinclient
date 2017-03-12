@@ -176,7 +176,6 @@ class ShellTest(testtools.TestCase):
             'command-foo': sc1,
             'command-bar': sc2,
             'bash-completion': None,
-            'bash_completion': None,
         }
 
         output = self.SHELL(sh.do_bash_completion, None)
@@ -195,26 +194,9 @@ class ShellTest(testtools.TestCase):
 
         self.assertEqual(0, parser.add_argument.call_count)
 
-    def test_add_bash_completion_subparser(self):
-        sh = shell.SenlinShell()
-        sh.subcommands = {}
-        x_subparser = mock.Mock()
-        x_subparsers = mock.Mock()
-        x_subparsers.add_parser.return_value = x_subparser
-
-        sh._add_bash_completion_subparser(x_subparsers)
-
-        x_subparsers.add_parser.assert_called_once_with(
-            'bash_completion', add_help=False,
-            formatter_class=shell.HelpFormatter)
-        self.assertEqual({'bash_completion': x_subparser}, sh.subcommands)
-        x_subparser.set_defaults.assert_called_once_with(
-            func=sh.do_bash_completion)
-
     @mock.patch.object(utils, 'import_versioned_module')
     @mock.patch.object(shell.SenlinShell, '_find_actions')
-    @mock.patch.object(shell.SenlinShell, '_add_bash_completion_subparser')
-    def test_get_subcommand_parser(self, x_add, x_find, x_import):
+    def test_get_subcommand_parser(self, x_find, x_import):
         x_base = mock.Mock()
         x_module = mock.Mock()
         x_import.return_value = x_module
@@ -233,7 +215,6 @@ class ShellTest(testtools.TestCase):
         ]
 
         x_find.assert_has_calls(find_calls)
-        x_add.assert_called_once_with(x_subparsers)
 
     @mock.patch.object(argparse.ArgumentParser, 'print_help')
     def test_do_help(self, mock_print):
