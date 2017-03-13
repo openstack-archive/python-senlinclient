@@ -19,6 +19,7 @@ from openstack import exceptions as sdk_exc
 from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
+from oslo_utils import strutils
 import six
 
 from senlinclient.common.i18n import _
@@ -366,6 +367,13 @@ class RecoverNode(command.Command):
     def get_parser(self, prog_name):
         parser = super(RecoverNode, self).get_parser(prog_name)
         parser.add_argument(
+            '--check',
+            metavar='<boolean>',
+            default=False,
+            help=_('Whether the node(s) should check physical resource status '
+                   'before doing node recover. Default is false')
+        )
+        parser.add_argument(
             'node',
             metavar='<node>',
             nargs='+',
@@ -376,9 +384,14 @@ class RecoverNode(command.Command):
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
+
+        params = {
+            'check': strutils.bool_from_string(parsed_args.check, strict=True)
+        }
+
         for nid in parsed_args.node:
             try:
-                resp = senlin_client.recover_node(nid)
+                resp = senlin_client.recover_node(nid, **params)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Node not found: %s') % nid)
             print('Node recover request on node %(nid)s is accepted by '

@@ -440,12 +440,13 @@ class TestNodeRecover(TestNode):
         self.mock_client.recover_node = mock.Mock(return_value=fake_res)
 
     def test_node_recover(self):
-        arglist = ['node1', 'node2', 'node3']
+        arglist = ['node1', 'node2', 'node3', '--check', 'false']
+        kwargs = {'check': False}
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.recover_node.assert_has_calls(
-            [mock.call('node1'), mock.call('node2'),
-             mock.call('node3')]
+            [mock.call('node1', **kwargs), mock.call('node2', **kwargs),
+             mock.call('node3', **kwargs)]
         )
 
     def test_node_recover_not_found(self):
