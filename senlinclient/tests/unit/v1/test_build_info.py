@@ -17,8 +17,6 @@ from senlinclient.v1 import build_info as osc_build_info
 
 
 class TestBuildInfo(fakes.TestClusteringv1):
-    response = {"build_info": {
-    }}
 
     def setUp(self):
         super(TestBuildInfo, self).setUp()
