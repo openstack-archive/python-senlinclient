@@ -26,7 +26,6 @@ from oslo_utils import strutils
 import six
 
 from senlinclient.common.i18n import _
-from senlinclient.common.i18n import _LI
 from senlinclient.common import utils as senlin_utils
 
 
@@ -312,10 +311,10 @@ class DeleteCluster(command.Command):
                 if not prompt_response.startswith('y'):
                     return
         except KeyboardInterrupt:  # Ctrl-c
-            self.log.info(_LI('Ctrl-c detected.'))
+            self.log.info('Ctrl-c detected.')
             return
         except EOFError:  # Ctrl-d
-            self.log.info(_LI('Ctrl-d detected'))
+            self.log.info('Ctrl-d detected')
             return
 
         result = {}
