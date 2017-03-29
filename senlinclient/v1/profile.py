@@ -20,7 +20,7 @@ from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 
-from senlinclient.common.i18n import _, _LI
+from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
 
 
@@ -190,10 +190,10 @@ class DeleteProfile(command.Command):
                 if not prompt_response.startswith('y'):
                     return
         except KeyboardInterrupt:  # Ctrl-c
-            self.log.info(_LI('Ctrl-c detected.'))
+            self.log.info('Ctrl-c detected.')
             return
         except EOFError:  # Ctrl-d
-            self.log.info(_LI('Ctrl-d detected'))
+            self.log.info('Ctrl-d detected')
             return
 
         failure_count = 0
