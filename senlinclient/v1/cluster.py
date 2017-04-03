@@ -405,6 +405,12 @@ class ResizeCluster(command.Command):
         max_size = parsed_args.max_size
         min_step = parsed_args.min_step
 
+        if sum(v is not None for v in (capacity, adjustment, percentage,
+                                       min_size, max_size)) == 0:
+            raise exc.CommandError(_("At least one parameter of 'capacity', "
+                                     "'adjustment', 'percentage', 'min_size' "
+                                     "and 'max_size' should be specified."))
+
         if sum(v is not None for v in (capacity, adjustment, percentage)) > 1:
             raise exc.CommandError(_("Only one of 'capacity', 'adjustment' and"
                                      " 'percentage' can be specified."))

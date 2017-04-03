@@ -409,6 +409,16 @@ class TestClusterResize(TestCluster):
         self.mock_client.cluster_resize = mock.Mock(
             return_value=self.response)
 
+    def test_cluster_resize_no_params(self):
+        arglist = ['my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual(("At least one parameter of 'capacity', "
+                          "'adjustment', 'percentage', 'min_size' and "
+                          "'max_size' should be specified."), str(error))
+
     def test_cluster_resize_multi_params(self):
         arglist = ['--capacity', '2', '--percentage', '50.0', '--adjustment',
                    '1', '--min-size', '1', '--max-size', '20', 'my_cluster']
@@ -418,21 +428,6 @@ class TestClusterResize(TestCluster):
                                   parsed_args)
         self.assertEqual("Only one of 'capacity', 'adjustment' "
                          "and 'percentage' can be specified.", str(error))
-
-    def test_cluster_resize_only_constraints(self):
-        arglist = ['--min-size', '1', '--max-size', '20', 'my_cluster']
-        parsed_args = self.check_parser(self.cmd, arglist, [])
-        self.cmd.take_action(parsed_args)
-        kwargs = {
-            'min_size': 1,
-            'max_size': 20,
-            'adjustment_type': None,
-            'min_step': None,
-            'number': None,
-            'strict': False
-        }
-        self.mock_client.cluster_resize.assert_called_with('my_cluster',
-                                                           **kwargs)
 
     def test_cluster_resize_capacity(self):
         arglist = ['--capacity', '2', '--min-size', '1', '--max-size', '20',
