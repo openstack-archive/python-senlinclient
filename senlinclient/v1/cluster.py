@@ -235,6 +235,15 @@ class UpdateCluster(command.ShowOne):
             help=_('ID or name of new profile to use')
         )
         parser.add_argument(
+            '--profile-only',
+            default=False, metavar='<boolean>',
+            help=_("Whether the cluster should be updated profile only. "
+                   "If false, it will be applied to all existing nodes. "
+                   "If true, any newly created nodes will use the new profile,"
+                   "but existing nodes will not be changed. Default is False.")
+
+        )
+        parser.add_argument(
             '--timeout',
             metavar='<timeout>',
             help=_('New timeout (in seconds) value for the cluster')
@@ -270,6 +279,10 @@ class UpdateCluster(command.ShowOne):
         attrs = {
             'name': parsed_args.name,
             'profile_id': parsed_args.profile,
+            'profile_only': strutils.bool_from_string(
+                parsed_args.profile_only,
+                strict=True,
+            ),
             'metadata': senlin_utils.format_parameters(parsed_args.metadata),
             'timeout': parsed_args.timeout,
         }
