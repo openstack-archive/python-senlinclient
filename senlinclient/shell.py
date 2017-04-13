@@ -89,7 +89,7 @@ class SenlinShell(object):
         commands = set()
         options = set()
         for sc_str, sc in self.subcommands.items():
-            if sc_str == 'bash_completion' or sc_str == 'bash-completion':
+            if sc_str == 'bash-completion':
                 continue
 
             commands.add(sc_str)
@@ -110,14 +110,6 @@ class SenlinShell(object):
                        'Without the key, profiling will not be triggered '
                        'even if osprofiler is enabled on server side.'))
 
-    def _add_bash_completion_subparser(self, subparsers):
-        subparser = subparsers.add_parser('bash_completion',
-                                          add_help=False,
-                                          formatter_class=HelpFormatter)
-
-        subparser.set_defaults(func=self.do_bash_completion)
-        self.subcommands['bash_completion'] = subparser
-
     def get_subcommand_parser(self, base_parser, version):
         parser = base_parser
 
@@ -126,7 +118,6 @@ class SenlinShell(object):
         submodule = utils.import_versioned_module(version, 'shell')
         self._find_actions(subparsers, submodule)
         self._find_actions(subparsers, self)
-        self._add_bash_completion_subparser(subparsers)
 
         return parser
 
