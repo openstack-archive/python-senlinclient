@@ -1716,3 +1716,16 @@ class ShellTest(testtools.TestCase):
                                service, args)
         msg = _('Action not found: fake_id')
         self.assertEqual(msg, six.text_type(ex))
+
+    @mock.patch.object(utils, 'print_list')
+    def test_do_service_list(self, mock_print):
+        service = mock.Mock()
+        fields = ['Binary', 'Host', 'Status', 'State', 'Updated_at',
+                  'Disabled Reason']
+
+        result = mock.Mock()
+        service.services.return_value = result
+        formatters = {}
+        sh.do_service_list(service)
+        mock_print.assert_called_once_with(result, fields,
+                                           formatters=formatters)
