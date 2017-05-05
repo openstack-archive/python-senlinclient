@@ -1164,13 +1164,21 @@ def do_cluster_check(service, args):
               'action %(action)s.' % {'cid': cid, 'action': resp['action']})
 
 
+@utils.arg('-c', '--check', metavar='<BOOLEAN>', default=False,
+           help=_("Whether the cluster should check it's nodes status before "
+                  "doing cluster recover. Default is false"))
 @utils.arg('id', metavar='<CLUSTER>', nargs='+',
            help=_('ID or name of cluster(s) to operate on.'))
 def do_cluster_recover(service, args):
     """Recover the cluster(s)."""
     show_deprecated('senlin cluster-recover', 'openstack cluster recover')
+
+    params = {
+        'check': strutils.bool_from_string(args.check, strict=True)
+    }
+
     for cid in args.id:
-        resp = service.recover_cluster(cid)
+        resp = service.recover_cluster(cid, **params)
         print('Cluster recover request on cluster %(cid)s is accepted by '
               'action %(action)s.' % {'cid': cid, 'action': resp['action']})
 

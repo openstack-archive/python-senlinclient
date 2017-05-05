@@ -829,14 +829,28 @@ class RecoverCluster(command.Command):
             nargs='+',
             help=_('ID or name of cluster(s) to operate on.')
         )
+
+        parser.add_argument(
+            '--check',
+            metavar='<boolean>',
+            default=False,
+            help=_("Whether the cluster should check it's nodes status before "
+                   "doing cluster recover. Default is false")
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
+
+        params = {
+            'check': strutils.bool_from_string(parsed_args.check, strict=True)
+        }
+
         for cid in parsed_args.cluster:
             try:
-                resp = senlin_client.recover_cluster(cid)
+                resp = senlin_client.recover_cluster(cid, **params)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Cluster not found: %s') % cid)
             print('Cluster recover request on cluster %(cid)s is accepted by '

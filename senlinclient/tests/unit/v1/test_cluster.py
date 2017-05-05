@@ -780,12 +780,13 @@ class TestClusterRecover(TestCluster):
             return_value=self.response)
 
     def test_cluster_recover(self):
-        arglist = ['cluster1', 'cluster2', 'cluster3']
+        arglist = ['cluster1', 'cluster2', 'cluster3', '--check', 'false']
+        kwargs = {'check': False}
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.recover_cluster.assert_has_calls(
-            [mock.call('cluster1'), mock.call('cluster2'),
-             mock.call('cluster3')]
+            [mock.call('cluster1', **kwargs), mock.call('cluster2', **kwargs),
+             mock.call('cluster3', **kwargs)]
         )
 
     def test_cluster_recover_not_found(self):
