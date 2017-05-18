@@ -4,7 +4,6 @@ High Priority
   - Support action_create
   - Support action_delete
   - Support action_cancel
-  - Support event_delete
   - Add support to HTTPS connection
     * This means a cert and key option using plain HTTP package, while
       it means using Transport when we switched to OpenStackSDK
