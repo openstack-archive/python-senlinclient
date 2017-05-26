@@ -552,7 +552,9 @@ def _show_cluster(service, cluster_id):
         'metadata': utils.json_formatter,
         'node_ids': utils.list_formatter,
     }
-    utils.print_dict(cluster.to_dict(), formatters=formatters)
+    cluster_attrs = cluster.to_dict()
+    cluster_attrs.pop('is_profile_only')
+    utils.print_dict(cluster_attrs, formatters=formatters)
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,

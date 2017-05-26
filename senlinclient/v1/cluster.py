@@ -144,6 +144,8 @@ def _show_cluster(senlin_client, cluster_id):
         'node_ids': senlin_utils.list_formatter
     }
     data = cluster.to_dict()
+    if 'is_profile_only' in data:
+        data.pop('is_profile_only')
     columns = sorted(data.keys())
     return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
