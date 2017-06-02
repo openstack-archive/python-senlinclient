@@ -15,6 +15,7 @@ import copy
 import mock
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
+from osc_lib import utils
 import six
 
 from senlinclient.common.i18n import _
@@ -237,6 +238,64 @@ class TestReceiverCreate(TestReceiver):
         args['cluster_id'] = None
         args['action'] = None
         self.mock_client.create_receiver.assert_called_with(**args)
+
+
+class TestReceiverUpdate(TestReceiver):
+    args = {
+        "action": "CLUSTER_SCALE_OUT",
+        "name": "test_receiver",
+        "params": {
+            "count": "2"
+        },
+    }
+
+    def setUp(self):
+        super(TestReceiverUpdate, self).setUp()
+        self.cmd = osc_receiver.UpdateReceiver(self.app, None)
+        fake_receiver = mock.Mock(
+            action="CLUSTER_SCALE_IN",
+            actor={},
+            channel={
+                "alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1"
+                             "-8c6a-74ba891e5422/trigger?V=1&count=1"
+            },
+            created_at="2015-06-27T05:09:43",
+            domain_id="Default",
+            id="573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
+            params={"count": "1"},
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            updated_at=None,
+            user_id="b4ad2d6e18cc2b9c48049f6dbe8a5b3c"
+        )
+        fake_receiver.name = "cluster_inflate"
+        fake_receiver.action = "CLUSTER_SCALE_IN"
+        fake_receiver.params = {"count": "1"}
+        fake_receiver.to_dict = mock.Mock(return_value={})
+        self.mock_client.update_receiver = mock.Mock(
+            return_value=fake_receiver)
+        self.mock_client.get_receiver = mock.Mock(return_value=fake_receiver)
+        self.mock_client.find_receiver = mock.Mock(return_value=fake_receiver)
+        utils.get_dict_properties = mock.Mock(return_value='')
+
+    def test_receiver_update_defaults(self):
+        arglist = ['--name', 'test_receiver', '--action', 'CLUSTER_SCALE_OUT',
+                   '--params', 'count=2', '573aa1ba']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+
+        self.cmd.take_action(parsed_args)
+
+        self.mock_client.update_receiver.assert_called_with(
+            "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3", **self.args)
+
+    def test_receiver_update_not_found(self):
+        arglist = ['--name', 'test_receiver', '--action', 'CLUSTER_SCALE_OUT',
+                   '--params', 'count=2', '573aa1b2']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.find_receiver.return_value = None
+        error = self.assertRaises(exc.CommandError,
+                                  self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Receiver not found: 573aa1b2', str(error))
 
 
 class TestReceiverDelete(TestReceiver):
