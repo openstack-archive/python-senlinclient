@@ -31,8 +31,7 @@ class Client(object):
         """List profile types
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #listProfileTypes
+        https://developer.openstack.org/api-ref/clustering/#list-profile-types
         """
         return self.service.profile_types(**query)
 
@@ -40,7 +39,8 @@ class Client(object):
         """Show profile type details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showProfileType
+        https://developer.openstack.org/api-ref/clustering/
+        #show-profile-type-details
         """
         return self.service.get_profile_type(profile_type)
 
@@ -48,7 +48,7 @@ class Client(object):
         """List profiles
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listProfiles
+        https://developer.openstack.org/api-ref/clustering/#list-profiles
         """
         return self.service.profiles(**query)
 
@@ -56,7 +56,7 @@ class Client(object):
         """Create a profile
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#createProfile
+        https://developer.openstack.org/api-ref/clustering/#create-profile
         """
         return self.service.create_profile(**attrs)
 
@@ -64,7 +64,7 @@ class Client(object):
         """Show profile details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showProfile
+        https://developer.openstack.org/api-ref/clustering/#show-profile-details
         """
         return self.service.get_profile(profile)
 
@@ -72,7 +72,7 @@ class Client(object):
         """Update a profile
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#updateProfile
+        https://developer.openstack.org/api-ref/clustering/#update-profile
         """
         return self.service.update_profile(profile, **attrs)
 
@@ -80,7 +80,7 @@ class Client(object):
         """Delete a profile
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#deleteProfile
+        https://developer.openstack.org/api-ref/clustering/#delete-profile
         """
         return self.service.delete_profile(profile, ignore_missing)
 
@@ -88,7 +88,7 @@ class Client(object):
         """Validate a profile spec
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#validateProfile
+        https://developer.openstack.org/api-ref/clustering/#validate-profile
         """
         return self.service.validate_profile(**attrs)
 
@@ -96,8 +96,7 @@ class Client(object):
         """List policy types
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #listPolicyType
+        https://developer.openstack.org/api-ref/clustering/#list-policy-types
         """
         return self.service.policy_types(**query)
 
@@ -105,8 +104,8 @@ class Client(object):
         """Show policy type details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #showPolicyType
+        https://developer.openstack.org/api-ref/clustering/
+        #show-policy-type-details
         """
         return self.service.get_policy_type(policy_type)
 
@@ -114,7 +113,7 @@ class Client(object):
         """List policies
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listPolicies
+        https://developer.openstack.org/api-ref/clustering/#list-policies
         """
         return self.service.policies(**query)
 
@@ -122,7 +121,7 @@ class Client(object):
         """Create a policy
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#createPolicy
+        https://developer.openstack.org/api-ref/clustering/#create-policy
         """
         return self.service.create_policy(**attrs)
 
@@ -130,7 +129,7 @@ class Client(object):
         """Show policy details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showPolicy
+        https://developer.openstack.org/api-ref/clustering/#show-policy-details
         """
         return self.service.get_policy(policy)
 
@@ -138,7 +137,7 @@ class Client(object):
         """Update policy
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#updatePolicy
+        https://developer.openstack.org/api-ref/clustering/#update-policy
         """
         return self.service.update_policy(policy, **attrs)
 
@@ -146,7 +145,7 @@ class Client(object):
         """Delete policy
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#deletePolicy
+        https://developer.openstack.org/api-ref/clustering/#delete-policy
         """
         return self.service.delete_policy(policy, ignore_missing)
 
@@ -154,7 +153,7 @@ class Client(object):
         """validate a policy spec
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#validatePolicy
+        https://developer.openstack.org/api-ref/clustering/#validate-policy
         """
         return self.service.validate_policy(**attrs)
 
@@ -162,7 +161,7 @@ class Client(object):
         """List clusters
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listClusters
+        https://developer.openstack.org/api-ref/clustering/#list-clusters
         """
         return self.service.clusters(**queries)
 
@@ -170,7 +169,7 @@ class Client(object):
         """Create a cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#createCluster
+        https://developer.openstack.org/api-ref/clustering/#create-cluster
         """
         return self.service.create_cluster(**attrs)
 
@@ -178,7 +177,7 @@ class Client(object):
         """Show cluster details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showCluster
+        https://developer.openstack.org/api-ref/clustering/#show-cluster-details
         """
         return self.service.get_cluster(cluster)
 
@@ -186,7 +185,7 @@ class Client(object):
         """Update cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#updateCluster
+        https://developer.openstack.org/api-ref/clustering/#update-cluster
         """
         return self.service.update_cluster(cluster, **attrs)
 
@@ -194,7 +193,7 @@ class Client(object):
         """Delete cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#deleteCluster
+        https://developer.openstack.org/api-ref/clustering/#delete-cluster
         """
         return self.service.delete_cluster(cluster, ignore_missing)
 
@@ -202,7 +201,8 @@ class Client(object):
         """Add a node to cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #add-nodes-to-a-cluster
         """
         return self.service.cluster_add_nodes(cluster, nodes)
 
@@ -210,7 +210,8 @@ class Client(object):
         """Delete a node belongs to cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #remove-nodes-from-a-cluster
         """
         return self.service.cluster_del_nodes(cluster, nodes)
 
@@ -218,7 +219,8 @@ class Client(object):
         """Replace the nodes in a cluster with specified nodes
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #replace-nodes-in-a-cluster
         """
         return self.service.cluster_replace_nodes(cluster, nodes)
 
@@ -226,7 +228,7 @@ class Client(object):
         """Resize cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/#resize-a-cluster
         """
         return self.service.cluster_resize(cluster, **params)
 
@@ -234,7 +236,7 @@ class Client(object):
         """Scale out cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/#scale-out-a-cluster
         """
         return self.service.cluster_scale_out(cluster, count)
 
@@ -242,7 +244,7 @@ class Client(object):
         """Scale in cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/#scale-in-a-cluster
         """
         return self.service.cluster_scale_in(cluster, count)
 
@@ -250,8 +252,8 @@ class Client(object):
         """List all policies attached to cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #listClusterPolicies
+        https://developer.openstack.org/api-ref/clustering/
+        #list-all-cluster-policies
         """
         return self.service.cluster_policies(cluster, **queries)
 
@@ -259,8 +261,8 @@ class Client(object):
         """Show details of a policy attached to cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #showClusterPolicy
+        https://developer.openstack.org/api-ref/clustering/
+        #show-cluster-policy-details
         """
         return self.service.get_cluster_policy(policy, cluster)
 
@@ -268,7 +270,8 @@ class Client(object):
         """Attach a policy to cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #attach-a-policy-to-a-cluster
         """
         return self.service.cluster_attach_policy(cluster, policy, **attrs)
 
@@ -276,7 +279,8 @@ class Client(object):
         """Detach a policy from cluster
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #detach-a-policy-from-a-cluster
         """
         return self.service.cluster_detach_policy(cluster, policy)
 
@@ -284,7 +288,8 @@ class Client(object):
         """Update the policy attachment
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #update-a-policy-on-a-cluster
         """
         return self.service.cluster_update_policy(cluster, policy, **attrs)
 
@@ -292,7 +297,8 @@ class Client(object):
         """Collect cluster attributes
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #collect-attributes-across-a-cluster
         """
         return self.service.collect_cluster_attrs(cluster, path)
 
@@ -300,7 +306,8 @@ class Client(object):
         """Check cluster's health status
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #check-a-cluster-s-health-status
         """
         return self.service.check_cluster(cluster, **params)
 
@@ -308,15 +315,16 @@ class Client(object):
         """Recover cluster from failure state
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#clusterAction
+        https://developer.openstack.org/api-ref/clustering/
+        #recover-a-cluster-to-a-healthy-status
         """
         return self.service.recover_cluster(cluster, **params)
 
     def nodes(self, **queries):
         """List nodes
 
-        Doc link: http://developer.openstack.org/api-ref-clustering-v1.html
-                  #listNodes
+        Doc link:
+        https://developer.openstack.org/api-ref/clustering/#list-nodes
         """
         return self.service.nodes(**queries)
 
@@ -324,7 +332,7 @@ class Client(object):
         """Create a node
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#createNode
+        https://developer.openstack.org/api-ref/clustering/#create-node
         """
         return self.service.create_node(**attrs)
 
@@ -332,7 +340,7 @@ class Client(object):
         """Show node details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showNode
+        https://developer.openstack.org/api-ref/clustering/#show-node-details
         """
         return self.service.get_node(node, details=details)
 
@@ -340,7 +348,7 @@ class Client(object):
         """Update node
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#updateNode
+        https://developer.openstack.org/api-ref/clustering/#update-node
         """
         return self.service.update_node(node, **attrs)
 
@@ -348,7 +356,7 @@ class Client(object):
         """Delete node
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#deleteNode
+        https://developer.openstack.org/api-ref/clustering/#delete-node
         """
         return self.service.delete_node(node, ignore_missing)
 
@@ -356,7 +364,7 @@ class Client(object):
         """Check node's health status
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#nodeAction
+        https://developer.openstack.org/api-ref/clustering/#check-a-node-s-health
         """
         return self.service.check_node(node, **params)
 
@@ -364,7 +372,8 @@ class Client(object):
         """Recover node from failure state
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#nodeAction
+        https://developer.openstack.org/api-ref/clustering/
+        #recover-a-node-to-healthy-status
         """
         return self.service.recover_node(node, **params)
 
@@ -372,7 +381,7 @@ class Client(object):
         """List receivers
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listReceivers
+        https://developer.openstack.org/api-ref/clustering/#list-receivers
         """
         return self.service.receivers(**queries)
 
@@ -380,8 +389,7 @@ class Client(object):
         """Creare a receiver
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #createReceiver
+        https://developer.openstack.org/api-ref/clustering/#create-receiver
         """
         return self.service.create_receiver(**attrs)
 
@@ -389,7 +397,7 @@ class Client(object):
         """Show receiver details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showReceiver
+        https://developer.openstack.org/api-ref/clustering/#show-receiver-details
         """
         return self.service.get_receiver(receiver)
 
@@ -397,8 +405,7 @@ class Client(object):
         """Delete receiver
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html
-        #deleteReceiver
+        https://developer.openstack.org/api-ref/clustering/#delete-receiver
         """
         return self.service.delete_receiver(receiver, ignore_missing)
 
@@ -406,7 +413,7 @@ class Client(object):
         """List events
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listEvents
+        https://developer.openstack.org/api-ref/clustering/#list-events
         """
         return self.service.events(**queries)
 
@@ -414,7 +421,7 @@ class Client(object):
         """Show event details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showEvent
+        https://developer.openstack.org/api-ref/clustering/#shows-event-details
         """
         return self.service.get_event(event)
 
@@ -422,7 +429,7 @@ class Client(object):
         """List actions
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#listActions
+        https://developer.openstack.org/api-ref/clustering/#list-actions
         """
         return self.service.actions(**queries)
 
@@ -430,6 +437,6 @@ class Client(object):
         """Show action details
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showAction
+        https://developer.openstack.org/api-ref/clustering/#show-action-details
         """
         return self.service.get_action(action)
