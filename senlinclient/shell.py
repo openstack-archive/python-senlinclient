@@ -101,12 +101,13 @@ class SenlinShell(object):
     def add_profiler_args(self, parser):
         if osprofiler_profiler:
             parser.add_argument(
-                '--os-profile', metavar='HMAC_KEY',
+                '--os-profile',
+                metavar='HMAC_KEY',
+                default=utils.env('OS_PROFILE'),
                 help=_('HMAC key to use for encrypting context data for '
                        'performance profiling of operation. This key should '
-                       'be the value of HMAC key configured in osprofiler '
-                       'middleware in senlin, it is specified in the paste '
-                       'deploy configuration (/etc/senlin/api-paste.ini). '
+                       'be the value of HMAC key configured in '
+                       'senlin configuration (/etc/senlin/senlin.conf). '
                        'Without the key, profiling will not be triggered '
                        'even if osprofiler is enabled on server side.'))
 
