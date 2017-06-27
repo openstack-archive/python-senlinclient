@@ -448,3 +448,11 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/#show-action-details
         """
         return self.service.get_action(action)
+
+    def get_service(self, **queries):
+        """List service
+
+        Doc link:
+        http://developer.openstack.org/api-ref-clustering-v1.html#showAction
+        """
+        return self.service.services(**queries)

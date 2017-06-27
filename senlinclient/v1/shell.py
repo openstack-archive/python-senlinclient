@@ -1710,3 +1710,16 @@ def do_action_show(service, args):
     }
 
     utils.print_dict(action.to_dict(), formatters=formatters)
+
+
+def do_service_list(service, args=None):
+    """Show a list of all running services."""
+    show_deprecated('senlin service-list',
+                    'openstack cluster service list')
+    fields = ['Binary', 'Host', 'Status', 'State', 'Updated_at',
+              'Disabled Reason']
+    queries = {}
+    result = service.services(**queries)
+
+    formatters = {}
+    utils.print_list(result, fields, formatters=formatters)
