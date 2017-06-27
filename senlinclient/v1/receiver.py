@@ -213,6 +213,57 @@ class CreateReceiver(command.ShowOne):
         return _show_receiver(senlin_client, receiver.id)
 
 
+class UpdateReceiver(command.ShowOne):
+    """Create a receiver."""
+
+    log = logging.getLogger(__name__ + ".UpdateReceiver")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdateReceiver, self).get_parser(prog_name)
+
+        parser.add_argument(
+            '--name',
+            metavar='<name>',
+            help=_('Name of the receiver to create')
+        )
+        parser.add_argument(
+            '--action',
+            metavar='<action>',
+            help=_('Name or ID of the targeted action to be triggered. '
+                   'Required if receiver type is webhook')
+        )
+        parser.add_argument(
+            '--params',
+            metavar='<"key1=value1;key2=value2...">',
+            help=_('A dictionary of parameters that will be passed to target '
+                   'action when the receiver is triggered'),
+            action='append'
+        )
+        parser.add_argument(
+            'receiver',
+            metavar='<receiver>',
+            help=_('Name or ID of receiver(s) to update')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+        params = {
+            'name': parsed_args.name,
+            'action': parsed_args.action,
+            'params': senlin_utils.format_parameters(parsed_args.params)
+        }
+
+        receiver = senlin_client.find_receiver(parsed_args.receiver)
+        if receiver is None:
+            raise exc.CommandError(_('Receiver not found: %s') %
+                                   parsed_args.receiver)
+        senlin_client.update_receiver(receiver.id, **params)
+        return _show_receiver(senlin_client, receiver_id=receiver.id)
+
+
 class DeleteReceiver(command.Command):
     """Delete receiver(s)."""
 

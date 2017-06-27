@@ -1511,6 +1511,36 @@ def do_receiver_create(service, args):
     _show_receiver(service, receiver.id)
 
 
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('The new name for the receiver.'))
+@utils.arg('-a', '--action', metavar='<ACTION>',
+           help=_('Name or ID of the targeted action to be triggered. '
+                  'Required if receiver type is webhook.'))
+@utils.arg('-P', '--params', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
+           help=_('A dictionary of parameters that will be passed to target '
+                  'action when the receiver is triggered.'),
+           action='append')
+@utils.arg('id', metavar='<receiver>',
+           help=_('Name or ID of receiver to update.'))
+def do_receiver_update(service, args):
+    """Update a receiver."""
+    show_deprecated('senlin receiver-update',
+                    'openstack cluster receiver update')
+    params = {
+        'name': args.name,
+        'action': args.action,
+        'params': args.params
+    }
+
+    # Find the receiver first, we need its id
+    try:
+        receiver = service.get_receiver(args.id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Receiver not found: %s') % args.id)
+    service.update_receiver(receiver, **params)
+    _show_receiver(service, receiver.id)
+
+
 @utils.arg('id', metavar='<RECEIVER>', nargs='+',
            help=_('Name or ID of receiver(s) to delete.'))
 def do_receiver_delete(service, args):

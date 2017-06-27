@@ -401,6 +401,14 @@ class Client(object):
         """
         return self.service.get_receiver(receiver)
 
+    def update_receiver(self, receiver, **attrs):
+        """Update receiver
+
+        Doc link:
+        http://developer.openstack.org/api-ref-clustering-v1.html#updateReceiver
+        """
+        return self.service.update_receiver(receiver, **attrs)
+
     def delete_receiver(self, receiver, ignore_missing=True):
         """Delete receiver
 

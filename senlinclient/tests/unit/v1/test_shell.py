@@ -569,6 +569,30 @@ class ShellTest(testtools.TestCase):
         service.create_receiver.assert_called_once_with(**params)
         mock_show.assert_called_once_with(service, 'FAKE_ID')
 
+    @mock.patch.object(sh, '_show_receiver')
+    def test_do_receiver_update(self, mock_show):
+        service = mock.Mock()
+        args = {
+            'name': 'receiver2',
+            'id': 'receiver_id',
+            'action': 'CLUSTER_SCALE_OUT',
+            'params': {'count': '2'}
+        }
+        args = self._make_args(args)
+        params = {
+            'name': 'receiver2',
+            'action': 'CLUSTER_SCALE_OUT',
+            'params': {'count': '2'}
+        }
+        receiver = mock.Mock()
+        receiver.id = 'receiver_id'
+        service.get_receiver.return_value = receiver
+        sh.do_receiver_update(service, args)
+        service.get_receiver.assert_called_once_with('receiver_id')
+        service.update_receiver.assert_called_once_with(
+            receiver, **params)
+        mock_show(service, receiver_id=receiver.id)
+
     def test_do_receiver_delete(self):
         service = mock.Mock()
         args = {'id': ['FAKE']}
