@@ -1177,6 +1177,28 @@ def do_cluster_recover(service, args):
               'action %(action)s.' % {'cid': cid, 'action': resp['action']})
 
 
+@utils.arg('-p', '--params', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
+           help=_("Parameter name and values for the operation specified. "
+                  "This can be specified multiple times, or once with "
+                  "key-value pairs separated by a semicolon."),
+           action='append')
+@utils.arg('-o', '--operation', metavar='<OPERATION>',
+           help=_("Name of an operation to be executed on the cluster."))
+@utils.arg('id', metavar='<CLUSTER>',
+           help=_('ID or name of a cluster.'))
+def do_cluster_op(service, args):
+    """Run an operation on a cluster."""
+    show_deprecated('senlin cluster-op', 'openstack cluster op')
+    params = utils.format_parameters(args.params)
+
+    try:
+        service.perform_operation_on_cluster(args.id, args.operation,
+                                             **params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Cluster "%s" is not found') % args.id)
+    print('Request accepted')
+
+
 # NODES
 
 
@@ -1391,6 +1413,31 @@ def do_node_recover(service, args):
     if failure_count > 0:
         msg = _('Failed to recover some of the specified nodes.')
         raise exc.CommandError(msg)
+    print('Request accepted')
+
+
+@utils.arg('-p', '--params', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
+           help=_("Parameter name and values for the operation specified. "
+                  "This can be specified multiple times, or once with "
+                  "key-value pairs separated by a semicolon."),
+           action='append')
+@utils.arg('-o', '--operation', metavar='<OPERATION>',
+           help=_("Name of an operation to be executed on the node"))
+@utils.arg('id', metavar='<NODE>',
+           help=_('ID or name of a node.'))
+def do_node_op(service, args):
+    """Run an operation on a node."""
+    show_deprecated('senlin node-op', 'openstack cluster node op')
+    if args.params:
+        params = utils.format_parameters(args.params)
+    else:
+        params = {}
+
+    try:
+        service.perform_operation_on_node(args.id, args.operation,
+                                          **params)
+    except exc.HTTPNotFound:
+        raise exc.CommandError(_('Node "%s" is not found') % args.id)
     print('Request accepted')
 
 

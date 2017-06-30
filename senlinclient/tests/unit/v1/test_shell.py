@@ -1441,6 +1441,40 @@ class ShellTest(testtools.TestCase):
         mock_print.assert_called_once_with(attrs, fields,
                                            formatters=formatters)
 
+    def test_do_cluster_op(self):
+        service = mock.Mock()
+        args = {
+            'id': 'cluster1',
+            'operation': 'dance',
+            'params': ['style=tango']
+        }
+        args = self._make_args(args)
+        attrs = {
+            'style': 'tango'
+        }
+        service.perform_operation_on_cluster = mock.Mock()
+
+        sh.do_cluster_op(service, args)
+
+        service.perform_operation_on_cluster.assert_called_once_with(
+            'cluster1', 'dance', **attrs)
+
+    def test_do_cluster_op_not_found(self):
+        service = mock.Mock()
+        ex = exc.HTTPNotFound
+        service.perform_operation_on_cluster.side_effect = ex
+        args = {
+            'id': 'cluster1',
+            'operation': 'swim',
+            'params': []
+        }
+        args = self._make_args(args)
+
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_cluster_op, service, args)
+        msg = _('Cluster "cluster1" is not found')
+        self.assertEqual(msg, six.text_type(ex))
+
     @mock.patch.object(utils, 'print_list')
     def test_do_node_list(self, mock_print):
         service = mock.Mock()
@@ -1529,6 +1563,31 @@ class ShellTest(testtools.TestCase):
         sh.do_node_show(service, args)
         mock_show.assert_called_once_with(service, 'node1', False)
 
+    @mock.patch.object(sh, '_show_node')
+    def test_do_node_update(self, mock_show):
+        service = mock.Mock()
+        args = {
+            'id': 'node_id',
+            'name': 'node1',
+            'role': 'master',
+            'profile': 'profile1',
+            'metadata': ['user=demo'],
+        }
+        args = self._make_args(args)
+        attrs = {
+            'name': 'node1',
+            'role': 'master',
+            'profile_id': 'profile1',
+            'metadata': {'user': 'demo'},
+        }
+        node = mock.Mock()
+        node.id = 'node_id'
+        service.get_node.return_value = node
+        sh.do_node_update(service, args)
+        service.get_node.assert_called_once_with('node_id')
+        service.update_node.assert_called_once_with(node, **attrs)
+        mock_show.assert_called_once_with(service, 'node_id')
+
     def test_do_node_delete(self):
         service = mock.Mock()
         args = self._make_args({'id': ['node1']})
@@ -1589,30 +1648,39 @@ class ShellTest(testtools.TestCase):
         msg = _('Failed to recover some of the specified nodes.')
         self.assertEqual(msg, six.text_type(ex))
 
-    @mock.patch.object(sh, '_show_node')
-    def test_do_node_update(self, mock_show):
+    def test_do_node_op(self):
         service = mock.Mock()
         args = {
-            'id': 'node_id',
-            'name': 'node1',
-            'role': 'master',
-            'profile': 'profile1',
-            'metadata': ['user=demo'],
+            'id': 'node1',
+            'operation': 'dance',
+            'params': ['style=tango']
         }
         args = self._make_args(args)
         attrs = {
-            'name': 'node1',
-            'role': 'master',
-            'profile_id': 'profile1',
-            'metadata': {'user': 'demo'},
+            'style': 'tango'
         }
-        node = mock.Mock()
-        node.id = 'node_id'
-        service.get_node.return_value = node
-        sh.do_node_update(service, args)
-        service.get_node.assert_called_once_with('node_id')
-        service.update_node.assert_called_once_with(node, **attrs)
-        mock_show.assert_called_once_with(service, 'node_id')
+        service.perform_operation_on_node = mock.Mock()
+
+        sh.do_node_op(service, args)
+
+        service.perform_operation_on_node.assert_called_once_with(
+            'node1', 'dance', **attrs)
+
+    def test_do_node_op_not_found(self):
+        service = mock.Mock()
+        ex = exc.HTTPNotFound
+        service.perform_operation_on_node.side_effect = ex
+        args = {
+            'id': 'node1',
+            'operation': 'swim',
+            'params': []
+        }
+        args = self._make_args(args)
+
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_node_op, service, args)
+        msg = _('Node "node1" is not found')
+        self.assertEqual(msg, six.text_type(ex))
 
     @mock.patch.object(utils, 'print_list')
     def test_do_event_list(self, mock_print):

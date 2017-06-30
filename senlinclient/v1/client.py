@@ -320,6 +320,16 @@ class Client(object):
         """
         return self.service.recover_cluster(cluster, **params)
 
+    def perform_operation_on_cluster(self, cluster, operation, **params):
+        """Perform an operation on a cluster.
+
+        Doc link:
+        https://developer.openstack.org/api-ref/clustering/
+        #perform-an-operation-on-a-cluster
+        """
+        return self.service.perform_operation_on_cluster(cluster, operation,
+                                                         **params)
+
     def nodes(self, **queries):
         """List nodes
 
@@ -376,6 +386,16 @@ class Client(object):
         #recover-a-node-to-healthy-status
         """
         return self.service.recover_node(node, **params)
+
+    def perform_operation_on_node(self, node, operation, **params):
+        """Perform an operation on a node.
+
+        Doc link:
+        https://developer.openstack.org/api-ref/clustering/
+        #perform-an-operation-on-a-node
+        """
+        return self.service.perform_operation_on_node(node, operation,
+                                                      **params)
 
     def receivers(self, **queries):
         """List receivers
