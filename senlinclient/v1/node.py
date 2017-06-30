@@ -396,3 +396,47 @@ class RecoverNode(command.Command):
             print('Node recover request on node %(nid)s is accepted by '
                   'action %(action)s.'
                   % {'nid': nid, 'action': resp['action']})
+
+
+class NodeOp(command.Lister):
+    """Perform an operation on a node."""
+    log = logging.getLogger(__name__ + ".NodeOp")
+
+    def get_parser(self, prog_name):
+        parser = super(NodeOp, self).get_parser(prog_name)
+        parser.add_argument(
+            '--operation',
+            metavar='<operation>',
+            required=True,
+            help=_('Operation to be performed on the node.')
+        )
+        parser.add_argument(
+            '--params',
+            metavar='<key1=value1;key2=value2...>',
+            help=_("Parameters to for the specified operation. "
+                   "This can be specified multiple times, or once with "
+                   "parameters separated by a semicolon."),
+            action="append"
+        )
+        parser.add_argument(
+            'node',
+            metavar='<node>',
+            help=_('ID or name the node operate on.')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        nid = parsed_args.node
+        if parsed_args.params:
+            params = senlin_utils.format_parameters(parsed_args.params)
+        else:
+            params = {}
+
+        try:
+            resp = senlin_client.perform_operation_on_node(
+                nid, parsed_args.operation, **params)
+            print('Request accepted by action: %s' % resp['action'])
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Node not found: %s') % nid)

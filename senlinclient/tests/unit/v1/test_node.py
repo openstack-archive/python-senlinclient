@@ -456,3 +456,33 @@ class TestNodeRecover(TestNode):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Node not found: node1', str(error))
+
+
+class TestNodeOp(TestNode):
+
+    response = {"action": "1db0f5c5-9183-4c47-9ef1-a5a97402a2c1"}
+
+    def setUp(self):
+        super(TestNodeOp, self).setUp()
+        self.cmd = osc_node.NodeOp(self.app, None)
+        self.mock_client.perform_operation_on_node = mock.Mock(
+            return_value=self.response)
+
+    def test_node_op(self):
+        arglist = ['--operation', 'dance', '--params', 'style=tango',
+                   'my_node']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.perform_operation_on_node.assert_called_once_with(
+            'my_node',
+            'dance',
+            style='tango')
+
+    def test_node_op_not_found(self):
+        arglist = ['--operation', 'dance', 'node1']
+        ex = sdk_exc.ResourceNotFound
+        self.mock_client.perform_operation_on_node.side_effect = ex
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Node not found: node1', str(error))

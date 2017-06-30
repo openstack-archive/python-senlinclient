@@ -919,6 +919,50 @@ class ClusterCollect(command.Lister):
                  for a in attrs))
 
 
+class ClusterOp(command.Lister):
+    """Perform an operation on all nodes across a cluster."""
+    log = logging.getLogger(__name__ + ".ClusterOp")
+
+    def get_parser(self, prog_name):
+        parser = super(ClusterOp, self).get_parser(prog_name)
+        parser.add_argument(
+            '--operation',
+            metavar='<operation>',
+            required=True,
+            help=_('Operation to be performed on the cluster')
+        )
+        parser.add_argument(
+            '--params',
+            metavar='<key1=value1;key2=value2...>',
+            help=_("Parameters to for the specified operation. "
+                   "This can be specified multiple times, or once with "
+                   "parameters separated by a semicolon."),
+            action='append'
+        )
+        parser.add_argument(
+            'cluster',
+            metavar='<cluster>',
+            help=_('ID or name of cluster to operate on.')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+        cid = parsed_args.cluster
+        if parsed_args.params:
+            params = senlin_utils.format_parameters(parsed_args.params)
+        else:
+            params = {}
+
+        try:
+            resp = senlin_client.perform_operation_on_cluster(
+                cid, parsed_args.operation, **params)
+            print('Request accepted by action: %s' % resp['action'])
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Cluster not found: %s') % cid)
+
+
 class ClusterRun(command.Command):
     """Run scripts on cluster."""
     log = logging.getLogger(__name__ + ".ClusterRun")

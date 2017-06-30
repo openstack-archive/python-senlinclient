@@ -810,6 +810,36 @@ class TestClusterRecover(TestCluster):
         self.assertIn('Cluster not found: cluster1', str(error))
 
 
+class TestClusterOp(TestCluster):
+
+    response = {"action": "a3c6d04c-3fca-4e4a-b0b3-c0522ef711f1"}
+
+    def setUp(self):
+        super(TestClusterOp, self).setUp()
+        self.cmd = osc_cluster.ClusterOp(self.app, None)
+        self.mock_client.perform_operation_on_cluster = mock.Mock(
+            return_value=self.response)
+
+    def test_cluster_op(self):
+        arglist = ['--operation', 'dance', '--params', 'style=tango',
+                   'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.perform_operation_on_cluster.assert_called_once_with(
+            'my_cluster',
+            'dance',
+            style='tango')
+
+    def test_cluster_op_not_found(self):
+        arglist = ['--operation', 'dance', 'cluster1']
+        ex = sdk_exc.ResourceNotFound
+        self.mock_client.perform_operation_on_cluster.side_effect = ex
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertIn('Cluster not found: cluster1', str(error))
+
+
 class TestClusterCollect(TestCluster):
     response = [
         {
