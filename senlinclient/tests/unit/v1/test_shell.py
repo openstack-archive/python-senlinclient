@@ -1374,13 +1374,20 @@ class ShellTest(testtools.TestCase):
 
     def test_do_cluster_recover(self):
         service = mock.Mock()
-        args = self._make_args({'id': ['cluster1']})
+        args = {
+            'id': ['cluster1'],
+            'check': 'false'
+        }
+        args = self._make_args(args)
+        params = {
+            'check': False
+        }
         service.recover_cluster = mock.Mock()
         service.recover_cluster.return_value = {'action': 'action_id'}
 
         sh.do_cluster_recover(service, args)
 
-        service.recover_cluster.assert_called_once_with('cluster1')
+        service.recover_cluster.assert_called_once_with('cluster1', **params)
 
     def test_do_cluster_collect(self):
         service = mock.Mock()
