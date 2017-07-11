@@ -195,7 +195,7 @@ class CreateCluster(command.ShowOne):
             '--profile',
             metavar='<profile>',
             required=True,
-            help=_('Profile Id or name used for this cluster')
+            help=_('Default profile Id or name used for this cluster')
         )
         parser.add_argument(
             'name',
