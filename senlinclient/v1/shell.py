@@ -558,7 +558,7 @@ def _show_cluster(service, cluster_id):
 
 
 @utils.arg('-p', '--profile', metavar='<PROFILE>', required=True,
-           help=_('Profile Id or name used for this cluster.'))
+           help=_('Default profile Id or name used for this cluster.'))
 @utils.arg('-n', '--min-size', metavar='<MIN-SIZE>', default=0,
            help=_('Min size of the cluster. Default to 0.'))
 @utils.arg('-m', '--max-size', metavar='<MAX-SIZE>', default=-1,
