@@ -138,19 +138,10 @@ def _show_policy(senlin_client, policy_id):
     formatters = {
         'spec': senlin_utils.json_formatter
     }
-    columns = [
-        'created_at',
-        'data',
-        'domain',
-        'id',
-        'name',
-        'project_id',
-        'spec',
-        'type',
-        'updated_at',
-        'user_id'
-    ]
-    return columns, utils.get_dict_properties(policy.to_dict(), columns,
+
+    data = policy.to_dict()
+    columns = sorted(data.keys())
+    return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
 
 
