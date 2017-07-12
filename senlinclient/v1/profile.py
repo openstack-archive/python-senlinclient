@@ -57,19 +57,9 @@ def _show_profile(senlin_client, profile_id):
             ['type', 'version', 'properties'],
             ['property', 'value'])
 
-        columns = [
-            'created_at',
-            'domain',
-            'id',
-            'metadata',
-            'name',
-            'project_id',
-            'spec',
-            'type',
-            'updated_at',
-            'user_id'
-        ]
-        return columns, utils.get_dict_properties(data.to_dict(), columns,
+        data = data.to_dict()
+        columns = sorted(data.keys())
+        return columns, utils.get_dict_properties(data, columns,
                                                   formatters=formatters)
 
 
