@@ -1087,7 +1087,7 @@ def do_cluster_policy_list(service, args):
     formatters = {}
     if not args.full_id:
         formatters = {
-            'policy_id': lambda x: x.id[:8]
+            'policy_id': lambda x: x.policy_id[:8]
         }
 
     utils.print_list(policies, fields, formatters=formatters,
