@@ -470,9 +470,9 @@ class Client(object):
         return self.service.get_action(action)
 
     def get_service(self, **queries):
-        """List service
+        """List services
 
         Doc link:
-        http://developer.openstack.org/api-ref-clustering-v1.html#showAction
+        https://developer.openstack.org/api-ref/clustering/#list-services
         """
         return self.service.services(**queries)
