@@ -1771,8 +1771,8 @@ def do_service_list(service, args=None):
     """Show a list of all running services."""
     show_deprecated('senlin service-list',
                     'openstack cluster service list')
-    fields = ['Binary', 'Host', 'Status', 'State', 'Updated_at',
-              'Disabled Reason']
+    fields = ['binary', 'host', 'status', 'state', 'updated_at',
+              'disabled_reason']
     queries = {}
     result = service.services(**queries)
 
