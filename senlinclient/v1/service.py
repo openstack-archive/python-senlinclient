@@ -17,7 +17,7 @@ from osc_lib import utils
 
 
 class Service(command.ShowOne):
-    """Retrieve build information."""
+    """Show a list of all running services."""
 
     log = logging.getLogger(__name__ + ".Service")
 
