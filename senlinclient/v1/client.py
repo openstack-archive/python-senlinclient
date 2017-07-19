@@ -469,7 +469,7 @@ class Client(object):
         """
         return self.service.get_action(action)
 
-    def get_service(self, **queries):
+    def services(self, **queries):
         """List services
 
         Doc link:

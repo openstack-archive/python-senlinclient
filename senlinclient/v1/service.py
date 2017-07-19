@@ -16,24 +16,28 @@ from osc_lib.command import command
 from osc_lib import utils
 
 
-class Service(command.ShowOne):
+class ListService(command.Lister):
     """Show a list of all running services."""
 
-    log = logging.getLogger(__name__ + ".Service")
+    log = logging.getLogger(__name__ + ".ListService")
 
     def get_parser(self, prog_name):
-        parser = super(Service, self).get_parser(prog_name)
+        parser = super(ListService, self).get_parser(prog_name)
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
 
         senlin_client = self.app.client_manager.clustering
+        columns = ['binary', 'host', 'status', 'state', 'updated_at',
+                   'disabled_reason']
+
         queries = {}
-        result = senlin_client.get_service(**queries)
+        result = senlin_client.services(**queries)
 
         formatters = {}
-        columns = ['Binary', 'Host', 'Status', 'State', 'Updated_at',
-                   'Disabled Reason']
-        return columns, utils.get_dict_properties(result, columns,
-                                                  formatters=formatters)
+        return (
+            columns,
+            (utils.get_item_properties(s, columns, formatters=formatters)
+             for s in result)
+        )
