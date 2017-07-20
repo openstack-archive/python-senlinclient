@@ -1819,8 +1819,8 @@ class ShellTest(testtools.TestCase):
     @mock.patch.object(utils, 'print_list')
     def test_do_service_list(self, mock_print):
         service = mock.Mock()
-        fields = ['Binary', 'Host', 'Status', 'State', 'Updated_at',
-                  'Disabled Reason']
+        fields = ['binary', 'host', 'status', 'state', 'updated_at',
+                  'disabled_reason']
 
         result = mock.Mock()
         service.services.return_value = result
