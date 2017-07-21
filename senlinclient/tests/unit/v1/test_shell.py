@@ -511,7 +511,7 @@ class ShellTest(testtools.TestCase):
             'type': 'webhook',
             'cluster': 'cluster1',
             'action': 'CLUSTER_SCALE_IN',
-            'params': {}
+            'params': []
         }
         args = self._make_args(args)
         params = {
@@ -535,7 +535,7 @@ class ShellTest(testtools.TestCase):
             'type': 'webhook',
             'cluster': None,
             'action': None,
-            'params': {}
+            'params': []
         }
         args = self._make_args(args)
         ex = self.assertRaises(exc.CommandError,
@@ -552,7 +552,7 @@ class ShellTest(testtools.TestCase):
             'type': 'foo',
             'cluster': None,
             'action': None,
-            'params': {}
+            'params': []
         }
         args = self._make_args(args)
         params = {
@@ -576,13 +576,13 @@ class ShellTest(testtools.TestCase):
             'name': 'receiver2',
             'id': 'receiver_id',
             'action': 'CLUSTER_SCALE_OUT',
-            'params': {'count': '2'}
+            'params': ['key1=value1;key2=value2']
         }
         args = self._make_args(args)
         params = {
             'name': 'receiver2',
             'action': 'CLUSTER_SCALE_OUT',
-            'params': {'count': '2'}
+            'params': {'key1': 'value1', 'key2': 'value2'}
         }
         receiver = mock.Mock()
         receiver.id = 'receiver_id'
