@@ -549,6 +549,7 @@ def _show_cluster(service, cluster_id):
         raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
 
     formatters = {
+        'config': utils.json_formatter,
         'metadata': utils.json_formatter,
         'node_ids': utils.list_formatter,
     }
@@ -568,6 +569,11 @@ def _show_cluster(service, cluster_id):
                   'min_size is specified else 0.'))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>', type=int,
            help=_('Cluster creation timeout in seconds.'))
+@utils.arg('-C', '--config', metavar='<"key1=value1;key2=value2...">',
+           help=_('Configuration of the cluster. Default to {}. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
+           action='append')
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_('Metadata values to be attached to the cluster. '
                   'This can be specified multiple times, or once with '
@@ -581,6 +587,7 @@ def do_cluster_create(service, args):
     if args.min_size and not args.desired_capacity:
         args.desired_capacity = args.min_size
     attrs = {
+        'config': utils.format_parameters(args.config),
         'name': args.name,
         'profile_id': args.profile,
         'min_size': args.min_size,
@@ -803,6 +810,11 @@ def do_cluster_run(service, args):
                   "but existing nodes will not be changed. Default is False."))
 @utils.arg('-t', '--timeout', metavar='<TIMEOUT>',
            help=_('New timeout (in seconds) value for the cluster.'))
+@utils.arg('-C', '--config', metavar='<"key1=value1;key2=value2...">',
+           help=_('Configuration of the cluster. Default to {}. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
+           action='append')
 @utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
            help=_("Metadata values to be attached to the cluster. "
                   "This can be specified multiple times, or once with "

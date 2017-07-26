@@ -146,6 +146,7 @@ class TestClusterShow(TestCluster):
         super(TestClusterShow, self).setUp()
         self.cmd = osc_cluster.ShowCluster(self.app, None)
         fake_cluster = mock.Mock(
+            config={},
             created_at="2015-02-11T15:13:20",
             data={},
             desired_capacity=0,
@@ -188,6 +189,7 @@ class TestClusterShow(TestCluster):
 class TestClusterCreate(TestCluster):
 
     defaults = {
+        "config": {},
         "desired_capacity": 0,
         "max_size": -1,
         "metadata": {},
@@ -201,6 +203,7 @@ class TestClusterCreate(TestCluster):
         super(TestClusterCreate, self).setUp()
         self.cmd = osc_cluster.CreateCluster(self.app, None)
         fake_cluster = mock.Mock(
+            config={},
             created_at="2015-02-11T15:13:20",
             data={},
             desired_capacity=0,
@@ -237,6 +240,15 @@ class TestClusterCreate(TestCluster):
                    '--metadata', 'key1=value1;key2=value2']
         kwargs = copy.deepcopy(self.defaults)
         kwargs['metadata'] = {'key1': 'value1', 'key2': 'value2'}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.create_cluster.assert_called_with(**kwargs)
+
+    def test_cluster_create_with_config(self):
+        arglist = ['test_cluster', '--profile', 'mystack',
+                   '--config', 'key1=value1;key2=value2']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['config'] = {'key1': 'value1', 'key2': 'value2'}
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_cluster.assert_called_with(**kwargs)

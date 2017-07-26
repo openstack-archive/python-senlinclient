@@ -140,6 +140,7 @@ def _show_cluster(senlin_client, cluster_id):
         raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
 
     formatters = {
+        'config': senlin_utils.json_formatter,
         'metadata': senlin_utils.json_formatter,
         'node_ids': senlin_utils.list_formatter
     }
@@ -158,6 +159,14 @@ class CreateCluster(command.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(CreateCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--config',
+            metavar='<"key1=value1;key2=value2...">',
+            help=_('Configuration of the cluster. Default to {}. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon.'),
+            action='append'
+        )
         parser.add_argument(
             '--min-size',
             metavar='<min-size>',
@@ -211,6 +220,7 @@ class CreateCluster(command.ShowOne):
         if parsed_args.min_size and not parsed_args.desired_capacity:
             parsed_args.desired_capacity = parsed_args.min_size
         attrs = {
+            'config': senlin_utils.format_parameters(parsed_args.config),
             'name': parsed_args.name,
             'profile_id': parsed_args.profile,
             'min_size': parsed_args.min_size,
@@ -231,6 +241,14 @@ class UpdateCluster(command.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(UpdateCluster, self).get_parser(prog_name)
+        parser.add_argument(
+            '--config',
+            metavar='<"key1=value1;key2=value2...">',
+            help=_('s of the cluster. Default to {}. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon.'),
+            action='append'
+        )
         parser.add_argument(
             '--profile',
             metavar='<profile>',

@@ -798,6 +798,7 @@ class ShellTest(testtools.TestCase):
         cluster.id = cluster_id
         service.get_cluster.return_value = cluster
         formatters = {
+            'config': utils.json_formatter,
             'metadata': utils.json_formatter,
             'node_ids': utils.list_formatter,
         }
@@ -816,6 +817,7 @@ class ShellTest(testtools.TestCase):
             'max_size': 10,
             'desired_capacity': 5,
             'metadata': ['user=demo'],
+            'config': {},
             'timeout': 200,
         }
         attrs = copy.deepcopy(args)
