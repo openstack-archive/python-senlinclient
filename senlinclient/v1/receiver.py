@@ -214,7 +214,7 @@ class CreateReceiver(command.ShowOne):
 
 
 class UpdateReceiver(command.ShowOne):
-    """Create a receiver."""
+    """Update a receiver."""
 
     log = logging.getLogger(__name__ + ".UpdateReceiver")
 

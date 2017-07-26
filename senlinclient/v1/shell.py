@@ -1584,7 +1584,7 @@ def do_receiver_update(service, args):
     params = {
         'name': args.name,
         'action': args.action,
-        'params': args.params
+        'params': utils.format_parameters(args.params)
     }
 
     # Find the receiver first, we need its id
