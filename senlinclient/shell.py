@@ -99,7 +99,7 @@ class SenlinShell(object):
         print(' '.join(commands | options))
 
     def add_profiler_args(self, parser):
-        if osprofiler_profiler:
+        if isinstance(osprofiler_profiler, int):
             parser.add_argument(
                 '--os-profile',
                 metavar='HMAC_KEY',
