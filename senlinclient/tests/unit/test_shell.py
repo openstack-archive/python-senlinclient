@@ -191,8 +191,10 @@ class ShellTest(testtools.TestCase):
         parser = mock.Mock()
 
         sh.add_profiler_args(parser)
-
-        self.assertEqual(0, parser.add_argument.call_count)
+        if shell.osprofiler_profiler:
+            self.assertEqual(1, parser.add_argument.call_count)
+        else:
+            self.assertEqual(0, parser.add_argument.call_count)
 
     @mock.patch.object(utils, 'import_versioned_module')
     @mock.patch.object(shell.SenlinShell, '_find_actions')
