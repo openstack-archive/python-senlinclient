@@ -131,6 +131,39 @@ class ShellTest(testtools.TestCase):
         self.assertEqual(_('Profile Type not found: wrong_type'),
                          six.text_type(ex))
 
+    @mock.patch.object(utils, 'format_output')
+    def test_do_profile_type_operations(self, mock_format):
+        service = mock.Mock()
+        fake_pto = {'foo': 'bar'}
+        service.list_profile_type_operations = mock.Mock(return_value=fake_pto)
+        args_dict = {
+            'format': 'json',
+            'type_name': 'os.nova.server-1.0'
+        }
+        args = self._make_args(args_dict)
+        sh.do_profile_type_ops(service, args)
+        mock_format.assert_called_with({'foo': 'bar'}, format=args.format)
+        service.list_profile_type_operations.assert_called_with(
+            'os.nova.server-1.0')
+        args.format = None
+        sh.do_profile_type_ops(service, args)
+        mock_format.assert_called_with({'foo': 'bar'})
+
+    def test_do_profile_type_operations_type_not_found(self):
+        service = mock.Mock()
+        args = {
+            'type_name': 'wrong_type',
+            'format': 'json'
+        }
+        args = self._make_args(args)
+        ex = oexc.ResourceNotFound
+        service.list_profile_type_operations = mock.Mock(side_effect=ex)
+        ex = self.assertRaises(exc.CommandError,
+                               sh.do_profile_type_ops,
+                               service, args)
+        self.assertEqual(_('Profile Type not found: wrong_type'),
+                         six.text_type(ex))
+
     @mock.patch.object(utils, 'print_list')
     def test_do_profile_list(self, mock_print):
         service = mock.Mock()

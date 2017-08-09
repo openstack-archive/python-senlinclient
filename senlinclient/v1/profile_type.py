@@ -77,3 +77,31 @@ class ProfileTypeShow(format_utils.YamlFormat):
         rows = data.values()
         columns = data.keys()
         return columns, rows
+
+
+class ProfileTypeOperations(format_utils.YamlFormat):
+    """Show the operations about a profile type."""
+    log = logging.getLogger(__name__ + ".ProfileTypeOperations")
+
+    def get_parser(self, prog_name):
+        parser = super(ProfileTypeOperations, self).get_parser(prog_name)
+        parser.add_argument(
+            'type_name',
+            metavar='<type-name>',
+            help=_('Profile type to retrieve')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        try:
+            ops = senlin_client.list_profile_type_operations(
+                parsed_args.type_name)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Profile Type not found: %s')
+                                   % parsed_args.type_name)
+        rows = ops.values()
+        columns = ops.keys()
+        return columns, rows
