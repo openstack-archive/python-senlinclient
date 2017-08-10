@@ -2,9 +2,9 @@
 # zzxwill <zzxwill@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: python-senlinclient 0.5.1.dev40\n"
+"Project-Id-Version: python-senlinclient 1.4.1.dev4\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-08-22 13:00+0000\n"
+"POT-Creation-Date: 2017-08-09 13:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Last-Translator: zzxwill <zzxwill@gmail.com>\n"
 "Language-Team: Chinese (China)\n"
 "Language: zh-CN\n"
-"X-Generator: Zanata 3.7.3\n"
+"X-Generator: Zanata 3.9.6\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 
 #, python-format
@@ -215,14 +215,6 @@ msgid "Failed to check some of the specified nodes."
 msgstr "检查部分给定的节点失败。"
 
 #, python-format
-msgid "Failed to delete %(count)s of the %(total)s specified cluster(s)."
-msgstr "删除%(total)s个给定的集群中的%(count)s个失败。"
-
-#, python-format
-msgid "Failed to delete %(count)s of the %(total)s specified node(s)."
-msgstr "删除%(total)s个给定的节点中的%(count)s个失败。"
-
-#, python-format
 msgid "Failed to delete %(count)s of the %(total)s specified policy(s)."
 msgstr "删除%(total)s个给定的策略中的%(count)s个失败。"
 
@@ -233,12 +225,6 @@ msgstr "删除%(total)s个给定的样版中的%(count)s个失败。"
 #, python-format
 msgid "Failed to delete %(count)s of the %(total)s specified receiver(s)."
 msgstr "删除%(total)s个给定的receiver中的%(count)s个失败。"
-
-msgid "Failed to delete some of the specified clusters."
-msgstr "删除部分给定的集群失败。"
-
-msgid "Failed to delete some of the specified nodes."
-msgstr "删除部分给定的节点失败。"
 
 msgid "Failed to delete some of the specified policy(s)."
 msgstr "删除部分给定的策略失败。"
@@ -266,14 +252,6 @@ msgstr ""
 "执行一次。"
 
 msgid ""
-"Filter parameters to apply on returned actions. This can be specified "
-"multiple times, or once with parameters separated by a semicolon. The valid "
-"filter keys are: ['name', 'target', 'action', 'status']"
-msgstr ""
-"过滤参数以应用在返回的action上。该操作可以指定多次，或者用分号分隔参数之后指"
-"定一次。有效的过滤键是['name', 'target', 'action', 'status']"
-
-msgid ""
 "Filter parameters to apply on returned clusters. This can be specified "
 "multiple times, or once with parameters separated by a semicolon."
 msgstr ""
@@ -294,23 +272,6 @@ msgid ""
 msgstr ""
 "过滤参数以应用在返回的事件上。该参数可以指定多次，也可以用分号分隔参数之后执"
 "行一次。"
-
-msgid ""
-"Filter parameters to apply on returned events. This can be specified "
-"multiple times, or once with parameters separated by a semicolon. The valid "
-"filter keys are: ['level', 'obj_type', 'obj_id' ,'cluster_id', 'obj_name', "
-"'action']"
-msgstr ""
-"过滤参数以应用在返回的事件上。该参数可以指定多次，也可以用分号分隔参数之后执"
-"行一次。有效的过滤键是['level', 'obj_type', 'obj_id' ,'cluster_id', "
-"'obj_name', 'action']"
-
-msgid ""
-"Filter parameters to apply on returned nodes. This can be specified multiple "
-"times, or once with parameters separated by a semicolon"
-msgstr ""
-"过滤参数以应用在返回的节点上。该参数可以指定多次，也可以用分号分隔参数之后执"
-"行一次"
 
 msgid ""
 "Filter parameters to apply on returned nodes. This can be specified multiple "
@@ -350,27 +311,11 @@ msgstr ""
 "行一次。"
 
 msgid ""
-"Filter parameters to apply on returned profiles. This can be specified "
-"multiple times, or once with parameters separated by a semicolon. The valid "
-"filter keys are: ['type', 'name', 'metadata']"
-msgstr ""
-"过滤参数以应用在返回的样版上。该参数可以指定多次，也可以用分号分隔参数之后执"
-"行一次。有效的过滤键是['type', 'name', 'metadata']"
-
-msgid ""
 "Filter parameters to apply on returned receivers. This can be specified "
 "multiple times, or once with parameters separated by a semicolon."
 msgstr ""
 "过滤参数以应用在返回的receiver上。该参数可以指定多次，也可以用分隔分割参数之"
 "后执行一次。"
-
-msgid ""
-"Filter parameters to apply on returned receivers. This can be specified "
-"multiple times, or once with parameters separated by a semicolon. The valid "
-"filter keys are: ['name', 'type', 'action', 'cluster_id']"
-msgstr ""
-"过滤参数以应用在返回的receiver上。该操作可以执行多次，或者用分号分隔参数之后"
-"执行一次。有效的过滤键是['name', 'type', 'action', 'cluster_id']"
 
 msgid ""
 "Filter parameters to apply on returned results. This can be specified "
@@ -379,31 +324,11 @@ msgstr ""
 "过滤参数以应用在返回的结果上。该参数可以指定多次，也可以用分号分隔参数之后执"
 "行一次。"
 
-msgid ""
-"Filter parameters to apply on returned results. This can be specified "
-"multiple times, or once with parameters separated by a semicolon. The valid "
-"filter keys are: ['type', 'name']"
-msgstr ""
-"过滤参数以应用在返回的结果上。该参数可以指定多次，也可以用分号分隔参数之后执"
-"行一次。有效的过滤键是['type', 'name']"
-
 msgid "ID of event to display details for"
 msgstr "显示事件详情的ID"
 
 msgid "ID of event to display details for."
 msgstr "显示事件详情的ID。"
-
-msgid "ID of new profile to use"
-msgstr "将要使用的样版的ID"
-
-msgid "ID of new profile to use."
-msgstr "将要使用的样版的ID。"
-
-msgid "ID of node(s) to check."
-msgstr "待检查的节点的ID。"
-
-msgid "ID of node(s) to recover."
-msgstr "待恢复的节点的ID。"
 
 msgid "ID of nodes to be added; multiple nodes can be separated with \",\""
 msgstr "待添加节点的ID；多个节点可以用“，”分隔"
@@ -596,30 +521,9 @@ msgstr "集群容量上限。默认为-1，表示无限制。"
 
 msgid ""
 "Metadata values to be attached to the cluster. This can be specified "
-"multiple times, or once with key-value pairs separated by a semicolon"
-msgstr ""
-"将要关联到集群的元数据。该元数据可以指定多次，也可以用分号分割键值对之后指定"
-"一次"
-
-msgid ""
-"Metadata values to be attached to the cluster. This can be specified "
 "multiple times, or once with key-value pairs separated by a semicolon."
 msgstr ""
 "将要关联到集群的元数据。该元数据可以指定多次，也可以用分号分割键值对之后指定"
-"一次。"
-
-msgid ""
-"Metadata values to be attached to the node. Metadata can be specified "
-"multiple times, or once with key-value pairs separated by a semicolon"
-msgstr ""
-"将要关联到节点的元数据。该元数据可以指定多次，也可以用分号分隔键值对之后指定"
-"一次"
-
-msgid ""
-"Metadata values to be attached to the node. Metadata can be specified "
-"multiple times, or once with key-value pairs separated by a semicolon."
-msgstr ""
-"将要关联到节点的元数据。该元数据可以指定多次，也可以用分号分隔键值对之后指定"
 "一次。"
 
 msgid ""
@@ -814,12 +718,6 @@ msgstr "待显示的receiver的名字或ID"
 msgid "Name or ID of the receiver to show."
 msgstr "待显示的receiver的名字或ID。"
 
-msgid "Name or ID of the targeted action to be triggered"
-msgstr "将被触发的目标action的名称或ID"
-
-msgid "Name or ID of the targeted action to be triggered."
-msgstr "将被触发的目标action的名称或ID。"
-
 msgid "Name or Id of the policy to show"
 msgstr "将要显示的策略的名字或ID"
 
@@ -896,9 +794,6 @@ msgstr "等待API响应的时间（秒），默认是系统socket的过期时间
 msgid "Only one of 'capacity', 'adjustment' and 'percentage' can be specified."
 msgstr "只能指定'capacity', 'adjustment'和'percentage'中的一个值。"
 
-msgid "Only return actions that appear after the given node ID"
-msgstr "仅仅返回给定节点ID后出现的action"
-
 msgid "Only return actions that appear after the given node ID."
 msgstr "仅仅返回给定节点ID后出现的action。"
 
@@ -920,20 +815,11 @@ msgstr "仅仅返回给定节点ID后出现的节点"
 msgid "Only return nodes that appear after the given node ID."
 msgstr "仅仅返回给定节点ID后出现的节点。"
 
-msgid "Only return policies that appear after the given ID"
-msgstr "仅仅返回给定ID后出现的策略"
-
 msgid "Only return policies that appear after the given ID."
 msgstr "仅仅返回给定ID后出现的策略。"
 
-msgid "Only return profiles that appear after the given ID"
-msgstr "仅仅返回给定ID后出现的样版"
-
 msgid "Only return profiles that appear after the given ID."
 msgstr "仅仅返回给定ID后出现的样版。"
-
-msgid "Only return receivers that appear after the given ID"
-msgstr "仅仅返回给定ID后出现的receiver"
 
 msgid "Only return receivers that appear after the given ID."
 msgstr "仅仅返回给定ID后出现的receiver。"
@@ -988,15 +874,6 @@ msgstr "打印更多详细的输出。"
 
 msgid "Profile Id or Name used for this node"
 msgstr "用于该节点的样板的Id或名称"
-
-msgid "Profile Id used for this cluster"
-msgstr "用于该节点的样版ID"
-
-msgid "Profile Id used for this cluster."
-msgstr "用于该节点的样版ID。"
-
-msgid "Profile Id used for this node."
-msgstr "用于该节点的样版Id。"
 
 #, python-format
 msgid "Profile Type not found: %s"
@@ -1061,15 +938,6 @@ msgstr ""
 msgid ""
 "Sorting option which is a string containing a list of keys separated by "
 "commas. Each key can be optionally appended by a sort direction (:asc or :"
-"desc).  The valid sort keys are: ['type', 'name', 'created_at', 'updated_at']"
-msgstr ""
-"排序选项是一个字符串，该字符串包含了一系列用逗号分隔的键。每个键可以附加上一"
-"个排序方向值（:asc或:desc），这个排序方向值是可选的。有效的过滤键是['type', "
-"'name', 'created_at', 'updated_at']"
-
-msgid ""
-"Sorting option which is a string containing a list of keys separated by "
-"commas. Each key can be optionally appended by a sort direction (:asc or :"
 "desc). The valid sort keys are: ['name', 'status', 'init_at', 'created_at', "
 "'updated_at']"
 msgstr ""
@@ -1100,16 +968,6 @@ msgstr ""
 msgid ""
 "Sorting option which is a string containing a list of keys separated by "
 "commas. Each key can be optionally appended by a sort direction (:asc or :"
-"desc). The valid sort keys are: ['timestamp', 'level', 'obj_type', "
-"'obj_name', 'user', 'action', 'status']"
-msgstr ""
-"排序选项是一个字符串，该字符串包含了一系列用逗号分隔的键。每个键可以附加上一"
-"个排序方向值（:asc或:desc），这个排序方向值是可选的。有效的过滤键是："
-"['timestamp', 'level', 'obj_type', 'obj_name', 'user', 'action', 'status']"
-
-msgid ""
-"Sorting option which is a string containing a list of keys separated by "
-"commas. Each key can be optionally appended by a sort direction (:asc or :"
 "desc). The valid sort keys are: ['type', 'name', 'created_at', 'updated_at']"
 msgstr ""
 "排序选项是一个字符串，该字符串包含了一系列用逗号分隔的键。每个键可以附加上一"
@@ -1119,27 +977,11 @@ msgstr ""
 msgid ""
 "Sorting option which is a string containing a list of keys separated by "
 "commas. Each key can be optionally appended by a sort direction (:asc or :"
-"desc). The valid sort keys are:'['index', 'name', 'status', 'init_at', "
-"'created_at', 'updated_at']'"
-msgstr ""
-"排序选项是一个字符串，该字符串包含了一系列用逗号分隔的键。每个键可以附加上一"
-"个排序方向值（:asc或:desc），这个排序方向值是可选的。有效的过滤键"
-"是：'['index', 'name', 'status', 'init_at', 'created_at', 'updated_at']'"
-
-msgid ""
-"Sorting option which is a string containing a list of keys separated by "
-"commas. Each key can be optionally appended by a sort direction (:asc or :"
 "desc). The valid sort_keys are:['type', 'name', 'created_at', 'updated_at']"
 msgstr ""
 "排序选项是一个字符串，该字符串包含了一系列用逗号分隔的键。每个键可以附加上一"
 "个排序方向值（:asc或:desc），这个排序方向值是可选的。有效的过滤键是['type', "
 "'name', 'created_at', 'updated_at']"
-
-msgid "Targeted cluster for this receiver"
-msgstr "receiver的目标集群。"
-
-msgid "Targeted cluster for this receiver."
-msgstr "receiver的目标集群。"
 
 msgid "The desired number of nodes of the cluster"
 msgstr "该集群中期望的节点个数"
@@ -1183,12 +1025,6 @@ msgstr "Trace ID: %s"
 
 msgid "Type \"senlin help <COMMAND>\" for help on a specific command."
 msgstr "输入“senlin help <COMMAND>”来获取该命令的帮助信息。"
-
-msgid "Type of the receiver to create"
-msgstr "要创建的receiver的类型"
-
-msgid "Type of the receiver to create."
-msgstr "待创建的receiver的类型。"
 
 #, python-format
 msgid "Unknown exception: %s"
