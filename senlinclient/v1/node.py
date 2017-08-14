@@ -163,6 +163,7 @@ def _show_node(senlin_client, node_id, show_details=False):
     if show_details and data['details']:
         formatters['details'] = senlin_utils.nested_dict_formatter(
             list(data['details'].keys()), ['property', 'value'])
+
     columns = sorted(data.keys())
     return columns, utils.get_dict_properties(data, columns,
                                               formatters=formatters)
@@ -396,6 +397,102 @@ class RecoverNode(command.Command):
             print('Node recover request on node %(nid)s is accepted by '
                   'action %(action)s.'
                   % {'nid': nid, 'action': resp['action']})
+
+
+class AdoptNode(command.ShowOne):
+    """Adopt (or preview) the node."""
+
+    log = logging.getLogger(__name__ + ".AdoptNode")
+
+    def get_parser(self, prog_name):
+        parser = super(AdoptNode, self).get_parser(prog_name)
+        parser.add_argument(
+            '--identity',
+            metavar='<identity>',
+            required=True,
+            help=_('Physical resource id.'))
+        parser.add_argument(
+            '--type',
+            metavar='<type>',
+            required=True,
+            help=_('The name of the profile type.')
+        )
+        parser.add_argument(
+            '--role',
+            metavar='<role>',
+            help=_('Role for this node in the specific cluster.')
+        )
+        parser.add_argument(
+            '--metadata',
+            metavar='<"key1=value1;key2=value2...">',
+            help=_('Metadata values to be attached to the node. '
+                   'This can be specified multiple times, or once with '
+                   'key-value pairs separated by a semicolon.'),
+            action='append'
+        )
+        parser.add_argument(
+            '--name',
+            metavar='<node-name>',
+            help=_('Name of the node to adopt.')
+        )
+        parser.add_argument(
+            '--overrides',
+            metavar='<json>',
+            help=_('JSON formatted specification for overriding this node '
+                   'properties.')
+        )
+        parser.add_argument(
+            '--preview',
+            default=False,
+            help=_('Whether preview the node adopt request. If set, '
+                   'only previewing this node and do not adopt.'),
+            action='store_true',
+        )
+        parser.add_argument(
+            '--snapshot',
+            default=False,
+            help=_('Whether a shapshot of the existing physical object '
+                   'should be created before the object is adopted as '
+                   'a node.'),
+            action='store_true'
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+
+        senlin_client = self.app.client_manager.clustering
+
+        preview = True if parsed_args.preview else False
+        attrs = {
+            'identity': parsed_args.identity,
+            'overrides': senlin_utils.format_json_parameter(
+                parsed_args.overrides),
+            'snapshot': parsed_args.snapshot,
+            'type': parsed_args.type
+        }
+
+        if not preview:
+            attrs.update({
+                'name': parsed_args.name,
+                'role': parsed_args.role,
+                'metadata': senlin_utils.format_parameters(
+                    parsed_args.metadata),
+            })
+
+        node = senlin_client.adopt_node(preview, **attrs)
+
+        if not preview:
+            return _show_node(senlin_client, node.id)
+        else:
+            formatters = {}
+            formatters['node_preview'] = senlin_utils.nested_dict_formatter(
+                ['type', 'version', 'properties'],
+                ['property', 'value'])
+            data = node['node_profile']
+            columns = sorted(data.keys())
+            return columns, utils.get_dict_properties(data, columns,
+                                                      formatters=formatters)
 
 
 class NodeOp(command.Lister):

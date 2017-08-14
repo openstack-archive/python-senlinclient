@@ -1329,6 +1329,71 @@ def do_node_create(service, args):
     _show_node(service, node.id)
 
 
+@utils.arg('-i', '--identity', metavar='<IDENTITY>', required=True,
+           help=_('Physical resource id.'))
+@utils.arg('-t', '--type', metavar='<TYPE>', required=True,
+           help=_('The name of the profile type.'))
+@utils.arg('-r', '--role', metavar='<ROLE>',
+           help=_('Role for this node in the specific cluster.'))
+@utils.arg('-M', '--metadata', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
+           help=_('Metadata values to be attached to the node. '
+                  'This can be specified multiple times, or once with '
+                  'key-value pairs separated by a semicolon.'),
+           action='append')
+@utils.arg('-n', '--name', metavar='<NAME>',
+           help=_('The name for the node.'))
+@utils.arg('-o', '--overrides', metavar='<JSON">',
+           help=_('JSON formatted specification for overriding this node '
+                  'properties.'))
+@utils.arg('-p', '--preview', default=False,
+           help=_('Whether preview the node adopt request. If set, '
+                  'only previewing this node and do not adopt.'),
+           action='store_true')
+@utils.arg('-s', '--snapshot', default=False,
+           help=_('Whether a shapshot of the existing physical object should '
+                  'be created before the object is adopted as a node.'),
+           action='store_true')
+def do_node_adopt(service, args):
+    """Adopt (or preview) a node."""
+    show_deprecated('senlin node-adopt', 'openstack cluster node adopt')
+    if args.preview:
+        _do_node_adopt_preview(service, args)
+    else:
+        _do_node_adopt(service, args)
+
+
+def _do_node_adopt_preview(service, args):
+    attrs = {
+        'identity': args.identity,
+        'overrides': utils.format_json_parameter(args.overrides),
+        'snapshot': args.snapshot,
+        'type': args.type
+    }
+
+    node = service.adopt_node(True, **attrs)
+
+    formatters = {}
+    formatters['node_preview'] = utils.nested_dict_formatter(
+        ['type', 'version', 'properties'],
+        ['property', 'value'])
+    utils.print_dict(node['node_profile'], formatters=formatters)
+
+
+def _do_node_adopt(service, args):
+    attrs = {
+        'identity': args.identity,
+        'name': args.name,
+        'role': args.role,
+        'metadata': utils.format_parameters(args.metadata),
+        'overrides': utils.format_json_parameter(args.overrides),
+        'snapshot': args.snapshot,
+        'type': args.type
+    }
+
+    node = service.adopt_node(**attrs)
+    _show_node(service, node.id)
+
+
 @utils.arg('-D', '--details', default=False, action="store_true",
            help=_('Include physical object details.'))
 @utils.arg('id', metavar='<NODE>',

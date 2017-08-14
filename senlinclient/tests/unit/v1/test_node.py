@@ -458,6 +458,158 @@ class TestNodeRecover(TestNode):
         self.assertIn('Node not found: node1', str(error))
 
 
+class TestNodeAdopt(TestNode):
+    defaults = {
+        "identity": "fake-resource-id",
+        "metadata": {},
+        "name": "my_node",
+        "overrides": {},
+        "role": None,
+        "snapshot": False,
+        "type": "os.nova.server-1.0"
+    }
+
+    def setUp(self):
+        super(TestNodeAdopt, self).setUp()
+        self.cmd = osc_node.AdoptNode(self.app, None)
+        fake_node = mock.Mock(
+            action="2366d440-c73e-4961-9254-6d1c3af7c167",
+            cluster_id="",
+            created_at=None,
+            data={},
+            domain=None,
+            id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            index=-1,
+            init_time="2015-03-05T08:53:15",
+            metadata={},
+            physical_id=None,
+            profile_id="edc63d0a-2ca4-48fa-9854-27926da76a4a",
+            profile_name="mystack",
+            project_id="6e18cc2bdbeb48a5b3cad2dc499f6804",
+            role="master",
+            status="INIT",
+            status_reason="Initializing",
+            updated_at=None,
+            user_id="5e5bf8027826429c96af157f68dc9072"
+        )
+        fake_node.name = "my_node"
+        fake_node.to_dict = mock.Mock(return_value={})
+
+        self.mock_client.adopt_node = mock.Mock(return_value=fake_node)
+        self.mock_client.get_node = mock.Mock(return_value=fake_node)
+
+    def test_node_adopt_defaults(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--name', 'my_node']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(False, **self.defaults)
+
+    def test_node_adopt_with_metadata(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--metadata', 'key1=value1;key2=value2',
+                   '--name', 'my_node']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['metadata'] = {'key1': 'value1', 'key2': 'value2'}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(False, **kwargs)
+
+    def test_node_adopt_with_override(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--overrides',
+                   '{"networks": [{"network": "fake-net-name"}]}',
+                   '--name', 'my_node']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['overrides'] = {'networks': [{'network': 'fake-net-name'}]}
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(False, **kwargs)
+
+    def test_node_adopt_with_role(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--role', 'master',
+                   '--name', 'my_node']
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['role'] = 'master'
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(False, **kwargs)
+
+    def test_node_adopt_with_snapshot(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--snapshot',
+                   '--name', 'my_node']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['snapshot'] = True
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(False, **kwargs)
+
+
+class TestNodeAdoptPreview(TestNode):
+    defaults = {
+        "identity": "fake-resource-id",
+        "overrides": {},
+        "snapshot": False,
+        "type": "os.nova.server-1.0"
+    }
+
+    def setUp(self):
+        super(TestNodeAdoptPreview, self).setUp()
+        self.cmd = osc_node.AdoptNode(self.app, None)
+        self.fake_node_preview = {
+            "node_profile": {
+                "node_preview": {
+                    "properties": {
+
+                    },
+                    "type": "os.nova.server",
+                    "version": "1.0"}
+            }
+        }
+
+        self.mock_client.adopt_node = mock.Mock(
+            return_value=self.fake_node_preview)
+        self.mock_client.get_node = mock.Mock(
+            return_value=self.fake_node_preview)
+
+    def test_node_adopt_preview_default(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--preview']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(True, **self.defaults)
+
+    def test_node_adopt_preview_with_overrides(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--overrides',
+                   '{"networks": [{"network": "fake-net-name"}]}',
+                   '--preview']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['overrides'] = {'networks': [{'network': 'fake-net-name'}]}
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(True, **kwargs)
+
+    def test_node_adopt_preview_with_snapshot(self):
+        arglist = ['--identity', 'fake-resource-id',
+                   '--type', 'os.nova.server-1.0',
+                   '--snapshot', '--preview']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        kwargs = copy.deepcopy(self.defaults)
+        kwargs['snapshot'] = True
+        self.cmd.take_action(parsed_args)
+        self.mock_client.adopt_node.assert_called_with(True, **kwargs)
+
+
 class TestNodeOp(TestNode):
 
     response = {"action": "1db0f5c5-9183-4c47-9ef1-a5a97402a2c1"}

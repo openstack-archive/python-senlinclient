@@ -346,6 +346,15 @@ class Client(object):
         """
         return self.service.create_node(**attrs)
 
+    def adopt_node(self, preview=False, **attrs):
+        """Adopt a node
+
+        Doc link:
+        https://developer.openstack.org/api-ref/clustering/#adopt-node
+        https://developer.openstack.org/api-ref/clustering/#adopt-node-preview
+        """
+        return self.service.adopt_node(preview, **attrs)
+
     def get_node(self, node, details=False):
         """Show node details
 
