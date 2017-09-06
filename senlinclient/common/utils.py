@@ -225,6 +225,22 @@ def format_parameters(params, parse_semicolon=True):
     return parameters
 
 
+def format_json_parameter(param):
+    '''Return JSON dict from JSON formatted param.
+
+    :parameter param  JSON formatted string
+    :return JSON dict
+    '''
+    if not param:
+        return {}
+
+    try:
+        return jsonutils.loads(param)
+    except ValueError:
+        msg = _('Malformed parameter(%s). Use the JSON format.') % param
+        raise exc.CommandError(msg)
+
+
 def get_spec_content(filename):
     with open(filename, 'r') as f:
         try:

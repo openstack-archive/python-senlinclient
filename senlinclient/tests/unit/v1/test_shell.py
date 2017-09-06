@@ -1562,6 +1562,76 @@ class ShellTest(testtools.TestCase):
         mock_show.assert_called_once_with(service, 'node_id')
 
     @mock.patch.object(sh, '_show_node')
+    def test_do_node_adopt(self, mock_show):
+        args = {
+            'identity': 'fake-resoruce-id',
+            'name': 'adopt-node1',
+            'role': 'master',
+            'metadata': ['user=demo'],
+            'snapshot': None,
+            'overrides': '{"networks": [{"network": "fake-net-name"}]}',
+            'type': 'os.nova.server-1.0',
+            'preview': False
+        }
+        args = self._make_args(args)
+        attrs = {
+            'identity': 'fake-resoruce-id',
+            'name': 'adopt-node1',
+            'role': 'master',
+            'metadata': {'user': 'demo'},
+            'overrides': {'networks': [{'network': 'fake-net-name'}]},
+            'snapshot': None,
+            'type': 'os.nova.server-1.0',
+        }
+        service = mock.Mock()
+        node = mock.Mock()
+        node.id = 'node_id'
+        service.adopt_node.return_value = node
+        sh.do_node_adopt(service, args)
+        service.adopt_node.assert_called_once_with(**attrs)
+        mock_show.assert_called_once_with(service, 'node_id')
+
+    @mock.patch.object(utils, 'print_dict')
+    @mock.patch.object(utils, 'nested_dict_formatter')
+    def test_do_node_adopt_preview(self, mock_nest, mock_print):
+        args = {
+            'identity': 'fake-resoruce-id',
+            'snapshot': None,
+            'overrides': '{"networks": [{"network": "fake-net-name"}]}',
+            'type': 'os.nova.server-1.0',
+            'preview': True
+        }
+        args = self._make_args(args)
+        attrs = {
+            'identity': 'fake-resoruce-id',
+            'overrides': {'networks': [{'network': 'fake-net-name'}]},
+            'snapshot': None,
+            'type': 'os.nova.server-1.0',
+        }
+
+        fake_preview = {
+            "node_profile": {
+                "node_preview": {
+                    "properties": {
+                    },
+                    "type": "os.nova.server",
+                    "version": "1.0"}
+            }
+        }
+
+        service = mock.Mock()
+        service.adopt_node.return_value = fake_preview
+        sh.do_node_adopt(service, args)
+        service.adopt_node.assert_called_once_with(True, **attrs)
+
+        formatters = {}
+        formatters['node_preview'] = utils.nested_dict_formatter(
+            ['type', 'version', 'properties'],
+            ['property', 'value'])
+        mock_print.assert_called_once_with(fake_preview['node_profile'],
+                                           formatters=formatters)
+
+    @mock.patch.object(sh, '_show_node')
     def test_do_node_show(self, mock_show):
         service = mock.Mock()
         args = {
