@@ -44,6 +44,15 @@ class Client(object):
         """
         return self.service.get_profile_type(profile_type)
 
+    def list_profile_type_operations(self, profile_type):
+        """Show profile type operations
+
+        Doc link:
+        https://developer.openstack.org/api-ref/clustering/
+        #show-profile-type-details
+        """
+        return self.service.list_profile_type_operations(profile_type)
+
     def profiles(self, **query):
         """List profiles
 

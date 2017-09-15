@@ -93,3 +93,40 @@ class TestProfileTypeShow(TestProfileType):
                                   parsed_args)
         self.assertEqual('Profile Type not found: os.heat.stack-1.1',
                          str(error))
+
+
+class TestProfileTypeOperations(TestProfileType):
+    def setUp(self):
+        super(TestProfileTypeOperations, self).setUp()
+        self.cmd = osc_profile_type.ProfileTypeOperations(self.app, None)
+        fake_profile_type_ops = mock.Mock(
+            {
+                'options': {
+                    'abandon': {
+                        'required': False,
+                        'type': 'Map',
+                        'description': 'Abandon a heat stack node.',
+                        'updatable': False
+                    }
+                }
+            }
+        )
+        self.mock_client.list_profile_type_operations = mock.Mock(
+            return_value=fake_profile_type_ops)
+
+    def test_profile_type_operations(self):
+        arglist = ['os.heat.stack-1.0']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.list_profile_type_operations.assert_called_once_with(
+            'os.heat.stack-1.0')
+
+    def test_profile_type_operations_not_found(self):
+        arglist = ['os.heat.stack-1.1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.mock_client.list_profile_type_operations.side_effect = (
+            sdk_exc.ResourceNotFound())
+        error = self.assertRaises(exc.CommandError, self.cmd.take_action,
+                                  parsed_args)
+        self.assertEqual('Profile Type not found: os.heat.stack-1.1',
+                         str(error))

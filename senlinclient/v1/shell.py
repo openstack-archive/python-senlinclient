@@ -96,6 +96,28 @@ def do_profile_type_show(service, args):
         print(utils.format_output(pt))
 
 
+@utils.arg('type_name', metavar='<TYPE_NAME>',
+           help=_('Profile type to retrieve.'))
+@utils.arg('-F', '--format', metavar='<FORMAT>',
+           choices=utils.supported_formats.keys(),
+           help=_("The template output format, one of: %s.")
+                 % ', '.join(utils.supported_formats.keys()))
+def do_profile_type_ops(service, args):
+    """Show the operations about a policy type."""
+    show_deprecated('senlin profile-type-ops',
+                    'openstack cluster profile type ops')
+    try:
+        ops = service.list_profile_type_operations(args.type_name)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Profile Type not found: %s')
+                               % args.type_name)
+
+    if args.format:
+        print(utils.format_output(ops, format=args.format))
+    else:
+        print(utils.format_output(ops))
+
+
 # PROFILES
 
 @utils.arg('-f', '--filters', metavar='<"KEY1=VALUE1;KEY2=VALUE2...">',
