@@ -343,8 +343,9 @@ class TestClusterDelete(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.delete_cluster.assert_has_calls(
-            [mock.call('cluster1', False), mock.call('cluster2', False),
-             mock.call('cluster3', False)]
+            [mock.call('cluster1', False, False),
+             mock.call('cluster2', False, False),
+             mock.call('cluster3', False, False)]
         )
 
     def test_cluster_delete_force(self):
@@ -352,8 +353,19 @@ class TestClusterDelete(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.delete_cluster.assert_has_calls(
-            [mock.call('cluster1', False), mock.call('cluster2', False),
-             mock.call('cluster3', False)]
+            [mock.call('cluster1', False, False),
+             mock.call('cluster2', False, False),
+             mock.call('cluster3', False, False)]
+        )
+
+    def test_cluster_delete_force_delete(self):
+        arglist = ['cluster1', 'cluster2', 'cluster3', '--force-delete']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        self.mock_client.delete_cluster.assert_has_calls(
+            [mock.call('cluster1', True, False),
+             mock.call('cluster2', True, False),
+             mock.call('cluster3', True, False)]
         )
 
     def test_cluster_delete_not_found(self):
@@ -364,7 +376,7 @@ class TestClusterDelete(TestCluster):
         self.cmd.take_action(parsed_args)
 
         self.mock_client.delete_cluster.assert_has_calls(
-            [mock.call('my_cluster', False)]
+            [mock.call('my_cluster', False, False)]
         )
 
     def test_cluster_delete_one_found_one_not_found(self):
@@ -377,7 +389,8 @@ class TestClusterDelete(TestCluster):
         self.cmd.take_action(parsed_args)
 
         self.mock_client.delete_cluster.assert_has_calls(
-            [mock.call('cluster1', False), mock.call('cluster2', False)]
+            [mock.call('cluster1', False, False),
+             mock.call('cluster2', False, False)]
         )
 
     @mock.patch('sys.stdin', spec=six.StringIO)
@@ -390,8 +403,8 @@ class TestClusterDelete(TestCluster):
         self.cmd.take_action(parsed_args)
 
         mock_stdin.readline.assert_called_with()
-        self.mock_client.delete_cluster.assert_called_with('my_cluster',
-                                                           False)
+        self.mock_client.delete_cluster.assert_called_with(
+            'my_cluster', False, False)
 
     @mock.patch('sys.stdin', spec=six.StringIO)
     def test_cluster_delete_prompt_no(self, mock_stdin):

@@ -631,6 +631,8 @@ def do_cluster_collect(service, args):
 
 @utils.arg('id', metavar='<CLUSTER>', nargs='+',
            help=_('Name or ID of cluster(s) to delete.'))
+@utils.arg('-f', '--force-delete', default=False, action="store_true",
+           help=_('Force to delete cluster(s).'))
 def do_cluster_delete(service, args):
     """Delete the cluster(s)."""
     show_deprecated('senlin cluster-delete', 'openstack cluster delete')
@@ -638,7 +640,7 @@ def do_cluster_delete(service, args):
     result = {}
     for cid in args.id:
         try:
-            cluster = service.delete_cluster(cid, False)
+            cluster = service.delete_cluster(cid, args.force_delete, False)
             result[cid] = ('OK', cluster.location.split('/')[-1])
         except Exception as ex:
             result[cid] = ('ERROR', six.text_type(ex))
@@ -1406,6 +1408,8 @@ def do_node_show(service, args):
 
 @utils.arg('id', metavar='<NODE>', nargs='+',
            help=_('Name or ID of node(s) to delete.'))
+@utils.arg('-f', '--force-delete', default=False, action="store_true",
+           help=_('Force to delete the node(s).'))
 def do_node_delete(service, args):
     """Delete the node(s)."""
     show_deprecated('senlin node-delete', 'openstack cluster node delete')
@@ -1413,7 +1417,7 @@ def do_node_delete(service, args):
     result = {}
     for nid in args.id:
         try:
-            node = service.delete_node(nid, False)
+            node = service.delete_node(nid, args.force_delete, False)
             result[nid] = ('OK', node.location.split('/')[-1])
         except Exception as ex:
             result[nid] = ('ERROR', six.text_type(ex))

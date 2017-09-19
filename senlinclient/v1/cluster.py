@@ -322,12 +322,17 @@ class DeleteCluster(command.Command):
             'cluster',
             metavar='<cluster>',
             nargs='+',
-            help=_('Name or ID of cluster(s) to delete')
+            help=_('Name or ID of cluster(s) to delete.')
+        )
+        parser.add_argument(
+            '--force-delete',
+            action='store_true',
+            help=_('Force to delete cluster(s).')
         )
         parser.add_argument(
             '--force',
             action='store_true',
-            help=_('Skip yes/no prompt (assume yes)')
+            help=_('Skip yes/no prompt (assume yes).')
         )
         return parser
 
@@ -353,7 +358,8 @@ class DeleteCluster(command.Command):
         result = {}
         for cid in parsed_args.cluster:
             try:
-                cluster = senlin_client.delete_cluster(cid, False)
+                cluster = senlin_client.delete_cluster(
+                    cid, parsed_args.force_delete, False)
                 result[cid] = ('OK', cluster.location.split('/')[-1])
             except Exception as ex:
                 result[cid] = ('ERROR', six.text_type(ex))
