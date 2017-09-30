@@ -867,11 +867,19 @@ class ShellTest(testtools.TestCase):
 
     def test_do_cluster_delete(self):
         service = mock.Mock()
-        args = {'id': ['CID']}
+        args = {'id': ['CID'], 'force_delete': False}
         args = self._make_args(args)
         service.delete_cluster = mock.Mock()
         sh.do_cluster_delete(service, args)
-        service.delete_cluster.assert_called_once_with('CID', False)
+        service.delete_cluster.assert_called_once_with('CID', False, False)
+
+    def test_do_cluster_delete_force(self):
+        service = mock.Mock()
+        args = {'id': ['CID'], 'force_delete': True}
+        args = self._make_args(args)
+        service.delete_cluster = mock.Mock()
+        sh.do_cluster_delete(service, args)
+        service.delete_cluster.assert_called_once_with('CID', True, False)
 
     @mock.patch('subprocess.Popen')
     def test__run_script(self, mock_proc):
@@ -1702,12 +1710,21 @@ class ShellTest(testtools.TestCase):
 
     def test_do_node_delete(self):
         service = mock.Mock()
-        args = self._make_args({'id': ['node1']})
+        args = self._make_args({'id': ['node1'], 'force_delete': False})
         service.delete_node = mock.Mock()
 
         sh.do_node_delete(service, args)
 
-        service.delete_node.assert_called_once_with('node1', False)
+        service.delete_node.assert_called_once_with('node1', False, False)
+
+    def test_do_node_delete_force(self):
+        service = mock.Mock()
+        args = self._make_args({'id': ['node1'], 'force_delete': True})
+        service.delete_node = mock.Mock()
+
+        sh.do_node_delete(service, args)
+
+        service.delete_node.assert_called_once_with('node1', True, False)
 
     def test_do_node_check(self):
         service = mock.Mock()

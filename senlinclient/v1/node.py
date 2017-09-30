@@ -293,12 +293,17 @@ class DeleteNode(command.Command):
             'node',
             metavar='<node>',
             nargs='+',
-            help=_('Name or ID of node(s) to delete')
+            help=_('Name or ID of node(s) to delete.')
+        )
+        parser.add_argument(
+            '--force-delete',
+            action='store_true',
+            help=_('Force to delete node(s).')
         )
         parser.add_argument(
             '--force',
             action='store_true',
-            help=_('Skip yes/no prompt (assume yes)')
+            help=_('Skip yes/no prompt (assume yes).')
         )
         return parser
 
@@ -324,7 +329,8 @@ class DeleteNode(command.Command):
         result = {}
         for nid in parsed_args.node:
             try:
-                node = senlin_client.delete_node(nid, False)
+                node = senlin_client.delete_node(
+                    nid, parsed_args.force_delete, False)
                 result[nid] = ('OK', node.location.split('/')[-1])
             except Exception as ex:
                 result[nid] = ('ERROR', six.text_type(ex))
