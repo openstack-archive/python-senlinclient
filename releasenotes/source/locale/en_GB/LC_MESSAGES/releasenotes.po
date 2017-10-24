@@ -1,0 +1,184 @@
+# Andi Chandler <andi@gowling.com>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: Senlin Client Release Notes 1.4.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-15 14:36+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-21 09:10+0000\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>\n"
+"Language-Team: English (United Kingdom)\n"
+"Language: en-GB\n"
+"X-Generator: Zanata 3.9.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "0.5.0"
+msgstr "0.5.0"
+
+msgid "1.0.0"
+msgstr "1.0.0"
+
+msgid "1.1.0"
+msgstr "1.1.0"
+
+msgid "1.2.0"
+msgstr "1.2.0"
+
+msgid ""
+"A new CLI command 'senlin cluster-run' and a new OSC plugin command "
+"'openstack cluster run' have been added. Use the 'help' command to find out "
+"how to use it."
+msgstr ""
+"A new CLI command 'senlin cluster-run' and a new OSC plugin command "
+"'openstack cluster run' have been added. Use the 'help' command to find out "
+"how to use it."
+
+msgid ""
+"A new command 'senlin cluster-collect' and its corresponding OSC plugin "
+"command has been added. This new command can be used to aggregate a specific "
+"property across a cluster."
+msgstr ""
+"A new command 'senlin cluster-collect' and its corresponding OSC plugin "
+"command has been added. This new command can be used to aggregate a specific "
+"property across a cluster."
+
+msgid ""
+"A policy-validate command has been added to senlin command line. OSC support "
+"is added as well."
+msgstr ""
+"A policy-validate command has been added to Senlin command line. OSC support "
+"is added as well."
+
+msgid ""
+"A profile-validate command has been added to command line. It can be used "
+"for validating the spec of a profile without creating it."
+msgstr ""
+"A profile-validate command has been added to command line. It can be used "
+"for validating the spec of a profile without creating it."
+
+msgid "Add \"cluster_id\" colume for openstack cluster event list."
+msgstr "Add \"cluster_id\" column for openstack cluster event list."
+
+msgid "Add filter \"is_enabled\" for policy binding list."
+msgstr "Add filter \"is_enabled\" for policy binding list."
+
+msgid "Added command for node-check and node-recover."
+msgstr "Added command for node-check and node-recover."
+
+msgid "Bug Fixes"
+msgstr "Bug Fixes"
+
+msgid "Current Series Release Notes"
+msgstr "Current Series Release Notes"
+
+msgid "Enhance the parameter check for \"path\" in cluster collect operation."
+msgstr "Enhance the parameter check for \"path\" in cluster collect operation."
+
+msgid "Fix enabled option for senlin cluster-policy-detach command."
+msgstr "Fix enabled option for Senlin cluster-policy-detach command."
+
+msgid "Fix incorrect description of profile/policy validate operations."
+msgstr "Fix incorrect description of profile/policy validate operations."
+
+msgid "Fix metadata purging."
+msgstr "Fix metadata purging."
+
+msgid "Fix policy binding operations including attach, detach and update."
+msgstr "Fix policy binding operations including attach, detach and update."
+
+msgid ""
+"Fix project_id and user_id show bug for profile/policy validate and cluster "
+"policy show operations."
+msgstr ""
+"Fix project_id and user_id show bug for profile/policy validate and cluster "
+"policy show operations."
+
+msgid "Fix resource list operations for openstackclient."
+msgstr "Fix resource list operations for openstackclient."
+
+msgid "Fix resource update operations."
+msgstr "Fix resource update operations."
+
+msgid "Help message for metadata clean operations."
+msgstr "Help message for metadata clean operations."
+
+msgid "New Features"
+msgstr "New Features"
+
+msgid "Newton Series Release Notes"
+msgstr "Newton Series Release Notes"
+
+msgid ""
+"OSC commands for cluster scaling are changed from 'cluster scale in' and "
+"'cluster scale out' to 'cluster shrink' and 'cluster expand' respectively."
+msgstr ""
+"OSC commands for cluster scaling are changed from 'cluster scale in' and "
+"'cluster scale out' to 'cluster shrink' and 'cluster expand' respectively."
+
+msgid "Ocata Series Release Notes"
+msgstr "Ocata Series Release Notes"
+
+msgid "Other Notes"
+msgstr "Other Notes"
+
+msgid "Pike Series Release Notes"
+msgstr "Pike Series Release Notes"
+
+msgid "Remove unsupported sort key \"user\" for event-list."
+msgstr "Remove unsupported sort key \"user\" for event-list."
+
+msgid "Senlin Client Release Notes"
+msgstr "Senlin Client Release Notes"
+
+msgid "Support \"global_project\" arguments for action-list."
+msgstr "Support \"global_project\" arguments for action-list."
+
+msgid "Support node replace operation."
+msgstr "Support node replace operation."
+
+msgid ""
+"The 'senlin' CLI will be removed in April 2017. This message is now "
+"explicitly printed when senlin CLI commands are invoked."
+msgstr ""
+"The 'senlin' CLI will be removed in April 2017. This message is now "
+"explicitly printed when Senlin CLI commands are invoked."
+
+msgid ""
+"The cluster policy list command was broken by new SDK changes and then "
+"fixed. The 'enabled' field is now renamed to 'is_enabled'."
+msgstr ""
+"The cluster policy list command was broken by new SDK changes and then "
+"fixed. The 'enabled' field is now renamed to 'is_enabled'."
+
+msgid ""
+"The receiver creation command (both senlin CLI and OSC plugin command) now "
+"allow 'cluster' and 'action' to be left unspecified if the receiver type is "
+"not 'webhook'."
+msgstr ""
+"The receiver creation command (both Senlin CLI and OSC plugin command) now "
+"allow 'cluster' and 'action' to be left unspecified if the receiver type is "
+"not 'webhook'."
+
+msgid ""
+"The senlin CLI 'node-delete' and the OSC plugin command 'cluster node "
+"delete' now outputs the action IDs when successful. Error messages are "
+"printed when appropriate."
+msgstr ""
+"The Senlin CLI 'node-delete' and the OSC plugin command 'cluster node "
+"delete' now outputs the action IDs when successful. Error messages are "
+"printed when appropriate."
+
+msgid ""
+"The senlinclient now supports API micro-versioning. Current supported "
+"version is 'clustering 1.2'."
+msgstr ""
+"The senlinclient now supports API micro-versioning. Current supported "
+"version is 'clustering 1.2'."
+
+msgid "The support to python 3.5 has been verified and gated."
+msgstr "The support to python 3.5 has been verified and gated."
+
+msgid "Upgrade Notes"
+msgstr "Upgrade Notes"
