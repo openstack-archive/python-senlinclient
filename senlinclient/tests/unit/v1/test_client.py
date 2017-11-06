@@ -201,19 +201,19 @@ class ClientTest(testtools.TestCase):
         mock_conn.return_value = self.conn
         sc = client.Client()
 
-        res = sc.delete_cluster('FAKE_ID')
+        res = sc.delete_cluster('FAKE_ID', True)
         self.assertEqual(self.service.delete_cluster.return_value, res)
         self.service.delete_cluster.assert_called_once_with(
-            'FAKE_ID', True)
+            'FAKE_ID', True, True)
 
     def test_delete_cluster_ignore_missing(self, mock_conn):
         mock_conn.return_value = self.conn
         sc = client.Client()
 
-        res = sc.delete_cluster('FAKE_ID', False)
+        res = sc.delete_cluster('FAKE_ID', True, False)
         self.assertEqual(self.service.delete_cluster.return_value, res)
         self.service.delete_cluster.assert_called_once_with(
-            'FAKE_ID', False)
+            'FAKE_ID', True, False)
 
     def test_cluster_add_nodes(self, mock_conn):
         mock_conn.return_value = self.conn
@@ -369,10 +369,10 @@ class ClientTest(testtools.TestCase):
         mock_conn.return_value = self.conn
         sc = client.Client()
 
-        res = sc.delete_node('FAKE_ID')
+        res = sc.delete_node('FAKE_ID', True)
         self.assertEqual(self.service.delete_node.return_value, res)
         self.service.delete_node.assert_called_once_with(
-            'FAKE_ID', True)
+            'FAKE_ID', True, True)
 
     def test_check_node(self, mock_conn):
         mock_conn.return_value = self.conn
@@ -395,10 +395,10 @@ class ClientTest(testtools.TestCase):
         mock_conn.return_value = self.conn
         sc = client.Client()
 
-        res = sc.delete_node('FAKE_ID', False)
+        res = sc.delete_node('FAKE_ID', True, False)
         self.assertEqual(self.service.delete_node.return_value, res)
         self.service.delete_node.assert_called_once_with(
-            'FAKE_ID', False)
+            'FAKE_ID', True, False)
 
     def test_receivers(self, mock_conn):
         mock_conn.return_value = self.conn
