@@ -7,7 +7,7 @@
 .. ###################################################
 .. ##
 .. This file is tool-generated. Do not edit manually.
-.. http://docs.openstack.org/contributor-guide/
+.. https://docs.openstack.org/doc-contrib-guide/
 .. doc-tools/cli-reference.html
 ..                                                  ##
 .. ##  WARNING  ######################################
