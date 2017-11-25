@@ -198,13 +198,14 @@ class Client(object):
         """
         return self.service.update_cluster(cluster, **attrs)
 
-    def delete_cluster(self, cluster, ignore_missing=True):
+    def delete_cluster(self, cluster, force_delete=False, ignore_missing=True):
         """Delete cluster
 
         Doc link:
         https://developer.openstack.org/api-ref/clustering/#delete-cluster
         """
-        return self.service.delete_cluster(cluster, ignore_missing)
+        return self.service.delete_cluster(cluster, force_delete,
+                                           ignore_missing)
 
     def cluster_add_nodes(self, cluster, nodes):
         """Add a node to cluster
@@ -380,13 +381,13 @@ class Client(object):
         """
         return self.service.update_node(node, **attrs)
 
-    def delete_node(self, node, ignore_missing=True):
+    def delete_node(self, node, force_delete=False, ignore_missing=True):
         """Delete node
 
         Doc link:
         https://developer.openstack.org/api-ref/clustering/#delete-node
         """
-        return self.service.delete_node(node, ignore_missing)
+        return self.service.delete_node(node, force_delete, ignore_missing)
 
     def check_node(self, node, **params):
         """Check node's health status
