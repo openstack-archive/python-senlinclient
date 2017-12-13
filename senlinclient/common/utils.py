@@ -12,59 +12,15 @@
 
 from __future__ import print_function
 
-import os
-import sys
 
 from heatclient.common import template_utils
 from oslo_serialization import jsonutils
-from oslo_utils import encodeutils
-from oslo_utils import importutils
 import prettytable
 import six
 import yaml
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
-
-
-supported_formats = {
-    "json": lambda x: jsonutils.dumps(x, indent=2),
-    "yaml": lambda x: yaml.safe_dump(x, default_flow_style=False)
-}
-
-
-def arg(*args, **kwargs):
-    """Decorator for CLI args."""
-
-    def _decorator(func):
-        if not hasattr(func, 'arguments'):
-            func.arguments = []
-
-        if (args, kwargs) not in func.arguments:
-            func.arguments.insert(0, (args, kwargs))
-
-        return func
-
-    return _decorator
-
-
-def env(*args, **kwargs):
-    """Returns the first environment variable set.
-
-    If all are empty, defaults to '' or keyword arg `default`.
-    """
-    for arg in args:
-        value = os.environ.get(arg)
-        if value:
-            return value
-    return kwargs.get('default', '')
-
-
-def import_versioned_module(version, submodule=None):
-    module = 'senlinclient.v%s' % version
-    if submodule:
-        module = '.'.join((module, submodule))
-    return importutils.import_module(module)
 
 
 def format_nested_dict(d, fields, column_names):
@@ -97,95 +53,6 @@ def json_formatter(js):
 
 def list_formatter(record):
     return '\n'.join(record or [])
-
-
-def _print_list(objs, fields, formatters=None, sortby_index=0,
-                mixed_case_fields=None, field_labels=None):
-    """Print a list of objects as a table, one row per object.
-
-    :param objs: iterable of :class:`Resource`
-    :param fields: attributes that correspond to columns, in order
-    :param formatters: `dict` of callables for field formatting
-    :param sortby_index: index of the field for sorting table rows
-    :param mixed_case_fields: fields corresponding to object attributes that
-        have mixed case names (e.g., 'serverId')
-    :param field_labels: Labels to use in the heading of the table, default to
-        fields.
-    """
-    formatters = formatters or {}
-    mixed_case_fields = mixed_case_fields or []
-    field_labels = field_labels or fields
-    if len(field_labels) != len(fields):
-        raise ValueError(_("Field labels list %(labels)s has different number "
-                           "of elements than fields list %(fields)s"),
-                         {'labels': field_labels, 'fields': fields})
-
-    if sortby_index is None:
-        kwargs = {}
-    else:
-        kwargs = {'sortby': field_labels[sortby_index]}
-    pt = prettytable.PrettyTable(field_labels)
-    pt.align = 'l'
-
-    for o in objs:
-        row = []
-        for field in fields:
-            if field in formatters:
-                data = formatters[field](o)
-            else:
-                if field in mixed_case_fields:
-                    field_name = field.replace(' ', '_')
-                else:
-                    field_name = field.lower().replace(' ', '_')
-                data = getattr(o, field_name, '')
-            if data is None:
-                data = '-'
-            row.append(data)
-        pt.add_row(row)
-
-    if six.PY3:
-        return encodeutils.safe_encode(pt.get_string(**kwargs)).decode()
-    else:
-        return encodeutils.safe_encode(pt.get_string(**kwargs))
-
-
-def print_list(objs, fields, formatters=None, sortby_index=0,
-               mixed_case_fields=None, field_labels=None):
-    # This wrapper is needed because sdk may yield a generator that will
-    # escape the exception catching previously
-    if not objs:
-        objs = []
-
-    try:
-        res = _print_list(objs, fields, formatters=formatters,
-                          sortby_index=sortby_index,
-                          mixed_case_fields=mixed_case_fields,
-                          field_labels=field_labels)
-        print(res)
-    except Exception as ex:
-        exc.parse_exception(ex)
-
-
-def print_dict(d, formatters=None):
-    formatters = formatters or {}
-    pt = prettytable.PrettyTable(['Property', 'Value'],
-                                 caching=False, print_empty=False)
-    pt.align = 'l'
-
-    for field in d.keys():
-        if field in formatters:
-            data = formatters[field](d[field])
-        else:
-            data = d[field]
-        if data is None:
-            data = '-'
-        pt.add_row([field, data])
-
-    content = pt.get_string(sortby='Property')
-    if six.PY3:
-        print(encodeutils.safe_encode(content).decode())
-    else:
-        print(encodeutils.safe_encode(content))
 
 
 def print_action_result(rid, res):
@@ -281,18 +148,3 @@ def process_stack_spec(spec):
     }
 
     return new_spec
-
-
-def format_output(output, format='yaml'):
-    fmt = format.lower()
-    try:
-        return supported_formats[fmt](output)
-    except KeyError:
-        raise exc.HTTPUnsupported(_('The format(%s) is unsupported.')
-                                  % fmt)
-
-
-def exit(msg=''):
-    if msg:
-        print(msg, file=sys.stderr)
-    sys.exit(1)
