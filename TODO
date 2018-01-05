@@ -1,8 +1,6 @@
 High Priority
 =============
 
-  - Support action_create
-  - Support action_delete
   - Support action_cancel
   - Add support to HTTPS connection
     * This means a cert and key option using plain HTTP package, while
