@@ -204,7 +204,7 @@ class ClientTest(testtools.TestCase):
         res = sc.delete_cluster('FAKE_ID', True)
         self.assertEqual(self.service.delete_cluster.return_value, res)
         self.service.delete_cluster.assert_called_once_with(
-            'FAKE_ID', True, True)
+            'FAKE_ID', True, False)
 
     def test_delete_cluster_ignore_missing(self, mock_conn):
         mock_conn.return_value = self.conn
@@ -372,7 +372,7 @@ class ClientTest(testtools.TestCase):
         res = sc.delete_node('FAKE_ID', True)
         self.assertEqual(self.service.delete_node.return_value, res)
         self.service.delete_node.assert_called_once_with(
-            'FAKE_ID', True, True)
+            'FAKE_ID', True, False)
 
     def test_check_node(self, mock_conn):
         mock_conn.return_value = self.conn

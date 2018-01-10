@@ -359,9 +359,9 @@ class TestNodeDelete(TestNode):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.delete_node.assert_has_calls(
-            [mock.call('node1', True, False),
-             mock.call('node2', True, False),
-             mock.call('node3', True, False)]
+            [mock.call('node1', False, True),
+             mock.call('node2', False, True),
+             mock.call('node3', False, True)]
         )
 
     def test_node_delete_not_found(self):

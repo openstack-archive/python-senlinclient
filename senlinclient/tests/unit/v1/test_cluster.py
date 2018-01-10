@@ -363,9 +363,9 @@ class TestClusterDelete(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.delete_cluster.assert_has_calls(
-            [mock.call('cluster1', True, False),
-             mock.call('cluster2', True, False),
-             mock.call('cluster3', True, False)]
+            [mock.call('cluster1', False, True),
+             mock.call('cluster2', False, True),
+             mock.call('cluster3', False, True)]
         )
 
     def test_cluster_delete_not_found(self):

@@ -359,7 +359,7 @@ class DeleteCluster(command.Command):
         for cid in parsed_args.cluster:
             try:
                 cluster = senlin_client.delete_cluster(
-                    cid, parsed_args.force_delete, False)
+                    cid, False, parsed_args.force_delete)
                 result[cid] = ('OK', cluster.location.split('/')[-1])
             except Exception as ex:
                 result[cid] = ('ERROR', six.text_type(ex))
