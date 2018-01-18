@@ -52,13 +52,13 @@
           fi
 
           function pre_test_hook {
-              cd /opt/stack/new/python-senlinclient/senlinclient/tests/functional/
+              cd /opt/stack/new/python-senlinclient/senlinclient/tests/functional/hooks/
               ./pre_test_hook.sh
           }
           export -f pre_test_hook
 
           function post_test_hook {
-              cd /opt/stack/new/python-senlinclient/senlinclient/tests/functional/
+              cd /opt/stack/new/python-senlinclient/senlinclient/tests/functional/hooks/
               ./post_test_hook.sh
           }
           export -f post_test_hook
