@@ -30,6 +30,10 @@ def make_client(instance):
     """Returns a clustering proxy"""
     prof = profile.Profile()
     prof.set_api_version(API_NAME, CURRENT_API_VERSION)
+    if instance.region_name:
+        prof.set_region('clustering', instance.region_name)
+    if instance.interface:
+        prof.set_interface('clustering', instance.interface)
 
     conn = connection.Connection(profile=prof,
                                  authenticator=instance.session.auth)
