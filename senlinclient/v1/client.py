@@ -9,15 +9,22 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from openstack import exceptions
 
-from senlinclient.common import sdk
+from senlinclient.common import exc
+from senlinclient import plugin
 
 
 class Client(object):
-
     def __init__(self, prof=None, user_agent=None, **kwargs):
-        self.conn = sdk.create_connection(prof=prof, user_agent=user_agent,
-                                          **kwargs)
+        try:
+            conn = plugin.create_connection(prof=prof,
+                                            user_agent=user_agent,
+                                            **kwargs)
+        except exceptions.HttpException as ex:
+            exc.parse_exception(ex.details)
+
+        self.conn = conn
         self.service = self.conn.cluster
 
     ######################################################################

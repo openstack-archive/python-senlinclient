@@ -13,11 +13,11 @@
 import mock
 import testtools
 
-from senlinclient.common import sdk
+from senlinclient import plugin
 from senlinclient.v1 import client
 
 
-@mock.patch.object(sdk, 'create_connection')
+@mock.patch.object(plugin, 'create_connection')
 class ClientTest(testtools.TestCase):
 
     def setUp(self):
