@@ -15,10 +15,10 @@ from openstack import connection as sdk_connection
 from openstack import profile as sdk_profile
 import testtools
 
-from senlinclient.common import sdk
+from senlinclient import plugin
 
 
-class TestSdk(testtools.TestCase):
+class TestPlugin(testtools.TestCase):
 
     @mock.patch.object(sdk_connection, 'Connection')
     def test_create_connection_with_profile(self, mock_connection):
@@ -30,7 +30,7 @@ class TestSdk(testtools.TestCase):
             'password': 'abc',
             'auth_url': 'test_url'
         }
-        res = sdk.create_connection(mock_prof, **kwargs)
+        res = plugin.create_connection(mock_prof, **kwargs)
         mock_connection.assert_called_once_with(profile=mock_prof,
                                                 user_agent=None,
                                                 user_id='123',
@@ -53,7 +53,7 @@ class TestSdk(testtools.TestCase):
             'password': 'abc',
             'auth_url': 'test_url'
         }
-        res = sdk.create_connection(**kwargs)
+        res = plugin.create_connection(**kwargs)
 
         mock_prof.set_interface.assert_called_once_with('clustering', 'public')
         mock_prof.set_region.assert_called_once_with('clustering', 'RegionOne')

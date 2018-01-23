@@ -26,17 +26,31 @@ API_NAME = 'clustering'
 CURRENT_API_VERSION = '1.8'
 
 
+def create_connection(prof=None, **kwargs):
+    interface = kwargs.pop('interface', None)
+    region_name = kwargs.pop('region_name', None)
+    user_agent = kwargs.pop('user_agent', None)
+
+    if not prof:
+        prof = profile.Profile()
+    prof.set_api_version(API_NAME, CURRENT_API_VERSION)
+
+    if interface:
+        prof.set_interface(API_NAME, interface)
+    if region_name:
+        prof.set_region(API_NAME, region_name)
+
+    return connection.Connection(profile=prof, user_agent=user_agent, **kwargs)
+
+
 def make_client(instance):
     """Returns a clustering proxy"""
-    prof = profile.Profile()
-    prof.set_api_version(API_NAME, CURRENT_API_VERSION)
-    if instance.region_name:
-        prof.set_region('clustering', instance.region_name)
-    if instance.interface:
-        prof.set_interface('clustering', instance.interface)
+    conn = create_connection(
+        region_name=instance.region_name,
+        interface=instance.interface,
+        authenticator=instance.session.auth
+    )
 
-    conn = connection.Connection(profile=prof,
-                                 authenticator=instance.session.auth)
     LOG.debug('Connection: %s', conn)
     LOG.debug('Clustering client initialized using OpenStackSDK: %s',
               conn.cluster)
