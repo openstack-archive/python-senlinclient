@@ -1,0 +1,17 @@
+- job:
+    name: senlinclient-dsvm-functional
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/senlinclient-dsvm-functional/run.yaml
+    post-run: playbooks/legacy/senlinclient-dsvm-functional/post.yaml
+    timeout: 7200
+    required-projects:
+      - openstack-infra/devstack-gate
+      - openstack/python-senlinclient
+      - openstack/senlin
+
+- project:
+    name: openstack/python-senlinclient
+    experimental:
+      jobs:
+        - senlinclient-dsvm-functional:
+            voting: false
