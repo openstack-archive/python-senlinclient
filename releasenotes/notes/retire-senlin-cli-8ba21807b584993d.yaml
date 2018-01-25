@@ -1,0 +1,4 @@
+---
+upgrade:
+  - The `senlin` command line support is completely dropped. Users are expected
+    to use `openstack cluster` commands to interact with Senlin service.
