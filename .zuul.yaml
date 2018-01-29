@@ -10,7 +10,6 @@
       - openstack/senlin
 
 - project:
-    name: openstack/python-senlinclient
     experimental:
       jobs:
         - senlinclient-dsvm-functional:
