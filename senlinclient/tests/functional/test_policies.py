@@ -21,3 +21,20 @@ class PolicyTest(base.OpenStackClientTestBase):
         policy_list = self.parser.listing(result)
         self.assertTableStruct(policy_list, ['id', 'name', 'type',
                                              'created_at'])
+
+    def test_policy_create(self):
+        name = self.name_generate()
+        result = self.policy_create(name, 'deletion_policy.yaml')
+        self.assertEqual(result['name'], name)
+        self.addCleanup(self.policy_delete, result['id'])
+
+    def test_policy_update(self):
+        old_name = self.name_generate()
+        pc1 = self.policy_create(old_name, 'deletion_policy.yaml')
+        new_name = self.name_generate()
+        cmd = ('cluster policy update --name %s %s' % (new_name, pc1['id']))
+        result = self.openstack(cmd)
+        pc2 = self.show_to_dict(result)
+        self.assertEqual(pc2['name'], new_name)
+        self.assertNotEqual(pc1['name'], pc2['name'])
+        self.addCleanup(self.policy_delete, pc2['id'])

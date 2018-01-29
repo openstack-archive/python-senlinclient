@@ -21,3 +21,20 @@ class ProfileTest(base.OpenStackClientTestBase):
         profile_list = self.parser.listing(result)
         self.assertTableStruct(profile_list, ['id', 'name', 'type',
                                               'created_at'])
+
+    def test_pofile_create(self):
+        name = self.name_generate()
+        result = self.profile_create(name, 'cirros_basic.yaml')
+        self.assertEqual(result['name'], name)
+        self.addCleanup(self.profile_delete, result['id'])
+
+    def test_profile_update(self):
+        old_name = self.name_generate()
+        pf1 = self.profile_create(old_name, 'cirros_basic.yaml')
+        new_name = self.name_generate()
+        cmd = ('cluster profile update --name %s %s' % (new_name, pf1['id']))
+        result = self.openstack(cmd)
+        pf2 = self.show_to_dict(result)
+        self.assertEqual(pf2['name'], new_name)
+        self.assertNotEqual(pf1['name'], pf2['name'])
+        self.addCleanup(self.profile_delete, pf2['id'])
