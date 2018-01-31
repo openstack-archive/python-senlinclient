@@ -15,12 +15,20 @@ from __future__ import print_function
 
 from heatclient.common import template_utils
 from oslo_serialization import jsonutils
+from oslo_utils import importutils
 import prettytable
 import six
 import yaml
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
+
+
+def import_versioned_module(version, submodule=None):
+    module = 'senlinclient.v%s' % version
+    if submodule:
+        module = '.'.join((module, submodule))
+        return importutils.import_module(module)
 
 
 def format_nested_dict(d, fields, column_names):
