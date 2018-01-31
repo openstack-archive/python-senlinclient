@@ -252,9 +252,10 @@ class UpdateReceiver(command.ShowOne):
         senlin_client = self.app.client_manager.clustering
         params = {
             'name': parsed_args.name,
-            'action': parsed_args.action,
             'params': senlin_utils.format_parameters(parsed_args.params)
         }
+        if parsed_args.action:
+            params['action'] = parsed_args.action
 
         receiver = senlin_client.find_receiver(parsed_args.receiver)
         if receiver is None:
