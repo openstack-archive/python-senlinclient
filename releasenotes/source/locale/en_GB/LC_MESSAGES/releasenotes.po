@@ -1,13 +1,14 @@
 # Andi Chandler <andi@gowling.com>, 2017. #zanata
+# Andi Chandler <andi@gowling.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: Senlin Client Release Notes 1.4.1\n"
+"Project-Id-Version: Senlin Client Release Notes\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-15 14:36+0000\n"
+"POT-Creation-Date: 2018-02-07 07:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-10-21 09:10+0000\n"
+"PO-Revision-Date: 2018-02-09 10:54+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom)\n"
 "Language: en-GB\n"
@@ -25,6 +26,9 @@ msgstr "1.1.0"
 
 msgid "1.2.0"
 msgstr "1.2.0"
+
+msgid "1.6.0"
+msgstr "1.6.0"
 
 msgid ""
 "A new CLI command 'senlin cluster-run' and a new OSC plugin command "
@@ -101,6 +105,13 @@ msgstr "Fix resource list operations for openstackclient."
 msgid "Fix resource update operations."
 msgstr "Fix resource update operations."
 
+msgid "Fixed a bug that force deletion of cluster or node was not working."
+msgstr "Fixed a bug that force deletion of cluster or node was not working."
+
+msgid "Fixed a bug that region name is not respected when connecting to cloud."
+msgstr ""
+"Fixed a bug that region name is not respected when connecting to cloud."
+
 msgid "Help message for metadata clean operations."
 msgstr "Help message for metadata clean operations."
 
@@ -126,6 +137,9 @@ msgstr "Other Notes"
 msgid "Pike Series Release Notes"
 msgstr "Pike Series Release Notes"
 
+msgid "Queens Series Release Notes"
+msgstr "Queens Series Release Notes"
+
 msgid "Remove unsupported sort key \"user\" for event-list."
 msgstr "Remove unsupported sort key \"user\" for event-list."
 
@@ -144,6 +158,13 @@ msgid ""
 msgstr ""
 "The 'senlin' CLI will be removed in April 2017. This message is now "
 "explicitly printed when Senlin CLI commands are invoked."
+
+msgid ""
+"The `senlin` command line support is completely dropped. Users are expected "
+"to use `openstack cluster` commands to interact with Senlin service."
+msgstr ""
+"The `senlin` command line support is completely dropped. Users are expected "
+"to use `openstack cluster` commands to interact with Senlin service."
 
 msgid ""
 "The cluster policy list command was broken by new SDK changes and then "
