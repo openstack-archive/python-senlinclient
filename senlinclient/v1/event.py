@@ -111,7 +111,7 @@ class ListEvent(command.Lister):
 
 
 class ShowEvent(command.ShowOne):
-    """Describe the event."""
+    """Show the event details."""
 
     log = logging.getLogger(__name__ + ".ShowEvent")
 

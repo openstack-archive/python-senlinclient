@@ -30,7 +30,7 @@ from senlinclient.common import utils as senlin_utils
 
 
 class ListCluster(command.Lister):
-    """List the user's clusters."""
+    """List clusters."""
 
     log = logging.getLogger(__name__ + ".ListCluster")
 

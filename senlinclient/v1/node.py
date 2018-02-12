@@ -27,7 +27,7 @@ from senlinclient.common import utils as senlin_utils
 
 
 class ListNode(command.Lister):
-    """Show list of nodes."""
+    """List nodes."""
 
     log = logging.getLogger(__name__ + ".ListNode")
 
