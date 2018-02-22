@@ -38,13 +38,17 @@ class PolicyTypeList(command.Lister):
         columns = ['name', 'version', 'support_status']
         results = []
         for t in types:
-            for v in t.support_status.keys():
-                st_list = '\n'.join([
-                    ' since '.join((item['status'], item['since']))
-                    for item in t.support_status[v]
-                ])
+            if t.support_status:
+                for v in t.support_status.keys():
+                    st_list = '\n'.join([
+                        ' since '.join((item['status'], item['since']))
+                        for item in t.support_status[v]
+                    ])
 
-                results.append((t.name, v, st_list))
+                    results.append((t.name, v, st_list))
+            else:
+                columns = ['name', 'version']
+                results.append((t.name.split('-')[0], t.name.split('-')[1]))
 
         return columns, sorted(results)
 

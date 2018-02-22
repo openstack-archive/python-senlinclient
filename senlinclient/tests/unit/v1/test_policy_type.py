@@ -55,11 +55,18 @@ class TestPolicyTypeList(TestPolicyType):
     def test_policy_type_list(self):
         arglist = []
         parsed_args = self.check_parser(self.cmd, arglist, [])
+        expected_columns = self.expected_columns
+        expected_rows = self.expected_rows
         columns, rows = self.cmd.take_action(parsed_args)
+        if len(columns) == 2:
+            expected_columns = ['name', 'version']
+            expected_rows = [
+                ('CCC', '1.0')
+            ]
 
         self.mock_client.policy_types.assert_called_with()
-        self.assertEqual(self.expected_columns, columns)
-        self.assertEqual(self.expected_rows, rows)
+        self.assertEqual(expected_columns, columns)
+        self.assertEqual(expected_rows, rows)
 
 
 class TestPolicyTypeShow(TestPolicyType):
