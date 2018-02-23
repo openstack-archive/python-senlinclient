@@ -59,8 +59,9 @@ class ProfileTypeShow(format_utils.YamlFormat):
         parser = super(ProfileTypeShow, self).get_parser(prog_name)
         parser.add_argument(
             'type_name',
-            metavar='<type-name>',
-            help=_('Profile type to retrieve')
+            metavar='<name-version>',
+            help=_('Profile type name and version to retrieve '
+                   '(e.g. os.nova.server-1.0)')
         )
         return parser
 
