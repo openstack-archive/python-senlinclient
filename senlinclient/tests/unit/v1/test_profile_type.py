@@ -55,6 +55,11 @@ class TestProfileTypeList(TestProfileType):
         expected_columns = ['name', 'version', 'support_status']
 
         columns, rows = self.cmd.take_action(parsed_args)
+        if len(columns) == 2:
+            expected_columns = ['name', 'version']
+            expected_rows = [
+                ('CCC', '1.0')
+            ]
 
         self.mock_client.profile_types.assert_called_with()
         self.assertEqual(expected_columns, columns)
