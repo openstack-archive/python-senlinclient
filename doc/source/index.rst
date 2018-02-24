@@ -8,6 +8,8 @@ Contents:
    :maxdepth: 2
 
    install/index
+   contributor/index
+   cli/index
 
 
 Indices and tables
