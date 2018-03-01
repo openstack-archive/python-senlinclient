@@ -12,10 +12,12 @@
 
 import os
 import six
+import time
 
 from oslo_utils import uuidutils
 from tempest.lib.cli import base
 from tempest.lib.cli import output_parser
+from tempest.lib import exceptions as tempest_lib_exc
 
 
 class OpenStackClientTestBase(base.ClientTestBase):
@@ -63,8 +65,56 @@ class OpenStackClientTestBase(base.ClientTestBase):
         return os.path.join(os.path.dirname(os.path.realpath(__file__)),
                             'policies/%s' % policy_name)
 
-    def policy_create(self, name, profile):
-        pf = self._get_policy_path(profile)
+    def wait_for_status(self, name, status, check_type, timeout=60,
+                        poll_interval=5):
+        """Wait until name reaches given status.
+
+        :param name: node or cluster name
+        :param status: expected status of node or cluster
+        :param timeout: timeout in seconds
+        :param poll_interval: poll interval in seconds
+        """
+        if check_type == 'node':
+            cmd = ('cluster node show %s' % name)
+        elif check_type == 'cluster':
+            cmd = ('cluster show %s' % name)
+        time.sleep(poll_interval)
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            check_status = self.openstack(cmd)
+            result = self.show_to_dict(check_status)
+            if result['status'] == status:
+                break
+            time.sleep(poll_interval)
+        else:
+            message = ("%s %s did not reach status %s after %d s"
+                       % (check_type, name, status, timeout))
+            raise tempest_lib_exc.TimeoutException(message)
+
+    def wait_for_delete(self, name, check_type, timeout=60,
+                        poll_interval=5):
+        """Wait until delete finish"""
+        if check_type == 'node':
+            cmd = ('cluster node show %s' % name)
+        if check_type == 'cluster':
+            cmd = ('cluster show %s' % name)
+        time.sleep(poll_interval)
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                self.openstack(cmd)
+            except tempest_lib_exc.CommandFailed as ex:
+                if "No Node found" or "No Cluster found" in ex.stderr:
+                    break
+            time.sleep(poll_interval)
+        else:
+
+            message = ("failed in deleting %s %s after %d seconds"
+                       % (check_type, name, timeout))
+            raise tempest_lib_exc.TimeoutException(message)
+
+    def policy_create(self, name, policy):
+        pf = self._get_policy_path(policy)
         cmd = ('cluster policy create --spec-file %s %s'
                % (pf, name))
         policy_raw = self.openstack(cmd)
@@ -75,8 +125,8 @@ class OpenStackClientTestBase(base.ClientTestBase):
         cmd = ('cluster policy delete %s --force' % name_or_id)
         self.openstack(cmd)
 
-    def profile_create(self, name, policy):
-        pf = self._get_profile_path(policy)
+    def profile_create(self, name, profile='cirros_basic.yaml'):
+        pf = self._get_profile_path(profile)
         cmd = ('cluster profile create --spec-file %s %s'
                % (pf, name))
         profile_raw = self.openstack(cmd)
@@ -86,3 +136,16 @@ class OpenStackClientTestBase(base.ClientTestBase):
     def profile_delete(self, name_or_id):
         cmd = ('cluster profile delete %s --force' % name_or_id)
         self.openstack(cmd)
+
+    def node_create(self, profile, name):
+        cmd = ('cluster node create --profile %s %s'
+               % (profile, name))
+        node_raw = self.openstack(cmd)
+        result = self.show_to_dict(node_raw)
+        self.wait_for_status(name, 'ACTIVE', 'node', 120)
+        return result
+
+    def node_delete(self, name_or_id):
+        cmd = ('cluster node delete %s --force' % name_or_id)
+        self.openstack(cmd)
+        self.wait_for_delete(name_or_id, 'node', 120)

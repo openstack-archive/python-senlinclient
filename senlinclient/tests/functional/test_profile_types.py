@@ -22,11 +22,13 @@ class ProfileTypeTest(base.OpenStackClientTestBase):
     def test_profile_type_list(self):
         result = self.openstack('cluster profile type list')
         profile_type = self.parser.listing(result)
-        self.assertTableStruct(profile_type, ['name', 'version',
-                                              'support_status'])
+        columns = ['name', 'version']
+        if any('support_status' in i for i in profile_type):
+            columns.append('support_status')
+        self.assertTableStruct(profile_type, columns)
 
     def test_profile_list_debug(self):
-        self.openstack('cluster profile list', flags='--debug')
+        self.openstack('cluster profile type list', flags='--debug')
 
     def test_profile_type_show(self):
         params = ['container.dockerinc.docker-1.0',

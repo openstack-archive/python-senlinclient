@@ -19,8 +19,10 @@ class PolicyTypeTest(base.OpenStackClientTestBase):
     def test_policy_type_list(self):
         result = self.openstack('cluster policy type list')
         policy_type = self.parser.listing(result)
-        self.assertTableStruct(policy_type, ['name', 'version',
-                                             'support_status'])
+        columns = ['name', 'version']
+        if any('support_status' in i for i in policy_type):
+            columns.append('support_status')
+        self.assertTableStruct(policy_type, columns)
 
     def test_policy_type_show(self):
         params = ['senlin.policy.affinity-1.0',
