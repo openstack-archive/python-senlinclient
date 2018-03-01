@@ -1047,7 +1047,6 @@ class ClusterRun(command.Command):
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_("Cluster not found: %s") % args.cluster)
 
-        script = None
         try:
             f = open(args.script, 'r')
             script = f.read()
