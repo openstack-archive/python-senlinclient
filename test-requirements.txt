@@ -11,7 +11,7 @@ mock>=2.0.0 # BSD
 openstackdocstheme>=1.18.1 # Apache-2.0
 python-openstackclient>=3.12.0 # Apache-2.0
 oslotest>=3.2.0 # Apache-2.0
-setuptools!=24.0.0,!=34.0.0,!=34.0.1,!=34.0.2,!=34.0.3,!=34.1.0,!=34.1.1,!=34.2.0,!=34.3.0,!=34.3.1,!=34.3.2,!=36.2.0,>=16.0 # PSF/ZPL
+setuptools!=24.0.0,!=34.0.0,!=34.0.1,!=34.0.2,!=34.0.3,!=34.1.0,!=34.1.1,!=34.2.0,!=34.3.0,!=34.3.1,!=34.3.2,!=36.2.0,>=21.0.0 # PSF/ZPL
 sphinx!=1.6.6,>=1.6.2 # BSD
 tempest>=17.1.0 # Apache-2.0
 testrepository>=0.0.18 # Apache-2.0/BSD
