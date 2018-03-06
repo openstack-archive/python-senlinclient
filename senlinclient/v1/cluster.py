@@ -476,10 +476,9 @@ class ResizeCluster(command.Command):
             action_args['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
             action_args['number'] = percentage
 
-        if min_step is not None:
-            if percentage is None:
-                raise exc.CommandError(_('Min step is only used with '
-                                         'percentage.'))
+        if min_step is not None and percentage is None:
+            raise exc.CommandError(_('Min step is only used with '
+                                     'percentage.'))
 
         if min_size is not None:
             if min_size < 0:
@@ -505,7 +504,10 @@ class ResizeCluster(command.Command):
         action_args['strict'] = parsed_args.strict
 
         resp = senlin_client.cluster_resize(parsed_args.cluster, **action_args)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ScaleInCluster(command.Command):
@@ -533,7 +535,10 @@ class ScaleInCluster(command.Command):
 
         resp = senlin_client.cluster_scale_in(parsed_args.cluster,
                                               parsed_args.count)
-        print('Request accepted by action %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ScaleOutCluster(command.Command):
@@ -561,7 +566,10 @@ class ScaleOutCluster(command.Command):
 
         resp = senlin_client.cluster_scale_out(parsed_args.cluster,
                                                parsed_args.count)
-        print('Request accepted by action %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterPolicyAttach(command.Command):
@@ -603,7 +611,10 @@ class ClusterPolicyAttach(command.Command):
         resp = senlin_client.cluster_attach_policy(parsed_args.cluster,
                                                    parsed_args.policy,
                                                    **kwargs)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterPolicyDetach(command.Command):
@@ -631,7 +642,10 @@ class ClusterPolicyDetach(command.Command):
         senlin_client = self.app.client_manager.clustering
         resp = senlin_client.cluster_detach_policy(parsed_args.cluster,
                                                    parsed_args.policy)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterNodeList(command.Lister):
@@ -737,7 +751,10 @@ class ClusterNodeAdd(command.Command):
         senlin_client = self.app.client_manager.clustering
         node_ids = parsed_args.nodes.split(',')
         resp = senlin_client.cluster_add_nodes(parsed_args.cluster, node_ids)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterNodeDel(command.Command):
@@ -777,7 +794,10 @@ class ClusterNodeDel(command.Command):
         kwargs = {"destroy_after_deletion": destroy}
         resp = senlin_client.cluster_del_nodes(parsed_args.cluster, node_ids,
                                                **kwargs)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterNodeReplace(command.Command):
@@ -813,7 +833,10 @@ class ClusterNodeReplace(command.Command):
             nodepairs[key] = value
         resp = senlin_client.cluster_replace_nodes(parsed_args.cluster,
                                                    nodepairs)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class CheckCluster(command.Command):
@@ -838,9 +861,12 @@ class CheckCluster(command.Command):
                 resp = senlin_client.check_cluster(cid)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Cluster not found: %s') % cid)
-            print('Cluster check request on cluster %(cid)s is accepted by '
-                  'action %(action)s.'
-                  % {'cid': cid, 'action': resp['action']})
+            if 'action' in resp:
+                print('Cluster check request on cluster %(cid)s is '
+                      'accepted by action %(action)s.'
+                      % {'cid': cid, 'action': resp['action']})
+            else:
+                print('Request error: %s' % resp)
 
 
 class RecoverCluster(command.Command):
@@ -879,9 +905,12 @@ class RecoverCluster(command.Command):
                 resp = senlin_client.recover_cluster(cid, **params)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Cluster not found: %s') % cid)
-            print('Cluster recover request on cluster %(cid)s is accepted by '
-                  'action %(action)s.'
-                  % {'cid': cid, 'action': resp['action']})
+            if 'action' in resp:
+                print('Cluster recover request on cluster %(cid)s is '
+                      'accepted by action %(action)s.'
+                      % {'cid': cid, 'action': resp['action']})
+            else:
+                print('Request error: %s' % resp)
 
 
 class ClusterCollect(command.Lister):
@@ -964,9 +993,12 @@ class ClusterOp(command.Lister):
         try:
             resp = senlin_client.perform_operation_on_cluster(
                 cid, parsed_args.operation, **params)
-            print('Request accepted by action: %s' % resp['action'])
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_('Cluster not found: %s') % cid)
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
 
 
 class ClusterRun(command.Command):

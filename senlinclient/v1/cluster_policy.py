@@ -153,4 +153,7 @@ class ClusterPolicyUpdate(command.Command):
         resp = senlin_client.cluster_update_policy(parsed_args.cluster,
                                                    parsed_args.policy,
                                                    **kwargs)
-        print('Request accepted by action: %s' % resp['action'])
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)

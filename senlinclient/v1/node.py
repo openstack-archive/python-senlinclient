@@ -361,9 +361,12 @@ class CheckNode(command.Command):
                 resp = senlin_client.check_node(nid)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Node not found: %s') % nid)
-            print('Node check request on node %(nid)s is accepted by '
-                  'action %(action)s.'
-                  % {'nid': nid, 'action': resp['action']})
+            if 'action' in resp:
+                print('Node check request on node %(nid)s is accepted by '
+                      'action %(action)s.'
+                      % {'nid': nid, 'action': resp['action']})
+            else:
+                print('Request error: %s' % resp)
 
 
 class RecoverNode(command.Command):
@@ -400,9 +403,12 @@ class RecoverNode(command.Command):
                 resp = senlin_client.recover_node(nid, **params)
             except sdk_exc.ResourceNotFound:
                 raise exc.CommandError(_('Node not found: %s') % nid)
-            print('Node recover request on node %(nid)s is accepted by '
-                  'action %(action)s.'
-                  % {'nid': nid, 'action': resp['action']})
+            if 'action' in resp:
+                print('Node recover request on node %(nid)s is accepted by '
+                      'action %(action)s.'
+                      % {'nid': nid, 'action': resp['action']})
+            else:
+                print('Request error: %s' % resp)
 
 
 class AdoptNode(command.ShowOne):
@@ -540,6 +546,9 @@ class NodeOp(command.Lister):
         try:
             resp = senlin_client.perform_operation_on_node(
                 nid, parsed_args.operation, **params)
-            print('Request accepted by action: %s' % resp['action'])
         except sdk_exc.ResourceNotFound:
             raise exc.CommandError(_('Node not found: %s') % nid)
+        if 'action' in resp:
+            print('Request accepted by action: %s' % resp['action'])
+        else:
+            print('Request error: %s' % resp)
