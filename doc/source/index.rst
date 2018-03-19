@@ -2,7 +2,8 @@
 Welcome to python-senlinclient's documentation!
 ===============================================
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +14,7 @@ Contents:
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`search`
