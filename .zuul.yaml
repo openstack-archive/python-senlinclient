@@ -14,3 +14,9 @@
       jobs:
         - senlinclient-dsvm-functional:
             voting: false
+    check:
+      jobs:
+        - openstack-tox-lower-constraints
+    gate:
+      jobs:
+        - openstack-tox-lower-constraints
