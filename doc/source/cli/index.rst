@@ -37,14 +37,18 @@ Service (Senlin).
 
 In order to use the CLI, you must provide your OpenStack username, password,
 project (historically called tenant), and auth endpoint. You can use
-configuration options `--os-username`, `--os-password`, `--os-tenant-name` or
-`--os-tenant-id`, and `--os-auth-url` or set corresponding environment
+configuration options `--os-username`, `--os-password`, `--os-project-name`,
+`--os-identity-api-version`, `-os-user-domain-name`, `--os-project-domain-name`
+and `--os-auth-url` or set corresponding environment
 variables::
 
     export OS_USERNAME=user
     export OS_PASSWORD=pass
-    export OS_TENANT_NAME=myproject
+    export OS_PROJECT_NAME=myproject
+    export OS_IDENTITY_API_VERSION=3
     export OS_AUTH_URL=http://auth.example.com:5000/v3
+    export OS_USER_DOMAIN_NAME=Default
+    export OS_PROJECT_DOMAIN_NAME=Default
 
 OPTIONS
 =======
