@@ -38,6 +38,8 @@ cover/
 htmlcov/
 .tox/
 .coverage
+.coverage.*
+.idea
 .cache
 .stestr/
 coverage.xml
