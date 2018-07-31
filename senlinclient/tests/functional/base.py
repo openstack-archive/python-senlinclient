@@ -113,7 +113,7 @@ class OpenStackClientTestBase(base.ClientTestBase):
                        % (check_type, name, timeout))
             raise tempest_lib_exc.TimeoutException(message)
 
-    def policy_create(self, name, policy):
+    def policy_create(self, name, policy='deletion_policy.yaml'):
         pf = self._get_policy_path(policy)
         cmd = ('cluster policy create --spec-file %s %s'
                % (pf, name))
@@ -149,3 +149,28 @@ class OpenStackClientTestBase(base.ClientTestBase):
         cmd = ('cluster node delete %s --force' % name_or_id)
         self.openstack(cmd)
         self.wait_for_delete(name_or_id, 'node', 120)
+
+    def cluster_create(self, profile, name, desired_capacity=0):
+        cmd = ('cluster create --profile %s --desired-capacity %d %s'
+               % (profile, desired_capacity, name))
+        cluster_raw = self.openstack(cmd)
+        result = self.show_to_dict(cluster_raw)
+        self.wait_for_status(name, 'ACTIVE', 'cluster', 120)
+        return result
+
+    def cluster_delete(self, name_or_id):
+        cmd = ('cluster delete %s --force' % name_or_id)
+        self.openstack(cmd)
+        self.wait_for_delete(name_or_id, 'cluster', 120)
+
+    def receiver_create(self, name, cluster, action='CLUSTER_SCALE_OUT',
+                        rt='webhook'):
+        cmd = ('cluster receiver create --cluster %s --action %s --type %s '
+               '%s' % (cluster, action, rt, name))
+        receiver_raw = self.openstack(cmd)
+        result = self.show_to_dict(receiver_raw)
+        return result
+
+    def receiver_delete(self, name_or_id):
+        cmd = ('cluster receiver delete %s --force' % name_or_id)
+        self.openstack(cmd)
