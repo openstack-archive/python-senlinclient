@@ -10,13 +10,13 @@
       - openstack/senlin
 
 - project:
-    experimental:
+    check:
       jobs:
         - senlinclient-dsvm-functional:
             voting: false
-    check:
-      jobs:
         - openstack-tox-lower-constraints
     gate:
       jobs:
+        - senlinclient-dsvm-functional:
+            voting: false
         - openstack-tox-lower-constraints
