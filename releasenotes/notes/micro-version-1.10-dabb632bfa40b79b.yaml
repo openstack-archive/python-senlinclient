@@ -1,0 +1,3 @@
+---
+fixes:
+  - Changed CURRENT_API_VERSION to "1.10".

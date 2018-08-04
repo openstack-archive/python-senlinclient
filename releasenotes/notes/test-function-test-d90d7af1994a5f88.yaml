@@ -1,0 +1,4 @@
+---
+features:
+  - Improved functional test for python-senlinclient.
+  - Aded profile, policy, cluster and receiver functional test.

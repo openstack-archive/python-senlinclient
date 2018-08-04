@@ -1,0 +1,7 @@
+---
+other:
+  - Switched testr switch to stestr.
+  - Fixed tox python3 overrides.
+  - Followed the new PTI for document build.
+  - Fix tox python3 overrides.
+  - Removed pypy because pypy is no longer supported by oslo libraries.
