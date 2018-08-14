@@ -2,13 +2,13 @@
 # Andi Chandler <andi@gowling.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: Senlin Client Release Notes\n"
+"Project-Id-Version: python-senlinclient\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-28 14:44+0000\n"
+"POT-Creation-Date: 2018-08-13 16:27+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-02-09 10:54+0000\n"
+"PO-Revision-Date: 2018-08-08 07:57+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom)\n"
 "Language: en_GB\n"
@@ -71,8 +71,14 @@ msgstr "Add filter \"is_enabled\" for policy binding list."
 msgid "Added command for node-check and node-recover."
 msgstr "Added command for node-check and node-recover."
 
+msgid "Aded profile, policy, cluster and receiver functional test."
+msgstr "Added profile, policy, cluster and receiver functional test."
+
 msgid "Bug Fixes"
 msgstr "Bug Fixes"
+
+msgid "Changed CURRENT_API_VERSION to \"1.10\"."
+msgstr "Changed CURRENT_API_VERSION to \"1.10\"."
 
 msgid "Current Series Release Notes"
 msgstr "Current Series Release Notes"
@@ -105,6 +111,9 @@ msgstr "Fix resource list operations for openstackclient."
 msgid "Fix resource update operations."
 msgstr "Fix resource update operations."
 
+msgid "Fix tox python3 overrides."
+msgstr "Fix tox python3 overrides."
+
 msgid "Fixed a bug that force deletion of cluster or node was not working."
 msgstr "Fixed a bug that force deletion of cluster or node was not working."
 
@@ -112,8 +121,17 @@ msgid "Fixed a bug that region name is not respected when connecting to cloud."
 msgstr ""
 "Fixed a bug that region name is not respected when connecting to cloud."
 
+msgid "Fixed tox python3 overrides."
+msgstr "Fixed tox python3 overrides."
+
+msgid "Followed the new PTI for document build."
+msgstr "Followed the new PTI for document build."
+
 msgid "Help message for metadata clean operations."
 msgstr "Help message for metadata clean operations."
+
+msgid "Improved functional test for python-senlinclient."
+msgstr "Improved functional test for python-senlinclient."
 
 msgid "New Features"
 msgstr "New Features"
@@ -143,6 +161,9 @@ msgstr "Queens Series Release Notes"
 msgid "Remove unsupported sort key \"user\" for event-list."
 msgstr "Remove unsupported sort key \"user\" for event-list."
 
+msgid "Removed pypy because pypy is no longer supported by oslo libraries."
+msgstr "Removed pypy because pypy is no longer supported by oslo libraries."
+
 msgid "Senlin Client Release Notes"
 msgstr "Senlin Client Release Notes"
 
@@ -151,6 +172,9 @@ msgstr "Support \"global_project\" arguments for action-list."
 
 msgid "Support node replace operation."
 msgstr "Support node replace operation."
+
+msgid "Switched testr switch to stestr."
+msgstr "Switched testr switch to stestr."
 
 msgid ""
 "The 'senlin' CLI will be removed in April 2017. This message is now "
