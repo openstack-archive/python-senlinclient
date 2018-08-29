@@ -10,6 +10,13 @@
       - openstack/senlin
 
 - project:
+    templates:
+      - check-requirements
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - publish-openstack-sphinx-docs
+      - openstackclient-plugin-jobs
+      - release-notes-jobs
     experimental:
       jobs:
         - senlinclient-dsvm-functional:
