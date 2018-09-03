@@ -9,7 +9,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-from tempest.lib import decorators
 
 from senlinclient.tests.functional import base
 
@@ -82,10 +81,6 @@ class ClusterTest(base.OpenStackClientTestBase):
         self.assertEqual(cluster_data['timeout'], '300')
         self.assertEqual(new_pf['name'], node_data['profile_name'])
 
-    # (chenyb4) cluster update profile only need api microversion support,
-    # skip cluster update profile only before openstacksdk support
-    # api microversion.
-    @decorators.skip_because(bug="2003146")
     def test_cluster_update_profile_only(self):
         old_name = self.name_generate()
         old_pf = self.profile_create(old_name)
@@ -257,9 +252,6 @@ class ClusterTest(base.OpenStackClientTestBase):
         self.assertEqual('', mem_del_data['node_ids'])
         self.assertNotIn(node['id'], mem_del_data['node_ids'])
 
-    # (chenyb4) cluster members replace need api microversion support,
-    # skip cluster members replace before openstacksdk support api microversion
-    @decorators.skip_because(bug="2003146")
     def test_cluster_members_replace(self):
         name = self.name_generate()
         pf = self.profile_create(name)
