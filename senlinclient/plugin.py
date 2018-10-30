@@ -43,17 +43,17 @@ def _get_config_from_profile(profile, **kwargs):
             region_name = service.region
         service_type = service.service_type
         if service.interface:
-            key = _make_key('interface', service_type)
+            key = _make_key(service_type, 'interface')
             kwargs[key] = service.interface
         if service.version:
             version = service.version
             if version.startswith('v'):
                 version = version[1:]
-            key = _make_key('api_version', service_type)
+            key = _make_key(service_type, 'api_version')
             kwargs[key] = version
         if service.api_version:
             version = service.api_version
-            key = _make_key('default_microversion', service_type)
+            key = _make_key(service_type, 'default_microversion')
             kwargs[key] = version
 
     config_kwargs = config_defaults.get_defaults()
