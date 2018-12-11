@@ -89,12 +89,12 @@ class TestClusterPolicyUpdate(TestClusterPolicy):
         super(TestClusterPolicyUpdate, self).setUp()
         self.cmd = osc_cluster_policy.ClusterPolicyUpdate(self.app, None)
         fake_resp = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
-        self.mock_client.cluster_update_policy = mock.Mock(
+        self.mock_client.update_cluster_policy = mock.Mock(
             return_value=fake_resp)
 
     def test_cluster_policy_update(self):
         arglist = ['--policy', 'my_policy', '--enabled', 'true', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_update_policy.assert_called_with(
+        self.mock_client.update_cluster_policy.assert_called_with(
             'my_cluster', 'my_policy', enabled=True)

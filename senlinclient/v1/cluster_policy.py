@@ -150,7 +150,7 @@ class ClusterPolicyUpdate(command.Command):
                                                  strict=True),
         }
 
-        resp = senlin_client.cluster_update_policy(parsed_args.cluster,
+        resp = senlin_client.update_cluster_policy(parsed_args.cluster,
                                                    parsed_args.policy,
                                                    **kwargs)
         if 'action' in resp:

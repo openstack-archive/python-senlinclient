@@ -432,7 +432,7 @@ class TestClusterResize(TestCluster):
     def setUp(self):
         super(TestClusterResize, self).setUp()
         self.cmd = osc_cluster.ResizeCluster(self.app, None)
-        self.mock_client.cluster_resize = mock.Mock(
+        self.mock_client.resize_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_resize_no_params(self):
@@ -460,7 +460,7 @@ class TestClusterResize(TestCluster):
                    'my_cluster', '--strict']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+        self.mock_client.resize_cluster.assert_called_with('my_cluster',
                                                            **self.defaults)
 
     def test_cluster_resize_invalid_capacity(self):
@@ -481,7 +481,7 @@ class TestClusterResize(TestCluster):
         kwargs['number'] = 1
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+        self.mock_client.resize_cluster.assert_called_with('my_cluster',
                                                            **kwargs)
 
     def test_cluster_resize_invalid_adjustment(self):
@@ -501,7 +501,7 @@ class TestClusterResize(TestCluster):
         kwargs['adjustment_type'] = 'CHANGE_IN_PERCENTAGE'
         kwargs['number'] = 50.0
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_resize.assert_called_with('my_cluster',
+        self.mock_client.resize_cluster.assert_called_with('my_cluster',
                                                            **kwargs)
 
     def test_cluster_resize_invalid_percentage(self):
@@ -568,14 +568,14 @@ class TestClusterScaleIn(TestCluster):
     def setUp(self):
         super(TestClusterScaleIn, self).setUp()
         self.cmd = osc_cluster.ScaleInCluster(self.app, None)
-        self.mock_client.cluster_scale_in = mock.Mock(
+        self.mock_client.scale_in_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_scale_in(self):
         arglist = ['--count', '2', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_scale_in.assert_called_with('my_cluster',
+        self.mock_client.scale_in_cluster.assert_called_with('my_cluster',
                                                              '2')
 
 
@@ -585,14 +585,14 @@ class TestClusterScaleOut(TestCluster):
     def setUp(self):
         super(TestClusterScaleOut, self).setUp()
         self.cmd = osc_cluster.ScaleOutCluster(self.app, None)
-        self.mock_client.cluster_scale_out = mock.Mock(
+        self.mock_client.scale_out_cluster = mock.Mock(
             return_value=self.response)
 
-    def test_cluster_scale_in(self):
+    def test_cluster_scale_out(self):
         arglist = ['--count', '2', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_scale_out.assert_called_with('my_cluster',
+        self.mock_client.scale_out_cluster.assert_called_with('my_cluster',
                                                               '2')
 
 
@@ -602,14 +602,14 @@ class TestClusterPolicyAttach(TestCluster):
     def setUp(self):
         super(TestClusterPolicyAttach, self).setUp()
         self.cmd = osc_cluster.ClusterPolicyAttach(self.app, None)
-        self.mock_client.cluster_attach_policy = mock.Mock(
+        self.mock_client.attach_policy_to_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_policy_attach(self):
         arglist = ['--policy', 'my_policy', '--enabled', 'True', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_attach_policy.assert_called_with(
+        self.mock_client.attach_policy_to_cluster.assert_called_with(
             'my_cluster',
             'my_policy',
             enabled=True)
@@ -621,14 +621,14 @@ class TestClusterPolicyDetach(TestCluster):
     def setUp(self):
         super(TestClusterPolicyDetach, self).setUp()
         self.cmd = osc_cluster.ClusterPolicyDetach(self.app, None)
-        self.mock_client.cluster_detach_policy = mock.Mock(
+        self.mock_client.detach_policy_from_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_policy_detach(self):
         arglist = ['--policy', 'my_policy', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_detach_policy.assert_called_with(
+        self.mock_client.detach_policy_from_cluster.assert_called_with(
             'my_cluster',
             'my_policy')
 
@@ -711,14 +711,14 @@ class TestClusterNodeAdd(TestCluster):
     def setUp(self):
         super(TestClusterNodeAdd, self).setUp()
         self.cmd = osc_cluster.ClusterNodeAdd(self.app, None)
-        self.mock_client.cluster_add_nodes = mock.Mock(
+        self.mock_client.add_nodes_to_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_node_add(self):
         arglist = ['--nodes', 'node1', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_add_nodes.assert_called_with(
+        self.mock_client.add_nodes_to_cluster.assert_called_with(
             'my_cluster',
             ['node1'])
 
@@ -726,7 +726,7 @@ class TestClusterNodeAdd(TestCluster):
         arglist = ['--nodes', 'node1,node2', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_add_nodes.assert_called_with(
+        self.mock_client.add_nodes_to_cluster.assert_called_with(
             'my_cluster',
             ['node1', 'node2'])
 
@@ -737,14 +737,14 @@ class TestClusterNodeDel(TestCluster):
     def setUp(self):
         super(TestClusterNodeDel, self).setUp()
         self.cmd = osc_cluster.ClusterNodeDel(self.app, None)
-        self.mock_client.cluster_del_nodes = mock.Mock(
+        self.mock_client.remove_nodes_from_cluster = mock.Mock(
             return_value=self.response)
 
     def test_cluster_node_delete(self):
         arglist = ['-d', 'True', '--nodes', 'node1', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_del_nodes.assert_called_with(
+        self.mock_client.remove_nodes_from_cluster.assert_called_with(
             'my_cluster',
             ['node1'],
             destroy_after_deletion=True)
@@ -753,7 +753,7 @@ class TestClusterNodeDel(TestCluster):
         arglist = ['-d', 'False', '--nodes', 'node1', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_del_nodes.assert_called_with(
+        self.mock_client.remove_nodes_from_cluster.assert_called_with(
             'my_cluster',
             ['node1'],
             destroy_after_deletion=False)
@@ -762,7 +762,7 @@ class TestClusterNodeDel(TestCluster):
         arglist = ['--nodes', 'node1,node2', 'my_cluster']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
-        self.mock_client.cluster_del_nodes.assert_called_with(
+        self.mock_client.remove_nodes_from_cluster.assert_called_with(
             'my_cluster',
             ['node1', 'node2'],
             destroy_after_deletion=False)
