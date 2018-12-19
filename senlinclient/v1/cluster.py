@@ -503,7 +503,7 @@ class ResizeCluster(command.Command):
         action_args['min_step'] = min_step
         action_args['strict'] = parsed_args.strict
 
-        resp = senlin_client.cluster_resize(parsed_args.cluster, **action_args)
+        resp = senlin_client.resize_cluster(parsed_args.cluster, **action_args)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -533,7 +533,7 @@ class ScaleInCluster(command.Command):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
 
-        resp = senlin_client.cluster_scale_in(parsed_args.cluster,
+        resp = senlin_client.scale_in_cluster(parsed_args.cluster,
                                               parsed_args.count)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
@@ -564,7 +564,7 @@ class ScaleOutCluster(command.Command):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
 
-        resp = senlin_client.cluster_scale_out(parsed_args.cluster,
+        resp = senlin_client.scale_out_cluster(parsed_args.cluster,
                                                parsed_args.count)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
@@ -608,9 +608,9 @@ class ClusterPolicyAttach(command.Command):
                                                  strict=True),
         }
 
-        resp = senlin_client.cluster_attach_policy(parsed_args.cluster,
-                                                   parsed_args.policy,
-                                                   **kwargs)
+        resp = senlin_client.attach_policy_to_cluster(parsed_args.cluster,
+                                                      parsed_args.policy,
+                                                      **kwargs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -640,8 +640,8 @@ class ClusterPolicyDetach(command.Command):
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
-        resp = senlin_client.cluster_detach_policy(parsed_args.cluster,
-                                                   parsed_args.policy)
+        resp = senlin_client.detach_policy_from_cluster(parsed_args.cluster,
+                                                        parsed_args.policy)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -750,7 +750,8 @@ class ClusterNodeAdd(command.Command):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
         node_ids = parsed_args.nodes.split(',')
-        resp = senlin_client.cluster_add_nodes(parsed_args.cluster, node_ids)
+        resp = senlin_client.add_nodes_to_cluster(parsed_args.cluster,
+                                                  node_ids)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -792,8 +793,8 @@ class ClusterNodeDel(command.Command):
         destroy = parsed_args.destroy_after_deletion
         destroy = strutils.bool_from_string(destroy, strict=True)
         kwargs = {"destroy_after_deletion": destroy}
-        resp = senlin_client.cluster_del_nodes(parsed_args.cluster, node_ids,
-                                               **kwargs)
+        resp = senlin_client.remove_nodes_from_cluster(
+            parsed_args.cluster, node_ids, **kwargs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -831,8 +832,8 @@ class ClusterNodeReplace(command.Command):
             key = nodepair.split('=')[0]
             value = nodepair.split('=')[1]
             nodepairs[key] = value
-        resp = senlin_client.cluster_replace_nodes(parsed_args.cluster,
-                                                   nodepairs)
+        resp = senlin_client.replace_nodes_in_cluster(parsed_args.cluster,
+                                                      nodepairs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:

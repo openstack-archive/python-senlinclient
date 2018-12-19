@@ -220,8 +220,8 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_add_nodes('FAKE_ID', ['NODE1', 'NODE2'])
-        self.assertEqual(self.service.cluster_add_nodes.return_value, res)
-        self.service.cluster_add_nodes.assert_called_once_with(
+        self.assertEqual(self.service.add_nodes_to_cluster.return_value, res)
+        self.service.add_nodes_to_cluster.assert_called_once_with(
             'FAKE_ID', ['NODE1', 'NODE2'])
 
     def test_cluster_del_nodes(self, mock_conn):
@@ -229,8 +229,9 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_del_nodes('FAKE_ID', ['NODE1', 'NODE2'])
-        self.assertEqual(self.service.cluster_del_nodes.return_value, res)
-        self.service.cluster_del_nodes.assert_called_once_with(
+        self.assertEqual(self.service.remove_nodes_from_cluster.return_value,
+                         res)
+        self.service.remove_nodes_from_cluster.assert_called_once_with(
             'FAKE_ID', ['NODE1', 'NODE2'])
 
     def test_cluster_resize(self, mock_conn):
@@ -238,8 +239,8 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_resize('FAKE_ID', foo='bar', zoo=1)
-        self.assertEqual(self.service.cluster_resize.return_value, res)
-        self.service.cluster_resize.assert_called_once_with(
+        self.assertEqual(self.service.resize_cluster.return_value, res)
+        self.service.resize_cluster.assert_called_once_with(
             'FAKE_ID', foo='bar', zoo=1)
 
     def test_cluster_scale_in(self, mock_conn):
@@ -247,8 +248,8 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_scale_in('FAKE_ID', 3)
-        self.assertEqual(self.service.cluster_scale_in.return_value, res)
-        self.service.cluster_scale_in.assert_called_once_with(
+        self.assertEqual(self.service.scale_in_cluster.return_value, res)
+        self.service.scale_in_cluster.assert_called_once_with(
             'FAKE_ID', 3)
 
     def test_cluster_scale_out(self, mock_conn):
@@ -256,8 +257,8 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_scale_out('FAKE_ID', 3)
-        self.assertEqual(self.service.cluster_scale_out.return_value, res)
-        self.service.cluster_scale_out.assert_called_once_with(
+        self.assertEqual(self.service.scale_out_cluster.return_value, res)
+        self.service.scale_out_cluster.assert_called_once_with(
             'FAKE_ID', 3)
 
     def test_cluster_policies(self, mock_conn):
@@ -283,8 +284,9 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_attach_policy('FOO', 'BAR', zoo='car')
-        self.assertEqual(self.service.cluster_attach_policy.return_value, res)
-        self.service.cluster_attach_policy.assert_called_once_with(
+        self.assertEqual(self.service.attach_policy_to_cluster.return_value,
+                         res)
+        self.service.attach_policy_to_cluster.assert_called_once_with(
             'FOO', 'BAR', zoo='car')
 
     def test_cluster_detach_policy(self, mock_conn):
@@ -292,8 +294,9 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_detach_policy('FOO', 'BAR')
-        self.assertEqual(self.service.cluster_detach_policy.return_value, res)
-        self.service.cluster_detach_policy.assert_called_once_with(
+        self.assertEqual(self.service.detach_policy_from_cluster.return_value,
+                         res)
+        self.service.detach_policy_from_cluster.assert_called_once_with(
             'FOO', 'BAR')
 
     def test_cluster_update_policy(self, mock_conn):
@@ -301,8 +304,8 @@ class ClientTest(testtools.TestCase):
         sc = client.Client()
 
         res = sc.cluster_update_policy('FOO', 'BAR', foo='bar')
-        self.assertEqual(self.service.cluster_update_policy.return_value, res)
-        self.service.cluster_update_policy.assert_called_once_with(
+        self.assertEqual(self.service.update_cluster_policy.return_value, res)
+        self.service.update_cluster_policy.assert_called_once_with(
             'FOO', 'BAR', foo='bar')
 
     def test_check_cluster(self, mock_conn):

@@ -221,7 +221,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #add-nodes-to-a-cluster
         """
-        return self.service.cluster_add_nodes(cluster, nodes)
+        return self.service.add_nodes_to_cluster(cluster, nodes)
 
     def cluster_del_nodes(self, cluster, nodes):
         """Delete a node belongs to cluster
@@ -230,7 +230,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #remove-nodes-from-a-cluster
         """
-        return self.service.cluster_del_nodes(cluster, nodes)
+        return self.service.remove_nodes_from_cluster(cluster, nodes)
 
     def cluster_replace_nodes(self, cluster, nodes):
         """Replace the nodes in a cluster with specified nodes
@@ -239,7 +239,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #replace-nodes-in-a-cluster
         """
-        return self.service.cluster_replace_nodes(cluster, nodes)
+        return self.service.replace_nodes_in_cluster(cluster, nodes)
 
     def cluster_resize(self, cluster, **params):
         """Resize cluster
@@ -247,7 +247,7 @@ class Client(object):
         Doc link:
         https://developer.openstack.org/api-ref/clustering/#resize-a-cluster
         """
-        return self.service.cluster_resize(cluster, **params)
+        return self.service.resize_cluster(cluster, **params)
 
     def cluster_scale_out(self, cluster, count):
         """Scale out cluster
@@ -255,7 +255,7 @@ class Client(object):
         Doc link:
         https://developer.openstack.org/api-ref/clustering/#scale-out-a-cluster
         """
-        return self.service.cluster_scale_out(cluster, count)
+        return self.service.scale_out_cluster(cluster, count)
 
     def cluster_scale_in(self, cluster, count):
         """Scale in cluster
@@ -263,7 +263,7 @@ class Client(object):
         Doc link:
         https://developer.openstack.org/api-ref/clustering/#scale-in-a-cluster
         """
-        return self.service.cluster_scale_in(cluster, count)
+        return self.service.scale_in_cluster(cluster, count)
 
     def cluster_policies(self, cluster, **queries):
         """List all policies attached to cluster
@@ -290,7 +290,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #attach-a-policy-to-a-cluster
         """
-        return self.service.cluster_attach_policy(cluster, policy, **attrs)
+        return self.service.attach_policy_to_cluster(cluster, policy, **attrs)
 
     def cluster_detach_policy(self, cluster, policy):
         """Detach a policy from cluster
@@ -299,7 +299,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #detach-a-policy-from-a-cluster
         """
-        return self.service.cluster_detach_policy(cluster, policy)
+        return self.service.detach_policy_from_cluster(cluster, policy)
 
     def cluster_update_policy(self, cluster, policy, **attrs):
         """Update the policy attachment
@@ -308,7 +308,7 @@ class Client(object):
         https://developer.openstack.org/api-ref/clustering/
         #update-a-policy-on-a-cluster
         """
-        return self.service.cluster_update_policy(cluster, policy, **attrs)
+        return self.service.update_cluster_policy(cluster, policy, **attrs)
 
     def collect_cluster_attrs(self, cluster, path):
         """Collect cluster attributes
