@@ -329,9 +329,9 @@ class DeleteNode(command.Command):
         result = {}
         for nid in parsed_args.node:
             try:
-                node = senlin_client.delete_node(
+                node_delete_action = senlin_client.delete_node(
                     nid, False, parsed_args.force_delete)
-                result[nid] = ('OK', node.location.split('/')[-1])
+                result[nid] = ('OK', node_delete_action['id'])
             except Exception as ex:
                 result[nid] = ('ERROR', six.text_type(ex))
 
