@@ -12,12 +12,11 @@
 
 import sys
 
-import json
 import mock
 from osc_lib.tests import utils
 import requests
-import six
 
+from oslo_serialization import jsonutils
 
 AUTH_TOKEN = "foobar"
 AUTH_URL = "http://0.0.0.0"
@@ -158,9 +157,7 @@ class FakeResponse(requests.Response):
         self.status_code = status_code
 
         self.headers.update(headers)
-        self._content = json.dumps(data)
-        if not isinstance(self._content, six.binary_type):
-            self._content = self._content.encode()
+        self._content = jsonutils.dump_as_bytes(data)
 
 
 class FakeClusteringv1Client(object):
