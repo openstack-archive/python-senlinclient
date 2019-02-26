@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    [`bug 1814171 <https://bugs.launchpad.net/senlin/+bug/1814171>`_]
+    Fixed a bug so that cluster delete and node delete return action id
+    associated with the delete action.
