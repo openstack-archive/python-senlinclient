@@ -535,6 +535,10 @@ class ScaleInCluster(command.Command):
 
         resp = senlin_client.scale_in_cluster(parsed_args.cluster,
                                               parsed_args.count)
+        status_code = resp.get('code', None)
+        if status_code in [409]:
+            raise exc.CommandError(_(
+                'Unable to scale in cluster: %s') % resp['error']['message'])
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
@@ -566,6 +570,10 @@ class ScaleOutCluster(command.Command):
 
         resp = senlin_client.scale_out_cluster(parsed_args.cluster,
                                                parsed_args.count)
+        status_code = resp.get('code', None)
+        if status_code in [409]:
+            raise exc.CommandError(_(
+                'Unable to scale out cluster: %s') % resp['error']['message'])
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
         else:
