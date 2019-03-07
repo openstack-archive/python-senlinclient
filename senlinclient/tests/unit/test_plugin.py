@@ -41,7 +41,7 @@ class TestPlugin(testtools.TestCase):
         mock_connection.assert_called_once_with(
             app_name=None, app_version=None,
             config=mock.ANY,
-            clustering_api_version='1.10',
+            clustering_api_version=plugin.CURRENT_API_VERSION,
             **kwargs
         )
         self.assertEqual(mock_conn, res)
@@ -62,7 +62,7 @@ class TestPlugin(testtools.TestCase):
         mock_connection.assert_called_once_with(
             app_name=None, app_version=None,
             auth_url='test_url',
-            clustering_api_version='1.10',
+            clustering_api_version=plugin.CURRENT_API_VERSION,
             config=None,
             interface='public',
             password='abc',
