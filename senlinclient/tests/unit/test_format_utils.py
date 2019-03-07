@@ -10,8 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
 import yaml
+
+from oslo_serialization import jsonutils
 
 from osc_lib.tests import utils
 from senlinclient.common import format_utils
@@ -46,7 +47,7 @@ class TestFormats(utils.TestCommand):
     def test_json_format(self):
         self.cmd = ShowJson(self.app, None)
         parsed_args = self.check_parser(self.cmd, [], [])
-        expected = json.dumps(dict(zip(columns, data)), indent=2)
+        expected = jsonutils.dumps(dict(zip(columns, data)), indent=2)
 
         self.cmd.run(parsed_args)
 
