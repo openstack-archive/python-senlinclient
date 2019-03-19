@@ -1,0 +1,40 @@
+# zzxwill <zzxwill@gmail.com>, 2016. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: python-senlinclient\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-07 08:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-06-25 02:41+0000\n"
+"Last-Translator: zzxwill <zzxwill@gmail.com>\n"
+"Language-Team: Chinese (China)\n"
+"Language: zh_CN\n"
+"X-Generator: Zanata 4.3.3\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+
+msgid "0.5.0"
+msgstr "0.5.0"
+
+msgid "Added command for node-check and node-recover."
+msgstr "已为node-check和node-recover添加了命令。"
+
+msgid "Current Series Release Notes"
+msgstr "当前版本发布说明"
+
+msgid "New Features"
+msgstr "新特性"
+
+msgid ""
+"OSC commands for cluster scaling are changed from 'cluster scale in' and "
+"'cluster scale out' to 'cluster shrink' and 'cluster expand' respectively."
+msgstr ""
+"集群扩展的OSC命令分别从'cluster scale in'和'cluster scale out'改成了'cluster "
+"shrink'和'cluster expand'。"
+
+msgid "Senlin Client Release Notes"
+msgstr "Senlin Client发布说明"
+
+msgid "Upgrade Notes"
+msgstr "升级说明"
