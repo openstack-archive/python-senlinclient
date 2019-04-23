@@ -26,7 +26,7 @@ first get senlinclient code from OpenStack git repository.
 ::
 
   $ cd /opt/stack
-  $ git clone https://git.openstack.org/openstack/python-senlinclient.git
+  $ git clone https://opendev.org/openstack/python-senlinclient.git
 
 Then execute the following command
 
