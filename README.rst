@@ -15,4 +15,4 @@ provides a plugin for the openstackclient command-line tool.
 
 Development takes place via the usual OpenStack processes as outlined in the
 `developer guide <https://docs.openstack.org/infra/manual/developers.html>`_.
-The master repository is in `Git <https://git.openstack.org/cgit/openstack/python-senlinclient>`_.
+The master repository is in `Git <https://opendev.org/openstack/python-senlinclient>`_.
