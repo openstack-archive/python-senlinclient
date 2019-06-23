@@ -51,7 +51,8 @@ class TestFormats(utils.TestCommand):
 
         self.cmd.run(parsed_args)
 
-        self.assertEqual(expected, self.app.stdout.make_string())
+        self.assertEqual(jsonutils.loads(expected),
+                         jsonutils.loads(self.app.stdout.make_string()))
 
     def test_yaml_format(self):
         self.cmd = ShowYaml(self.app, None)
