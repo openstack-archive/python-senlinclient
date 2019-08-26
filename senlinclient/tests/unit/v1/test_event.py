@@ -29,7 +29,7 @@ class TestEvent(fakes.TestClusteringv1):
 class TestEventList(TestEvent):
 
     columns = ['id', 'generated_at', 'obj_type', 'obj_id', 'obj_name',
-               'action', 'status', 'level', 'cluster_id']
+               'action', 'status', 'level', 'cluster_id', 'meta_data']
     defaults = {
         'global_project': False,
         'marker': None,
