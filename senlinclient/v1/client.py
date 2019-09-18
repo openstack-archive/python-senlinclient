@@ -495,6 +495,14 @@ class Client(object):
         """
         return self.service.get_action(action)
 
+    def update_action(self, action, **attrs):
+        """Update an action
+
+        Doc link:
+        https://docs.openstack.org/api-ref/clustering/#update-action
+        """
+        return self.service.update_action(action, **attrs)
+
     def services(self, **queries):
         """List services
 

@@ -462,6 +462,15 @@ class ClientTest(testtools.TestCase):
         self.assertEqual(self.service.get_action.return_value, res)
         self.service.get_action.assert_called_once_with('FOOBAR')
 
+    def test_update_action(self, mock_conn):
+        mock_conn.return_value = self.conn
+        sc = client.Client()
+
+        res = sc.update_action('FAKE_ID', status='CANCELLED')
+        self.assertEqual(self.service.update_action.return_value, res)
+        self.service.update_action.assert_called_once_with(
+            'FAKE_ID', status='CANCELLED')
+
     def test_events(self, mock_conn):
         mock_conn.return_value = self.conn
         sc = client.Client()
