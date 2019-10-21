@@ -21,4 +21,5 @@ class EventTest(base.OpenStackClientTestBase):
         event_list = self.parser.listing(result)
         self.assertTableStruct(event_list, ['id', 'generated_at', 'obj_type',
                                             'obj_id', 'obj_name', 'action',
-                                            'status', 'level', 'cluster_id'])
+                                            'status', 'level', 'cluster_id',
+                                            'meta_data'])
