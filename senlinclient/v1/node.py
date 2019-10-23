@@ -86,7 +86,8 @@ class ListNode(command.Lister):
         senlin_client = self.app.client_manager.clustering
 
         columns = ['id', 'name', 'index', 'status', 'cluster_id',
-                   'physical_id', 'profile_name', 'created_at', 'updated_at']
+                   'physical_id', 'profile_name', 'created_at', 'updated_at',
+                   'tainted']
         queries = {
             'cluster_id': parsed_args.cluster,
             'sort': parsed_args.sort,
@@ -255,6 +256,14 @@ class UpdateNode(command.ShowOne):
             action='append'
         )
         parser.add_argument(
+            '--tainted',
+            metavar='<boolean>',
+            help=_("Whether the node should be marked as tainted. "
+                   "If true, this node will be selected first for the next"
+                   "cluster scale-in operation.")
+
+        )
+        parser.add_argument(
             'node',
             metavar='<node>',
             help=_('Name or ID of node to update')
@@ -277,6 +286,12 @@ class UpdateNode(command.ShowOne):
             'profile_id': parsed_args.profile,
             'metadata': senlin_utils.format_parameters(parsed_args.metadata),
         }
+
+        if parsed_args.tainted is not None:
+            attrs['tainted'] = strutils.bool_from_string(
+                parsed_args.tainted,
+                strict=True,
+            )
 
         senlin_client.update_node(node.id, **attrs)
         return _show_node(senlin_client, node.id)
