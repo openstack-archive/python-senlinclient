@@ -22,7 +22,7 @@ class NodeTest(base.OpenStackClientTestBase):
         self.assertTableStruct(node_list, ['id', 'name', 'index', 'status',
                                            'cluster_id', 'physical_id',
                                            'profile_name', 'created_at',
-                                           'updated_at'])
+                                           'updated_at', 'tainted'])
 
     def test_node_create(self):
         name = self.name_generate()
@@ -39,8 +39,10 @@ class NodeTest(base.OpenStackClientTestBase):
         new_name = self.name_generate()
         pf_new = self.profile_create(new_name)
         role = 'master'
-        cmd = ('cluster node update --name %s --role %s --profile %s %s'
-               % (new_name, role, pf_new['id'], n1['id']))
+        tainted = 'True'
+        cmd = ('cluster node update --name %s --role %s --profile %s '
+               '--tainted %s %s'
+               % (new_name, role, pf_new['id'], tainted, n1['id']))
         self.openstack(cmd)
         self.wait_for_status(n1['id'], 'ACTIVE', 'node', 120)
         raw_node = self.openstack('cluster node show %s' % n1['id'])
@@ -48,6 +50,7 @@ class NodeTest(base.OpenStackClientTestBase):
         self.assertEqual(node_data['name'], new_name)
         self.assertNotEqual(node_data['name'], old_name)
         self.assertEqual(node_data['role'], role)
+        self.assertEqual(node_data['tainted'], tainted)
         self.assertEqual(node_data['profile_id'], pf_new['id'])
         self.node_delete(new_name)
         self.addCleanup(self.profile_delete, pf['id'])

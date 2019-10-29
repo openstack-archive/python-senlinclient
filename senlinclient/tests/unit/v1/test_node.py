@@ -30,7 +30,8 @@ class TestNode(fakes.TestClusteringv1):
 class TestNodeList(TestNode):
 
     columns = ['id', 'name', 'index', 'status', 'cluster_id',
-               'physical_id', 'profile_name', 'created_at', 'updated_at']
+               'physical_id', 'profile_name', 'created_at', 'updated_at',
+               'tainted']
 
     defaults = {
         'cluster_id': None,
@@ -60,6 +61,7 @@ class TestNodeList(TestNode):
             role=None,
             status="ACTIVE",
             status_reason="Creation succeeded",
+            tainted=True,
             updated_at=None,
             user_id="5e5bf8027826429c96af157f68dc9072"
         )
@@ -160,6 +162,7 @@ class TestNodeShow(TestNode):
             role=None,
             status="ACTIVE",
             status_reason="Creation succeeded",
+            tainted=True,
             updated_at="2015-03-04T04:58:27",
             user_id="5e5bf8027826429c96af157f68dc9072"
         )
@@ -275,7 +278,8 @@ class TestNodeUpdate(TestNode):
             "nk2": "nv2",
         },
         "profile_id": "new_profile",
-        "role": "new_role"
+        "role": "new_role",
+        "tainted": True
     }
 
     def setUp(self):
@@ -298,6 +302,7 @@ class TestNodeUpdate(TestNode):
             role="master",
             status="INIT",
             status_reason="Initializing",
+            tainted=False,
             updated_at=None,
             user_id="5e5bf8027826429c96af157f68dc9072"
         )
@@ -310,7 +315,7 @@ class TestNodeUpdate(TestNode):
     def test_node_update_defaults(self):
         arglist = ['--name', 'new_node', '--metadata', 'nk1=nv1;nk2=nv2',
                    '--profile', 'new_profile', '--role', 'new_role',
-                   '0df0931b']
+                   '--tainted', 'True', '0df0931b']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.update_node.assert_called_with(
