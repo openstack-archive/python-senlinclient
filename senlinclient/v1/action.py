@@ -114,6 +114,27 @@ class ListAction(command.Lister):
         )
 
 
+def _show_action(senlin_client, action_id):
+    try:
+        action = senlin_client.get_action(action_id)
+    except sdk_exc.ResourceNotFound:
+        raise exc.CommandError(_('Action not found: %s')
+                               % action_id)
+
+    formatters = {
+        'inputs': senlin_utils.json_formatter,
+        'outputs': senlin_utils.json_formatter,
+        'metadata': senlin_utils.json_formatter,
+        'data': senlin_utils.json_formatter,
+        'depends_on': senlin_utils.list_formatter,
+        'depended_by': senlin_utils.list_formatter,
+    }
+    data = action.to_dict()
+    columns = sorted(data.keys())
+    return columns, utils.get_dict_properties(data, columns,
+                                              formatters=formatters)
+
+
 class ShowAction(command.ShowOne):
     """Show detailed info about the specified action."""
 
@@ -132,21 +153,35 @@ class ShowAction(command.ShowOne):
         self.log.debug("take_action(%s)", parsed_args)
 
         senlin_client = self.app.client_manager.clustering
-        try:
-            action = senlin_client.get_action(parsed_args.action)
-        except sdk_exc.ResourceNotFound:
-            raise exc.CommandError(_('Action not found: %s')
-                                   % parsed_args.action)
+        return _show_action(senlin_client, parsed_args.action)
 
-        formatters = {
-            'inputs': senlin_utils.json_formatter,
-            'outputs': senlin_utils.json_formatter,
-            'metadata': senlin_utils.json_formatter,
-            'data': senlin_utils.json_formatter,
-            'depends_on': senlin_utils.list_formatter,
-            'depended_by': senlin_utils.list_formatter,
+
+class UpdateAction(command.ShowOne):
+    """Update an action."""
+
+    log = logging.getLogger(__name__ + ".UpdateAction")
+
+    def get_parser(self, prog_name):
+        parser = super(UpdateAction, self).get_parser(prog_name)
+        parser.add_argument(
+            '--status',
+            metavar='<status>',
+            help=_('The new status for the action')
+        )
+        parser.add_argument(
+            'action',
+            metavar='<action>',
+            help=_('ID of the action to update')
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        self.log.debug("take_action(%s)", parsed_args)
+        senlin_client = self.app.client_manager.clustering
+
+        params = {
+            'status': parsed_args.status,
         }
-        data = action.to_dict()
-        columns = sorted(data.keys())
-        return columns, utils.get_dict_properties(data, columns,
-                                                  formatters=formatters)
+
+        senlin_client.update_action(parsed_args.action, **params)
+        return _show_action(senlin_client, parsed_args.action)

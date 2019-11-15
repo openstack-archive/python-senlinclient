@@ -174,3 +174,46 @@ class TestActionShow(TestAction):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertEqual('Action not found: my_action', str(error))
+
+
+class TestActionUpdate(TestAction):
+
+    def setUp(self):
+        super(TestActionUpdate, self).setUp()
+        self.cmd = osc_action.UpdateAction(self.app, None)
+        fake_action = mock.Mock(
+            action="NODE_CREATE",
+            cause="RPC Request",
+            created_at="2015-12-04T04:54:41",
+            depended_by=[],
+            depends_on=[],
+            end_time=1425550000.0,
+            id="2366d440-c73e-4961-9254-6d1c3af7c167",
+            inputs={},
+            interval=-1,
+            name="node_create_0df0931b",
+            outputs={},
+            owner=None,
+            start_time=1425550000.0,
+            status="INIT",
+            status_reason="Action completed successfully.",
+            target_id="0df0931b-e251-4f2e-8719-4ebfda3627ba",
+            timeout=3600,
+            updated_at=None
+        )
+        fake_action.to_dict = mock.Mock(return_value={})
+        self.mock_client.get_action = mock.Mock(return_value=fake_action)
+        self.mock_client.update_action = mock.Mock(return_value=fake_action)
+
+    def test_action_update(self):
+        arglist = ['--status', 'CANCELLED',
+                   '2366d440-c73e-4961-9254-6d1c3af7c167']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        defaults = {
+            "status": "CANCELLED"
+        }
+
+        self.cmd.take_action(parsed_args)
+
+        self.mock_client.update_action.assert_called_with(
+            "2366d440-c73e-4961-9254-6d1c3af7c167", **defaults)
