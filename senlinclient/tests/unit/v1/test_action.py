@@ -30,7 +30,7 @@ class TestAction(fakes.TestClusteringv1):
 class TestActionList(TestAction):
 
     columns = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
-               'depended_by', 'created_at']
+               'depended_by', 'created_at', 'cluster_id']
     defaults = {
         'global_project': False,
         'marker': None,
@@ -43,6 +43,7 @@ class TestActionList(TestAction):
         self.cmd = osc_action.ListAction(self.app, None)
         fake_action = mock.Mock(
             action="NODE_CREATE",
+            cluster_id="FAKE_CLUSTER_ID",
             cause="RPC Request",
             created_at="2015-12-04T04:54:41",
             depended_by=[],
@@ -140,6 +141,7 @@ class TestActionShow(TestAction):
         self.cmd = osc_action.ShowAction(self.app, None)
         fake_action = mock.Mock(
             action="NODE_CREATE",
+            cluster_id="FAKE_CLUSTER_ID",
             cause="RPC Request",
             created_at="2015-12-04T04:54:41",
             depended_by=[],
@@ -183,6 +185,7 @@ class TestActionUpdate(TestAction):
         self.cmd = osc_action.UpdateAction(self.app, None)
         fake_action = mock.Mock(
             action="NODE_CREATE",
+            cluster_id="FAKE_CLUSTER_ID",
             cause="RPC Request",
             created_at="2015-12-04T04:54:41",
             depended_by=[],

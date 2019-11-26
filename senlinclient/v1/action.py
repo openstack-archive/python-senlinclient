@@ -82,7 +82,7 @@ class ListAction(command.Lister):
         senlin_client = self.app.client_manager.clustering
 
         columns = ['id', 'name', 'action', 'status', 'target_id', 'depends_on',
-                   'depended_by', 'created_at']
+                   'depended_by', 'created_at', 'cluster_id']
 
         queries = {
             'sort': parsed_args.sort,

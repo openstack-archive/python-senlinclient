@@ -19,6 +19,7 @@ class ActionTest(base.OpenStackClientTestBase):
     def test_action_list(self):
         result = self.openstack('cluster action list')
         action_list = self.parser.listing(result)
-        self.assertTableStruct(action_list, ['id', 'name', 'action', 'status',
-                                             'target_id', 'depends_on',
-                                             'depended_by', 'created_at'])
+        self.assertTableStruct(action_list,
+                               ['id', 'name', 'action', 'status',
+                                'target_id', 'depends_on', 'cluster_id',
+                                'depended_by', 'created_at'])
