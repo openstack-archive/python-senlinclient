@@ -241,6 +241,7 @@ class DeletePolicy(command.Command):
                 sys.stdout.write(
                     _("Are you sure you want to delete this policy(s)"
                       " [y/N]?"))
+                sys.stdout.flush()
                 prompt_response = sys.stdin.readline().lower()
                 if not prompt_response.startswith('y'):
                     return
