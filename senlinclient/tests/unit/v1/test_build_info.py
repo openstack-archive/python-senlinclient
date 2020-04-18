@@ -10,7 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import mock
+from unittest import mock
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import build_info as osc_build_info

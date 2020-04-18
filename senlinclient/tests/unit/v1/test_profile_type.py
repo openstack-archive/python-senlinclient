@@ -10,9 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import mock
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
+from unittest import mock
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import profile_type as osc_profile_type

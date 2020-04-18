@@ -10,9 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import mock
 from openstack import connection as sdk_connection
 import testtools
+from unittest import mock
 
 from senlinclient import plugin
 
