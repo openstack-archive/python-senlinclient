@@ -11,8 +11,8 @@
 # under the License.
 
 import copy
+from unittest import mock
 
-import mock
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 import six

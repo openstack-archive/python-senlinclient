@@ -11,8 +11,8 @@
 # under the License.
 
 import sys
+from unittest import mock
 
-import mock
 from osc_lib.tests import utils
 import requests
 

@@ -11,7 +11,8 @@
 # under the License.
 
 from heatclient.common import template_utils
-import mock
+from unittest import mock
+
 import six
 import testtools
 
