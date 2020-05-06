@@ -13,7 +13,6 @@
 from heatclient.common import template_utils
 from unittest import mock
 
-import six
 import testtools
 
 from senlinclient.common import exc
@@ -49,7 +48,7 @@ class UtilTest(testtools.TestCase):
                                params)
         msg = _('Malformed parameter(status:ACTIVE). '
                 'Use the key=value format.')
-        self.assertEqual(msg, six.text_type(ex))
+        self.assertEqual(msg, str(ex))
 
     @mock.patch.object(template_utils,
                        'process_multiple_environments_and_files')

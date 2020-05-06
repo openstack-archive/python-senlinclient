@@ -15,7 +15,6 @@ from keystoneauth1.exceptions import http as kae_http
 from openstack import exceptions as sdkexc
 from oslo_serialization import jsonutils
 from requests import exceptions as reqexc
-import six
 
 from senlinclient.common.i18n import _
 
@@ -272,7 +271,7 @@ def parse_exception(exc):
             }
         }
 
-    elif isinstance(exc, six.string_types):
+    elif isinstance(exc, str):
         record = jsonutils.loads(exc)
     # some exception from keystoneauth1 is not shaped by SDK
     elif isinstance(exc, kae_http.HttpError):

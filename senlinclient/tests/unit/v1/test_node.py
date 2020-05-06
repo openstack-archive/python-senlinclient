@@ -11,11 +11,11 @@
 # under the License.
 
 import copy
+import io
 from unittest import mock
 
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
-import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import node as osc_node
@@ -394,7 +394,7 @@ class TestNodeDelete(TestNode):
              mock.call('node2', False, False)]
         )
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_node_delete_prompt_yes(self, mock_stdin):
         arglist = ['my_node']
         mock_stdin.isatty.return_value = True
@@ -407,7 +407,7 @@ class TestNodeDelete(TestNode):
         self.mock_client.delete_node.assert_called_with(
             'my_node', False, False)
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_node_delete_prompt_no(self, mock_stdin):
         arglist = ['my_node']
         mock_stdin.isatty.return_value = True

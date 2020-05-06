@@ -23,7 +23,6 @@ from osc_lib.command import command
 from osc_lib import exceptions as exc
 from osc_lib import utils
 from oslo_utils import strutils
-import six
 
 from senlinclient.common.i18n import _
 from senlinclient.common import utils as senlin_utils
@@ -363,7 +362,7 @@ class DeleteCluster(command.Command):
                     cid, False, parsed_args.force_delete)
                 result[cid] = ('OK', cluster_delete_action['id'])
             except Exception as ex:
-                result[cid] = ('ERROR', six.text_type(ex))
+                result[cid] = ('ERROR', str(ex))
 
         for rid, res in result.items():
             senlin_utils.print_action_result(rid, res)

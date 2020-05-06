@@ -11,12 +11,12 @@
 # under the License.
 
 import copy
+import io
 from unittest import mock
 
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 from osc_lib import utils
-import six
 
 from senlinclient.common.i18n import _
 from senlinclient.tests.unit.v1 import fakes
@@ -347,7 +347,7 @@ class TestReceiverDelete(TestReceiver):
         self.assertEqual('Failed to delete 1 of the 2 specified receiver(s).',
                          str(error))
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_receiver_delete_prompt_yes(self, mock_stdin):
         arglist = ['my_receiver']
         mock_stdin.isatty.return_value = True
@@ -360,7 +360,7 @@ class TestReceiverDelete(TestReceiver):
         self.mock_client.delete_receiver.assert_called_with('my_receiver',
                                                             False)
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_receiver_delete_prompt_no(self, mock_stdin):
         arglist = ['my_receiver']
         mock_stdin.isatty.return_value = True

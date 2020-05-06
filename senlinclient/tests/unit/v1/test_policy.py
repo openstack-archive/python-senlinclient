@@ -11,11 +11,11 @@
 # under the License.
 
 import copy
+import io
 from unittest import mock
 
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
-import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import policy as osc_policy
@@ -353,7 +353,7 @@ class TestPolicyDelete(TestPolicy):
         self.assertEqual('Failed to delete 1 of the 2 specified policy(s).',
                          str(error))
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_policy_delete_prompt_yes(self, mock_stdin):
         arglist = ['my_policy']
         mock_stdin.isatty.return_value = True
@@ -366,7 +366,7 @@ class TestPolicyDelete(TestPolicy):
         self.mock_client.delete_policy.assert_called_with('my_policy',
                                                           False)
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_policy_delete_prompt_no(self, mock_stdin):
         arglist = ['my_policy']
         mock_stdin.isatty.return_value = True
