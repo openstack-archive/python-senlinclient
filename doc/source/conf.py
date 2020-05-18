@@ -35,10 +35,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # openstackdocstheme options
-repository_name = 'openstack/python-senlinclient'
-bug_project = 'python-senlinclient'
-bug_tag = ''
-project = 'python-senlinclient'
+openstackdocs_repo_name = 'openstack/python-senlinclient'
+openstackdocs_bug_project = 'python-senlinclient'
+openstackdocs_bug_tag = ''
 copyright = 'OpenStack Contributors'
 
 # List of directories, relative to source directory, that shouldn't be searched
@@ -53,19 +52,13 @@ add_function_parentheses = True
 add_module_names = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'openstackdocs'
-
-# -- Options for openstackdocstheme -------------------------------------------
-
-repository_name = 'openstack/python-senlinclient'
-bug_project = 'python-senlinclient'
-bug_tag = ''
 
 # -- Options for manual page output ------------------------------------------
 
@@ -75,6 +68,3 @@ man_pages = [
     ('index', 'senlin', 'OpenStack Senlin command line client',
      ['OpenStack Contributors'], 1),
 ]
-
-# Last updated
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
