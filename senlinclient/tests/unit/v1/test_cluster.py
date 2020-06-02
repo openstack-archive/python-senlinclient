@@ -11,12 +11,12 @@
 # under the License.
 
 import copy
+import io
 import subprocess
 from unittest import mock
 
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
-import six
 
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import cluster as osc_cluster
@@ -393,7 +393,7 @@ class TestClusterDelete(TestCluster):
              mock.call('cluster2', False, False)]
         )
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_cluster_delete_prompt_yes(self, mock_stdin):
         arglist = ['my_cluster']
         mock_stdin.isatty.return_value = True
@@ -406,7 +406,7 @@ class TestClusterDelete(TestCluster):
         self.mock_client.delete_cluster.assert_called_with(
             'my_cluster', False, False)
 
-    @mock.patch('sys.stdin', spec=six.StringIO)
+    @mock.patch('sys.stdin', spec=io.StringIO)
     def test_cluster_delete_prompt_no(self, mock_stdin):
         arglist = ['my_cluster']
         mock_stdin.isatty.return_value = True

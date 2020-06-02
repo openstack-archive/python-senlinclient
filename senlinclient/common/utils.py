@@ -17,7 +17,6 @@ from heatclient.common import template_utils
 from oslo_serialization import jsonutils
 from oslo_utils import importutils
 import prettytable
-import six
 import yaml
 
 from senlinclient.common import exc
@@ -42,7 +41,7 @@ def format_nested_dict(d, fields, column_names):
     keys = sorted(d.keys())
     for field in keys:
         value = d[field]
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             value = jsonutils.dumps(value, indent=2, ensure_ascii=False)
         if value is None:
             value = '-'
@@ -122,7 +121,7 @@ def get_spec_content(filename):
             data = yaml.safe_load(f)
         except Exception as ex:
             raise exc.CommandError(_('The specified file is not a valid '
-                                     'YAML file: %s') % six.text_type(ex))
+                                     'YAML file: %s') % str(ex))
     return data
 
 
@@ -133,7 +132,7 @@ def process_stack_spec(spec):
         tmplfile = spec.get('template', None)
     except AttributeError as ex:
         raise exc.FileFormatError(_('The specified file is not a valid '
-                                    'YAML file: %s') % six.text_type(ex))
+                                    'YAML file: %s') % str(ex))
     if not tmplfile:
         raise exc.FileFormatError(_('No template found in the given '
                                     'spec file'))

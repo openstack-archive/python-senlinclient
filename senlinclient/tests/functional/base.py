@@ -11,7 +11,6 @@
 # under the License.
 
 import os
-import six
 import time
 
 from oslo_utils import uuidutils
@@ -46,7 +45,7 @@ class OpenStackClientTestBase(base.ClientTestBase):
         obj = {}
         items = self.parser.listing(output)
         for item in items:
-            obj[item['Field']] = six.text_type(item['Value'])
+            obj[item['Field']] = str(item['Value'])
         return dict((self._key_name(k), v) for k, v in obj.items())
 
     def _key_name(self, key):
