@@ -28,7 +28,7 @@ Running the tests
 -----------------
 There are a number of ways to run unit tests currently, and there's a
 combination of frameworks used depending on what commands you use.  The
-preferred method is to use tox, which calls ostestr via the tox.ini file.
+preferred method is to use tox, which calls stestr via the tox.ini file.
 To run all tests simply run::
 
     tox
@@ -52,4 +52,4 @@ Or all tests in the test_node.py file::
     tox -epy27 senlinclient.tests.unit.v1.test_node
 
 For more information on these options and how to run tests, please see the
-`ostestr documentation <https://docs.openstack.org/os-testr/latest/>`_.
+`stestr documentation <https://stestr.readthedocs.io/en/latest/index.html>`_.
