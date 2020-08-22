@@ -1,13 +1,32 @@
 - job:
-    name: senlinclient-dsvm-functional
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/senlinclient-dsvm-functional/run.yaml
-    post-run: playbooks/legacy/senlinclient-dsvm-functional/post.yaml
-    timeout: 7200
+    name: senlinclient-functional
+    parent: devstack-tox-functional
     required-projects:
-      - openstack/devstack-gate
       - openstack/python-senlinclient
       - openstack/senlin
+    vars:
+      openrc_enable_export: true
+      devstack_plugins:
+        senlin: https://opendev.org/openstack/senlin
+      devstack_local_conf:
+        post-config:
+          $SENLIN_CONF:
+             DEFAULT:
+               cloud_backend: openstack_test
+               default_log_levels: >-
+                 amqp=WARN,amqplib=WARN,sqlalchemy=WARN,oslo_messaging=WARN
+                 ,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN
+                 ,urllib3.connectionpool=WARN
+                 ,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN
+                 ,keystonemiddleware=WARN
+                 ,routes.middleware=WARN
+                 ,stevedore=WARN
+                 ,oslo_messaging._drivers.amqp=WARN
+                 ,oslo_messaging._drivers.amqpdriver=WARN
+    irrelevant-files:
+      - ^senlinclient/tests/unit/.*$
+      - ^setup.cfg$
+      - ^tools/.*$
 
 - project:
     templates:
@@ -19,5 +38,5 @@
       - release-notes-jobs-python3
     check:
       jobs:
-        - senlinclient-dsvm-functional:
+        - senlinclient-functional:
             voting: false
