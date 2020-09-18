@@ -243,9 +243,11 @@ class UpdateCluster(command.ShowOne):
         parser.add_argument(
             '--config',
             metavar='<"key1=value1;key2=value2...">',
-            help=_('s of the cluster. Default to {}. '
+            help=_('Configuration of the cluster. '
                    'This can be specified multiple times, or once with '
-                   'key-value pairs separated by a semicolon.'),
+                   'key-value pairs separated by a semicolon. '
+                   'Any existing configuration values on the cluster are '
+                   'wiped out when using this option.'),
             action='append'
         )
         parser.add_argument(
@@ -303,6 +305,7 @@ class UpdateCluster(command.ShowOne):
                 strict=True,
             ),
             'metadata': senlin_utils.format_parameters(parsed_args.metadata),
+            'config': senlin_utils.format_parameters(parsed_args.config),
             'timeout': parsed_args.timeout,
         }
 
