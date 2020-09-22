@@ -210,6 +210,11 @@ class CreateCluster(command.ShowOne):
             metavar='<cluster-name>',
             help=_('Name of the cluster to create')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster creation to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -230,6 +235,8 @@ class CreateCluster(command.ShowOne):
         }
 
         cluster = senlin_client.create_cluster(**attrs)
+        if parsed_args.wait:
+            senlin_utils.await_cluster_status(senlin_client, cluster.id)
         return _show_cluster(senlin_client, cluster.id)
 
 
@@ -262,7 +269,6 @@ class UpdateCluster(command.ShowOne):
                    "If false, it will be applied to all existing nodes. "
                    "If true, any newly created nodes will use the new profile,"
                    "but existing nodes will not be changed. Default is False.")
-
         )
         parser.add_argument(
             '--timeout',
@@ -288,6 +294,11 @@ class UpdateCluster(command.ShowOne):
             metavar='<cluster>',
             help=_('Name or ID of cluster to be updated')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster update to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -310,6 +321,12 @@ class UpdateCluster(command.ShowOne):
         }
 
         senlin_client.update_cluster(cluster, **attrs)
+        if parsed_args.wait:
+            # PATCH operations do not currently return an action to await.
+            # introducing a delay to allow the cluster to transition state
+            # out of ACTIVE before inspection.
+            time.sleep(1)
+            senlin_utils.await_cluster_status(senlin_client, cluster.id)
         return _show_cluster(senlin_client, cluster.id)
 
 
@@ -336,6 +353,11 @@ class DeleteCluster(command.Command):
             action='store_true',
             help=_('Skip yes/no prompt (assume yes).')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster delete to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -361,17 +383,21 @@ class DeleteCluster(command.Command):
         result = {}
         for cid in parsed_args.cluster:
             try:
-                cluster_delete_action = senlin_client.delete_cluster(
+                action = senlin_client.delete_cluster(
                     cid, False, parsed_args.force_delete)
-                result[cid] = ('OK', cluster_delete_action['id'])
+                result[cid] = ('OK', action['id'])
             except Exception as ex:
                 result[cid] = ('ERROR', str(ex))
 
-        for rid, res in result.items():
-            senlin_utils.print_action_result(rid, res)
+        for cid, a in result.items():
+            senlin_utils.print_action_result(cid, a)
+            if parsed_args.wait:
+                if a[0] == 'OK':
+                    senlin_utils.await_action(senlin_client, a[1])
+                    senlin_utils.await_cluster_delete(senlin_client, cid)
 
 
-class ResizeCluster(command.Command):
+class ResizeCluster(command.ShowOne):
     """Resize a cluster."""
 
     log = logging.getLogger(__name__ + ".ResizeCluster")
@@ -432,6 +458,11 @@ class ResizeCluster(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster resize to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -446,6 +477,7 @@ class ResizeCluster(command.Command):
         min_size = parsed_args.min_size
         max_size = parsed_args.max_size
         min_step = parsed_args.min_step
+        wait = parsed_args.wait
 
         if sum(v is not None for v in (capacity, adjustment, percentage,
                                        min_size, max_size)) == 0:
@@ -507,13 +539,21 @@ class ResizeCluster(command.Command):
         action_args['strict'] = parsed_args.strict
 
         resp = senlin_client.resize_cluster(parsed_args.cluster, **action_args)
+
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                senlin_utils.await_cluster_status(senlin_client,
+                                                  parsed_args.cluster)
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
 
+        return '', ''
 
-class ScaleInCluster(command.Command):
+
+class ScaleInCluster(command.ShowOne):
     """Scale in a cluster by the specified number of nodes."""
 
     log = logging.getLogger(__name__ + ".ScaleInCluster")
@@ -530,6 +570,11 @@ class ScaleInCluster(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster scale-in to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -544,11 +589,18 @@ class ScaleInCluster(command.Command):
                 'Unable to scale in cluster: %s') % resp['error']['message'])
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                senlin_utils.await_cluster_status(senlin_client,
+                                                  parsed_args.cluster)
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
 
+        return '', ''
 
-class ScaleOutCluster(command.Command):
+
+class ScaleOutCluster(command.ShowOne):
     """Scale out a cluster by the specified number of nodes."""
 
     log = logging.getLogger(__name__ + ".ScaleOutCluster")
@@ -565,6 +617,11 @@ class ScaleOutCluster(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster scale-out to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -579,8 +636,15 @@ class ScaleOutCluster(command.Command):
                 'Unable to scale out cluster: %s') % resp['error']['message'])
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                senlin_utils.await_cluster_status(senlin_client,
+                                                  parsed_args.cluster)
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
+
+        return '', ''
 
 
 class ClusterPolicyAttach(command.Command):
@@ -608,6 +672,11 @@ class ClusterPolicyAttach(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster policy-attach to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -624,6 +693,8 @@ class ClusterPolicyAttach(command.Command):
                                                       **kwargs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
         else:
             print('Request error: %s' % resp)
 
@@ -646,6 +717,11 @@ class ClusterPolicyDetach(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster policy-detach to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -655,6 +731,8 @@ class ClusterPolicyDetach(command.Command):
                                                         parsed_args.policy)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
         else:
             print('Request error: %s' % resp)
 
@@ -737,7 +815,7 @@ class ClusterNodeList(command.Lister):
         )
 
 
-class ClusterNodeAdd(command.Command):
+class ClusterNodeAdd(command.ShowOne):
     """Add specified nodes to cluster."""
     log = logging.getLogger(__name__ + ".ClusterNodeAdd")
 
@@ -755,6 +833,11 @@ class ClusterNodeAdd(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster members add to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -765,11 +848,16 @@ class ClusterNodeAdd(command.Command):
                                                   node_ids)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
 
+        return '', ''
 
-class ClusterNodeDel(command.Command):
+
+class ClusterNodeDel(command.ShowOne):
     """Delete specified nodes from cluster."""
     log = logging.getLogger(__name__ + ".ClusterNodeDel")
 
@@ -795,6 +883,11 @@ class ClusterNodeDel(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster members delete to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -808,11 +901,16 @@ class ClusterNodeDel(command.Command):
             parsed_args.cluster, node_ids, **kwargs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
 
+        return '', ''
 
-class ClusterNodeReplace(command.Command):
+
+class ClusterNodeReplace(command.ShowOne):
     """Replace the nodes in a cluster with specified nodes."""
     log = logging.getLogger(__name__ + ".ClusterNodeReplace")
 
@@ -833,6 +931,11 @@ class ClusterNodeReplace(command.Command):
             metavar='<cluster>',
             help=_('Name or ID of cluster to operate on')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster members replace to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -847,11 +950,16 @@ class ClusterNodeReplace(command.Command):
                                                       nodepairs)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                return _show_cluster(senlin_client, parsed_args.cluster)
         else:
             print('Request error: %s' % resp)
 
+        return '', ''
 
-class CheckCluster(command.Command):
+
+class CheckCluster(command.Lister):
     """Check the cluster(s)."""
     log = logging.getLogger(__name__ + ".CheckCluster")
 
@@ -863,11 +971,19 @@ class CheckCluster(command.Command):
             nargs='+',
             help=_('ID or name of cluster(s) to operate on.')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster check to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)", parsed_args)
         senlin_client = self.app.client_manager.clustering
+
+        cluster_actions = {}
+
         for cid in parsed_args.cluster:
             try:
                 resp = senlin_client.check_cluster(cid)
@@ -877,11 +993,39 @@ class CheckCluster(command.Command):
                 print('Cluster check request on cluster %(cid)s is '
                       'accepted by action %(action)s.'
                       % {'cid': cid, 'action': resp['action']})
+                cluster_actions[cid] = resp['action']
             else:
                 print('Request error: %s' % resp)
 
+        # generate the output after all actions have been accepted/rejected
+        if parsed_args.wait and len(cluster_actions) > 0:
+            for cid, action in cluster_actions.items():
+                senlin_utils.await_action(senlin_client, action)
+                senlin_utils.await_cluster_status(senlin_client, cid)
+            return _list_cluster_summaries(senlin_client,
+                                           cluster_actions.keys())
 
-class RecoverCluster(command.Command):
+        return '', ''
+
+
+def _list_cluster_summaries(senlin_client, cluster_ids):
+    clusters = []
+    for cluster_id in cluster_ids:
+        try:
+            cluster = senlin_client.get_cluster(cluster_id)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
+
+        clusters.append(cluster)
+
+    columns = ['ID', 'Name', 'Status', 'Status Reason']
+    formatters = {}
+    props = (utils.get_item_properties(c, columns, formatters=formatters)
+             for c in clusters)
+    return columns, props
+
+
+class RecoverCluster(command.Lister):
     """Recover the cluster(s)."""
     log = logging.getLogger(__name__ + ".RecoverCluster")
 
@@ -893,13 +1037,17 @@ class RecoverCluster(command.Command):
             nargs='+',
             help=_('ID or name of cluster(s) to operate on.')
         )
-
         parser.add_argument(
             '--check',
             metavar='<boolean>',
             default=False,
             help=_("Whether the cluster should check it's nodes status before "
                    "doing cluster recover. Default is false")
+        )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster recover to complete')
         )
 
         return parser
@@ -912,6 +1060,7 @@ class RecoverCluster(command.Command):
             'check': strutils.bool_from_string(parsed_args.check, strict=True)
         }
 
+        cluster_actions = {}
         for cid in parsed_args.cluster:
             try:
                 resp = senlin_client.recover_cluster(cid, **params)
@@ -921,8 +1070,19 @@ class RecoverCluster(command.Command):
                 print('Cluster recover request on cluster %(cid)s is '
                       'accepted by action %(action)s.'
                       % {'cid': cid, 'action': resp['action']})
+                cluster_actions[cid] = resp['action']
             else:
                 print('Request error: %s' % resp)
+
+        # generate the output after all actions have been accepted/rejected
+        if parsed_args.wait and len(cluster_actions) > 0:
+            for cid, action in cluster_actions.items():
+                senlin_utils.await_action(senlin_client, action)
+                senlin_utils.await_cluster_status(senlin_client, cid)
+            return _list_cluster_summaries(senlin_client,
+                                           cluster_actions.keys())
+
+        return '', ''
 
 
 class ClusterCollect(command.Lister):
@@ -966,7 +1126,7 @@ class ClusterCollect(command.Lister):
                  for a in attrs))
 
 
-class ClusterOp(command.Lister):
+class ClusterOp(command.ShowOne):
     """Perform an operation on all nodes across a cluster."""
     log = logging.getLogger(__name__ + ".ClusterOp")
 
@@ -991,6 +1151,11 @@ class ClusterOp(command.Lister):
             metavar='<cluster>',
             help=_('ID or name of cluster to operate on.')
         )
+        parser.add_argument(
+            '--wait',
+            action='store_true',
+            help=_('Wait for cluster operation to complete')
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -1009,8 +1174,14 @@ class ClusterOp(command.Lister):
             raise exc.CommandError(_('Cluster not found: %s') % cid)
         if 'action' in resp:
             print('Request accepted by action: %s' % resp['action'])
+            if parsed_args.wait:
+                senlin_utils.await_action(senlin_client, resp['action'])
+                senlin_utils.await_cluster_status(senlin_client, cid)
+                return _show_cluster(senlin_client, cid)
         else:
             print('Request error: %s' % resp)
+
+        return '', ''
 
 
 class ClusterRun(command.Command):
