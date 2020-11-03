@@ -273,6 +273,9 @@ class TestClusterUpdate(TestCluster):
             "nk1": "nv1",
             "nk2": "nv2",
         },
+        "config": {
+            "cluster.stop_node_before_delete": "true",
+        },
         "name": 'new_cluster',
         "profile_id": 'new_profile',
         "profile_only": False,
@@ -314,6 +317,7 @@ class TestClusterUpdate(TestCluster):
 
     def test_cluster_update_defaults(self):
         arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--config', 'cluster.stop_node_before_delete=true',
                    '--profile', 'new_profile', '--timeout', '30', '45edadcb']
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
