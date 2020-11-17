@@ -304,10 +304,15 @@ class UpdateCluster(command.ShowOne):
                 parsed_args.profile_only,
                 strict=True,
             ),
-            'metadata': senlin_utils.format_parameters(parsed_args.metadata),
-            'config': senlin_utils.format_parameters(parsed_args.config),
             'timeout': parsed_args.timeout,
         }
+
+        if parsed_args.config is not None:
+            attrs['config'] = senlin_utils.format_parameters(
+                parsed_args.config)
+        if parsed_args.metadata is not None:
+            attrs['metadata'] = senlin_utils.format_parameters(
+                parsed_args.metadata)
 
         senlin_client.update_cluster(cluster, **attrs)
         return _show_cluster(senlin_client, cluster.id)
