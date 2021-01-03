@@ -54,8 +54,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Senlin Client Release Notes'
-copyright = u'2015, Senlin Developers'
+project = 'Senlin Client Release Notes'
+copyright = '2015, Senlin Developers'
 
 # Release notes are version independent.
 # The full version, including alpha/beta/rc tags.
@@ -207,8 +207,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     ('index', 'SenlinClientReleaseNotes.tex',
-     u'Senlin Client Release Notes Documentation',
-     u'Senlin Developers', 'manual'),
+     'Senlin Client Release Notes Documentation',
+     'Senlin Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -238,8 +238,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'senlinclientreleasenotes',
-     u'Senlin Client Release Notes Documentation',
-     [u'Senlin Developers'], 1)
+     'Senlin Client Release Notes Documentation',
+     ['Senlin Developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -253,8 +253,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'SenlinClientReleaseNotes',
-     u'Senlin Client Release Notes Documentation',
-     u'Senlin Developers', 'SenlinClientReleaseNotes',
+     'Senlin Client Release Notes Documentation',
+     'Senlin Developers', 'SenlinClientReleaseNotes',
      'One line description of project.',
      'Miscellaneous'),
 ]
