@@ -18,6 +18,7 @@ from unittest import mock
 from openstack import exceptions as sdk_exc
 from osc_lib import exceptions as exc
 
+from senlinclient.common import utils as senlin_utils
 from senlinclient.tests.unit.v1 import fakes
 from senlinclient.v1 import cluster as osc_cluster
 
@@ -202,13 +203,14 @@ class TestClusterCreate(TestCluster):
     def setUp(self):
         super(TestClusterCreate, self).setUp()
         self.cmd = osc_cluster.CreateCluster(self.app, None)
+        self.cluster_id = '7d85f602-a948-4a30-afd4-e84f47471c15'
         fake_cluster = mock.Mock(
             config={},
             created_at="2015-02-11T15:13:20",
             data={},
             desired_capacity=0,
             domain_id=None,
-            id="7d85f602-a948-4a30-afd4-e84f47471c15",
+            id=self.cluster_id,
             init_time="2015-02-10T14:26:11",
             max_size=-1,
             metadata={},
@@ -264,6 +266,24 @@ class TestClusterCreate(TestCluster):
         parsed_args = self.check_parser(self.cmd, arglist, [])
         self.cmd.take_action(parsed_args)
         self.mock_client.create_cluster.assert_called_with(**kwargs)
+
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_create_with_wait(self, mock_await):
+        arglist = ['test_cluster', '--profile', 'mystack',
+                   '--min-size', '1', '--max-size', '10',
+                   '--desired-capacity', '2', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await.assert_called_once_with(self.mock_client, self.cluster_id)
+
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_create_without_wait(self, mock_await):
+        arglist = ['test_cluster', '--profile', 'mystack',
+                   '--min-size', '1', '--max-size', '10',
+                   '--desired-capacity', '2']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await.assert_not_called()
 
 
 class TestClusterUpdate(TestCluster):
@@ -333,6 +353,24 @@ class TestClusterUpdate(TestCluster):
                                   self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Cluster not found: c6b8b252', str(error))
+
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_update_with_wait(self, mock_await):
+        arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', '--timeout', '30', '45edadcb',
+                   '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await.assert_called_once_with(self.mock_client,
+                                           self.fake_cluster.id)
+
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_update_without_wait(self, mock_await):
+        arglist = ['--name', 'new_cluster', '--metadata', 'nk1=nv1;nk2=nv2',
+                   '--profile', 'new_profile', '--timeout', '30', '45edadcb']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await.assert_not_called()
 
 
 class TestClusterDelete(TestCluster):
@@ -421,6 +459,45 @@ class TestClusterDelete(TestCluster):
 
         mock_stdin.readline.assert_called_with()
         self.mock_client.delete_cluster.assert_not_called()
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_delete')
+    def test_cluster_delete_with_wait(self, mock_await_cluster,
+                                      mock_await_action):
+        fake_action = {'id': 'fake-action-id'}
+        self.mock_client.delete_cluster = mock.Mock(return_value=fake_action)
+        arglist = ['my_cluster', '--force', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  fake_action['id'])
+        mock_await_cluster.assert_called_once_with(self.mock_client,
+                                                   'my_cluster')
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_delete')
+    def test_cluster_delete_without_wait(self, mock_await_cluster,
+                                         mock_await_action):
+        fake_action = {'id': 'fake-action-id'}
+        self.mock_client.delete_cluster = mock.Mock(return_value=fake_action)
+        arglist = ['my_cluster', '--force']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_cluster.assert_not_called()
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_delete')
+    def test_cluster_delete_with_wait_bad_action(self, mock_await_cluster,
+                                                 mock_await_action):
+        self.mock_client.delete_cluster.side_effect = (
+            Exception('test exception')
+        )
+        arglist = ['my_cluster', '--force', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_cluster.assert_not_called()
 
 
 class TestClusterResize(TestCluster):
@@ -565,6 +642,46 @@ class TestClusterResize(TestCluster):
         self.assertEqual('Max size cannot be less than the specified '
                          'capacity.', str(error))
 
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_resize_with_wait(self, mock_await_status,
+                                      mock_await_action, mock_show):
+        arglist = ['--capacity', '2', 'my_cluster', "--wait"]
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_await_status.assert_called_once_with(self.mock_client,
+                                                  'my_cluster')
+        mock_show.assert_called_once()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_resize_without_wait(self, mock_await_status,
+                                         mock_await_action, mock_show):
+        arglist = ['--capacity', '2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_resize_with_wait_no_action(self, mock_await_status,
+                                                mock_await_action, mock_show):
+        error = 'test error'
+        self.mock_client.resize_cluster = mock.Mock(return_value=error)
+        arglist = ['--capacity', '2', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
 
 class TestClusterScaleIn(TestCluster):
     response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
@@ -582,6 +699,48 @@ class TestClusterScaleIn(TestCluster):
         self.mock_client.scale_in_cluster.assert_called_with('my_cluster',
                                                              '2')
 
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_in_with_wait(self, mock_await_status,
+                                        mock_await_action, mock_show):
+        arglist = ['--count', '2', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_await_status.assert_called_once_with(self.mock_client,
+                                                  'my_cluster')
+        mock_show.assert_called_once()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_in_without_wait(self, mock_await_status,
+                                           mock_await_action, mock_show):
+        arglist = ['--count', '2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_in_with_wait_no_action(self, mock_await_status,
+                                                  mock_await_action,
+                                                  mock_show):
+        arglist = ['--count', '2', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.scale_in_cluster = mock.Mock(return_value=error)
+
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
 
 class TestClusterScaleOut(TestCluster):
     response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
@@ -598,6 +757,48 @@ class TestClusterScaleOut(TestCluster):
         self.cmd.take_action(parsed_args)
         self.mock_client.scale_out_cluster.assert_called_with('my_cluster',
                                                               '2')
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_out_with_wait(self, mock_await_status,
+                                         mock_await_action, mock_show):
+        arglist = ['--count', '2', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_await_status.assert_called_once_with(self.mock_client,
+                                                  'my_cluster')
+        mock_show.assert_called_once()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_out_without_wait(self, mock_await_status,
+                                            mock_await_action, mock_show):
+        arglist = ['--count', '2', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_scale_out_with_wait_no_action(self, mock_await_status,
+                                                   mock_await_action,
+                                                   mock_show):
+        arglist = ['--count', '2', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.scale_out_cluster = mock.Mock(return_value=error)
+
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
 
 
 class TestClusterPolicyAttach(TestCluster):
@@ -618,6 +819,32 @@ class TestClusterPolicyAttach(TestCluster):
             'my_policy',
             enabled=True)
 
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_attach_with_wait(self, mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_attach_without_wait(self, mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_attach_with_wait_no_action(self,
+                                                       mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.attach_policy_to_cluster = \
+            mock.Mock(return_value=error)
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+
 
 class TestClusterPolicyDetach(TestCluster):
     response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
@@ -635,6 +862,32 @@ class TestClusterPolicyDetach(TestCluster):
         self.mock_client.detach_policy_from_cluster.assert_called_with(
             'my_cluster',
             'my_policy')
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_dettach_with_wait(self, mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_dettach_without_wait(self, mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_policy_dettach_with_wait_no_action(self,
+                                                        mock_await_action):
+        arglist = ['--policy', 'my_policy', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.detach_policy_from_cluster = \
+            mock.Mock(return_value=error)
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
 
 
 class TestClusterNodeList(TestCluster):
@@ -734,6 +987,40 @@ class TestClusterNodeAdd(TestCluster):
             'my_cluster',
             ['node1', 'node2'])
 
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_add_with_wait(self, mock_await_action, mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_show.assert_called_once_with(self.mock_client, 'my_cluster')
+
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_add_without_wait(self, mock_await_action, mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_add_with_wait_no_action(self, mock_await_action,
+                                                  mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.add_nodes_to_cluster = mock.Mock(return_value=error)
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_show.assert_not_called()
+
 
 class TestClusterNodeDel(TestCluster):
     response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
@@ -771,6 +1058,43 @@ class TestClusterNodeDel(TestCluster):
             ['node1', 'node2'],
             destroy_after_deletion=False)
 
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_delete_with_wait(self, mock_await_action, mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_show.assert_called_once_with(self.mock_client, 'my_cluster')
+
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_delete_without_wait(self, mock_await_action,
+                                              mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, "_show_cluster")
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_node_delete_with_wait_no_action(self, mock_await_action,
+                                                     mock_show):
+        arglist = ['--nodes', 'node1', 'my_cluster', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.remove_nodes_from_cluster = \
+            mock.Mock(return_value=error)
+
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_show.assert_not_called()
+
 
 class TestClusterCheck(TestCluster):
     response = {"action": "8bb476c3-0f4c-44ee-9f64-c7b0260814de"}
@@ -797,6 +1121,48 @@ class TestClusterCheck(TestCluster):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Cluster not found: cluster1', str(error))
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_check_with_wait(self, mock_await_action,
+                                     mock_await_status, mock_list):
+        arglist = ['cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_called_with(self.mock_client,
+                                             self.response['action'])
+        mock_await_status.assert_called_with(self.mock_client, 'cluster1')
+        mock_list.assert_called_with(self.mock_client, {'cluster1'})
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_check_without_wait(self, mock_await_action,
+                                        mock_await_status, mock_list):
+        arglist = ['cluster1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_list.assert_not_called()
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_check_with_wait_no_action(self, mock_await_action,
+                                               mock_await_status, mock_list):
+        arglist = ['cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.check_cluster = mock.Mock(return_value=error)
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_list.assert_not_called()
 
 
 class TestClusterRecover(TestCluster):
@@ -825,6 +1191,48 @@ class TestClusterRecover(TestCluster):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Cluster not found: cluster1', str(error))
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_recover_with_wait(self, mock_await_action,
+                                       mock_await_status, mock_list):
+        arglist = ['cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_called_with(self.mock_client,
+                                             self.response['action'])
+        mock_await_status.assert_called_with(self.mock_client, 'cluster1')
+        mock_list.assert_called_with(self.mock_client, {'cluster1'})
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_recover_without_wait(self, mock_await_action,
+                                          mock_await_status, mock_list):
+        arglist = ['cluster1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_list.assert_not_called()
+
+    @mock.patch.object(osc_cluster, "_list_cluster_summaries")
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    @mock.patch.object(senlin_utils, 'await_action')
+    def test_cluster_recover_with_wait_no_action(self, mock_await_action,
+                                                 mock_await_status, mock_list):
+        arglist = ['cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.recover_cluster = mock.Mock(return_value=error)
+        self.cmd.take_action(parsed_args)
+
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_list.assert_not_called()
 
 
 class TestClusterOp(TestCluster):
@@ -855,6 +1263,48 @@ class TestClusterOp(TestCluster):
         error = self.assertRaises(exc.CommandError, self.cmd.take_action,
                                   parsed_args)
         self.assertIn('Cluster not found: cluster1', str(error))
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_op_with_wait(self, mock_await_status,
+                                  mock_await_action, mock_show):
+        arglist = ['--operation', 'dance', 'cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_called_once_with(self.mock_client,
+                                                  self.response['action'])
+        mock_await_status.assert_called_once_with(self.mock_client,
+                                                  'cluster1')
+        mock_show.assert_called_once()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_op_without_wait(self, mock_await_status,
+                                     mock_await_action, mock_show):
+        arglist = ['--operation', 'dance', 'cluster1']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
+
+    @mock.patch.object(osc_cluster, '_show_cluster')
+    @mock.patch.object(senlin_utils, 'await_action')
+    @mock.patch.object(senlin_utils, 'await_cluster_status')
+    def test_cluster_op_with_wait_no_action(self, mock_await_status,
+                                            mock_await_action, mock_show):
+        arglist = ['--operation', 'dance', 'cluster1', '--wait']
+        parsed_args = self.check_parser(self.cmd, arglist, [])
+        error = {'error': 'test-error'}
+        self.mock_client.perform_operation_on_cluster = \
+            mock.Mock(return_value=error)
+
+        self.cmd.take_action(parsed_args)
+        mock_await_action.assert_not_called()
+        mock_await_status.assert_not_called()
+        mock_show.assert_not_called()
 
 
 class TestClusterCollect(TestCluster):

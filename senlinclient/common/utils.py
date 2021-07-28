@@ -12,13 +12,19 @@
 
 
 from heatclient.common import template_utils
+import logging
+from openstack import exceptions as sdk_exc
 from oslo_serialization import jsonutils
 from oslo_utils import importutils
 import prettytable
+import time
 import yaml
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
+
+
+log = logging.getLogger(__name__)
 
 
 def import_versioned_module(version, submodule=None):
@@ -153,3 +159,78 @@ def process_stack_spec(spec):
     }
 
     return new_spec
+
+
+def await_action(senlin_client, action_id,
+                 poll_count_max=10, poll_interval=5):
+
+    def check_action():
+        try:
+            action = senlin_client.get_action(action_id)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Action not found: %s')
+                                   % action_id)
+        action_states = ['succeeded', 'failed', 'cancelled']
+        if action.status.lower() in action_states:
+            log.info("Action %s completed with status %s."
+                     % (action.id, action.status))
+            return True
+        log.info("Awaiting action %s completion status (current: %s)."
+                 % (action.id, action.status))
+        return False
+
+    _check(check_action, poll_count_max, poll_interval)
+
+
+def await_cluster_status(senlin_client, cluster_id, statuses=None,
+                         poll_count_max=10, poll_interval=5):
+
+    if not statuses or len(statuses) <= 0:
+        statuses = ['ACTIVE', 'ERROR', 'WARNING']
+
+    def check_status():
+        try:
+            cluster = senlin_client.get_cluster(cluster_id)
+        except sdk_exc.ResourceNotFound:
+            raise exc.CommandError(_('Cluster not found: %s') % cluster_id)
+
+        if cluster.status.lower() in [fs.lower() for fs in statuses]:
+            return True
+        log.info("Awaiting cluster status (desired: %s - current: %s)." %
+                 (', '.join(statuses), cluster.status))
+        return False
+
+    _check(check_status, poll_count_max, poll_interval)
+
+
+def await_cluster_delete(senlin_client, cluster_id,
+                         poll_count_max=10, poll_interval=5):
+
+    def check_deleted():
+        try:
+            senlin_client.get_cluster(cluster_id)
+        except sdk_exc.ResourceNotFound:
+            log.info("Successfully deleted cluster %s." % cluster_id)
+            return True
+        log.info("Awaiting cluster deletion for %s." % cluster_id)
+        return False
+
+    _check(check_deleted, poll_count_max, poll_interval)
+
+
+def _check(check_func, poll_count_max=10, poll_interval=5):
+    # a negative poll_count_max is considered indefinite
+
+    poll_increment = 1
+    if poll_count_max < 0:
+        poll_count_max = 1
+        poll_increment = 0
+
+    poll_count = 0
+    while poll_count < poll_count_max:
+        if check_func():
+            return
+
+        time.sleep(poll_interval)
+        poll_count += poll_increment
+    raise exc.PollingExceededError()

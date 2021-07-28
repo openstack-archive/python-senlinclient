@@ -38,6 +38,10 @@ class FileFormatError(BaseException):
     """Illegal file format detected."""
 
 
+class PollingExceededError(BaseException):
+    """Desired resource state not achived within polling period."""
+
+
 class HTTPException(BaseException):
     """Base exception for all HTTP-derived exceptions."""
     code = 'N/A'

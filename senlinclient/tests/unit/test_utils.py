@@ -14,6 +14,7 @@ from heatclient.common import template_utils
 from unittest import mock
 
 import testtools
+import time
 
 from senlinclient.common import exc
 from senlinclient.common.i18n import _
@@ -97,3 +98,40 @@ class UtilTest(testtools.TestCase):
     def test_list_formatter_with_empty_list(self):
         params = []
         self.assertEqual('', utils.list_formatter(params))
+
+    @mock.patch.object(utils, '_check')
+    def test_await_cluster_action(self, mock_check):
+        utils.await_action('fake-client', 'test-action-id')
+        mock_check.assert_called_once()
+
+    @mock.patch.object(utils, '_check')
+    def test_await_cluster_status(self, mock_check):
+        utils.await_cluster_status('fake-client', 'ACTIVE')
+        mock_check.assert_called_once()
+
+    @mock.patch.object(utils, '_check')
+    def test_await_cluster_delete(self, mock_check):
+        utils.await_cluster_delete('fake-client', 'test-cluster-id')
+        mock_check.assert_called_once()
+
+    def test_check(self):
+        check_func = mock.Mock(return_value=True)
+
+        try:
+            utils._check(check_func)
+        except Exception:
+            self.fail("_check() unexpectedly raised an exception")
+
+        check_func.assert_called()
+
+    @mock.patch.object(time, 'sleep')
+    def test_check_raises(self, mock_sleep):
+        mock_check_func = mock.Mock(return_value=False)
+
+        poll_count = 2
+        poll_interval = 1
+
+        self.assertRaises(exc.PollingExceededError, utils._check,
+                          mock_check_func, poll_count, poll_interval)
+        mock_check_func.assert_called()
+        mock_sleep.assert_called()
