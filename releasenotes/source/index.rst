@@ -6,6 +6,7 @@ Senlin Client Release Notes
    :maxdepth: 1
 
    unreleased
+   wallaby
    victoria
    ussuri
    train
