@@ -1,14 +1,15 @@
 # Andi Chandler <andi@gowling.com>, 2017. #zanata
 # Andi Chandler <andi@gowling.com>, 2018. #zanata
+# Andi Chandler <andi@gowling.com>, 2022. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: python-senlinclient\n"
+"Project-Id-Version: Senlin Client Release Notes\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-13 16:27+0000\n"
+"POT-Creation-Date: 2022-03-07 17:39+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-08-08 07:57+0000\n"
+"PO-Revision-Date: 2022-06-13 07:33+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom)\n"
 "Language: en_GB\n"
@@ -24,11 +25,20 @@ msgstr "1.0.0"
 msgid "1.1.0"
 msgstr "1.1.0"
 
+msgid "1.10.0"
+msgstr "1.10.0"
+
 msgid "1.2.0"
 msgstr "1.2.0"
 
 msgid "1.6.0"
 msgstr "1.6.0"
+
+msgid "1.8.0"
+msgstr "1.8.0"
+
+msgid "2.0.0"
+msgstr "2.0.0"
 
 msgid ""
 "A new CLI command 'senlin cluster-run' and a new OSC plugin command "
@@ -155,6 +165,15 @@ msgstr "Other Notes"
 msgid "Pike Series Release Notes"
 msgstr "Pike Series Release Notes"
 
+msgid ""
+"Python 2.7 support has been dropped. Last release of python-senlinclient to "
+"support python 2.7 is OpenStack Train. The minimum version of Python now "
+"supported by python-senlinclient is Python 3.6."
+msgstr ""
+"Python 2.7 support has been dropped. Last release of python-senlinclient to "
+"support python 2.7 is OpenStack Train. The minimum version of Python now "
+"supported by python-senlinclient is Python 3.6."
+
 msgid "Queens Series Release Notes"
 msgstr "Queens Series Release Notes"
 
@@ -164,8 +183,14 @@ msgstr "Remove unsupported sort key \"user\" for event-list."
 msgid "Removed pypy because pypy is no longer supported by oslo libraries."
 msgstr "Removed pypy because pypy is no longer supported by oslo libraries."
 
+msgid "Rocky Series Release Notes"
+msgstr "Rocky Series Release Notes"
+
 msgid "Senlin Client Release Notes"
 msgstr "Senlin Client Release Notes"
+
+msgid "Stein Series Release Notes"
+msgstr "Stein Series Release Notes"
 
 msgid "Support \"global_project\" arguments for action-list."
 msgstr "Support \"global_project\" arguments for action-list."
@@ -225,5 +250,32 @@ msgstr ""
 msgid "The support to python 3.5 has been verified and gated."
 msgstr "The support to python 3.5 has been verified and gated."
 
+msgid "Train Series Release Notes"
+msgstr "Train Series Release Notes"
+
 msgid "Upgrade Notes"
 msgstr "Upgrade Notes"
+
+msgid "Ussuri Series Release Notes"
+msgstr "Ussuri Series Release Notes"
+
+msgid "Victoria Series Release Notes"
+msgstr "Victoria Series Release Notes"
+
+msgid "Wallaby Series Release Notes"
+msgstr "Wallaby Series Release Notes"
+
+msgid "Xena Series Release Notes"
+msgstr "Xena Series Release Notes"
+
+msgid "Yoga Series Release Notes"
+msgstr "Yoga Series Release Notes"
+
+msgid ""
+"[`bug 1814171 <https://bugs.launchpad.net/senlin/+bug/1814171>`_] Fixed a "
+"bug so that cluster delete and node delete return action id associated with "
+"the delete action."
+msgstr ""
+"[`bug 1814171 <https://bugs.launchpad.net/senlin/+bug/1814171>`_] Fixed a "
+"bug so that cluster delete and node delete return action id associated with "
+"the delete action."
