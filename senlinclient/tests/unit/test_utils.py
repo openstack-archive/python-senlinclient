@@ -11,6 +11,7 @@
 # under the License.
 
 from heatclient.common import template_utils
+from oslo_utils import importutils
 from unittest import mock
 
 import testtools
@@ -28,6 +29,15 @@ class UtilTest(testtools.TestCase):
         format_params = {'status': 'ACTIVE', 'name': 'cluster1'}
         self.assertEqual(format_params,
                          utils.format_parameters(params))
+
+    def test_import_versioned_module(self):
+        module = 'senlinclient'
+        version = 'v1'
+        submodule = '__init__'
+        module_name = '.'.join((module, version, submodule))
+        self.assertIsNone(utils.import_versioned_module(version[-1]))
+        self.assertEqual(utils.import_versioned_module(version[-1], submodule),
+                         importutils.import_module(module_name))
 
     def test_format_parameter_split(self):
         params = ['status=ACTIVE', 'name=cluster1']
