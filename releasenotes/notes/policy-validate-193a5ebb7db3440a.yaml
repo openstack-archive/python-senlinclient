@@ -1,4 +1,0 @@
----
-features:
-  - A policy-validate command has been added to senlin command line.
-    OSC support is added as well.

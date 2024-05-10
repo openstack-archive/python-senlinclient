@@ -1,5 +1,0 @@
----
-features:
-  - A new command 'senlin cluster-collect' and its corresponding OSC plugin
-    command has been added. This new command can be used to aggregate a
-    specific property across a cluster.

@@ -1,4 +1,0 @@
----
-other:
-  - The 'senlin' CLI will be removed in April 2017. This message is now
-    explicitly printed when senlin CLI commands are invoked.

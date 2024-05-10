@@ -1,18 +1,10 @@
-========================
-Team and repository tags
-========================
+This project is no longer maintained.
 
-.. image:: https://governance.openstack.org/tc/badges/python-senlinclient.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
+The contents of this repository are still available in the Git
+source code management system.  To see the contents of this
+repository before it reached its end of life, please check out the
+previous commit with "git checkout HEAD^1".
 
-.. Change things from this point on
-
-OpenStackClient Plugin for Senlin Clustering Service
-====================================================
-
-This is a client library for Senlin built on the Senlin clustering API. It
-provides a plugin for the openstackclient command-line tool.
-
-Development takes place via the usual OpenStack processes as outlined in the
-`developer guide <https://docs.openstack.org/infra/manual/developers.html>`_.
-The master repository is in `Git <https://opendev.org/openstack/python-senlinclient>`_.
+For any further questions, please email
+openstack-discuss@lists.openstack.org or join #openstack-dev on
+OFTC.
